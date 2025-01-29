@@ -1,20 +1,18 @@
-import { Navigate, useNavigate } from "react-router";
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
+import { LoginForm } from "./components";
 
 export const Login = () => {
   const navigate = useNavigate();
-  const isAuth = false;
 
-  if (isAuth) return <Navigate to="/dashboard" replace />;
+  console.log("login page");
+  useEffect(() => {
+    const token = localStorage.getItem("auth") || null;
 
-  const handleLogin = () => {
-    localStorage.setItem("auth", "true");
-    navigate("/dashboard");
-  };
+    if (token) {
+      navigate("/dashboard");
+    }
+  }, []);
 
-  return (
-    <div>
-      <h2>Login</h2>
-      <button onClick={handleLogin}>Iniciar Sesión</button>
-    </div>
-  );
+  return <LoginForm />;
 };
