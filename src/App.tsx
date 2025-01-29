@@ -1,21 +1,20 @@
-import { CssBaseline, Typography } from "@mui/material"
-import { AppLayout } from "./styled-components/app-layout.styled.component"
-
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Login } from "./pages";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import { PrivateRouteGuard } from "./components/private-route-guard";
 
 function App() {
-  
-
   return (
-    <>
-    <AppLayout>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />}></Route>
 
-      <CssBaseline/>
-      <div>
-       <Typography variant="h1">Hello World</Typography>
-      </div>
-    </AppLayout>
-    </>
-  )
+        <Route element={<PrivateRouteGuard />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
