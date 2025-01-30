@@ -1,27 +1,33 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { PrivateRouteGuard } from "./components/private-route-guard";
-import { Login } from "./pages";
-import Dashboard from "./pages/Dashboard/Dashboard";
-import LoginLayout from "./layouts/login.layout";
-import AppLayout from "./layouts/app.layout";
+import { Suspense, lazy } from "react";
+import { BrowserRouter, Navigate, Route } from "react-router-dom";
+import AuthGuard from "./guards/auth.guard";
+import { PrivateRoutes, PublicRoutes } from "./models/routes";
+import RoutesWithNotFound from "./utilities/RoutesWithNotFound.utility";
+
+const Login = lazy(() => import("./pages/Login/Login"));
+const Private = lazy(() => import("./pages/Private/Private"));
 
 function App() {
+  // const isAuth = localStorage.getItem("auth");
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<LoginLayout />}>
-          <Route path="/" element={<Login />}></Route>
-        </Route>
+    <Suspense fallback={<div>Loading...</div>}>
+      <BrowserRouter>
+        <RoutesWithNotFound>
+          <Route
+            path="/"
+            element={<Navigate to={PrivateRoutes.PRIVATE} />}
+          ></Route>
+          <Route path={`${PublicRoutes.LOGIN}`} element={<Login />}></Route>
 
-        <Route element={<PrivateRouteGuard />}>
-          <Route element={<AppLayout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
+          <Route element={<AuthGuard />}>
+            <Route
+              path={`${PrivateRoutes.PRIVATE}/*`}
+              element={<Private />}
+            ></Route>
           </Route>
-        </Route>
-
-        <Route path="*" element={<h1>Not Found</h1>} />
-      </Routes>
-    </BrowserRouter>
+        </RoutesWithNotFound>
+      </BrowserRouter>
+    </Suspense>
   );
 }
 

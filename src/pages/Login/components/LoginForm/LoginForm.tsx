@@ -1,3 +1,4 @@
+import { PrivateRoutes } from "@/models/routes";
 import {
   Box,
   Button,
@@ -14,7 +15,7 @@ export function LoginForm() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     localStorage.setItem("auth", "true");
-    navigate("/dashboard");
+    navigate(`/${PrivateRoutes.PRIVATE}`);
   };
 
   return (
