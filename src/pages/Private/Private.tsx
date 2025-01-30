@@ -3,6 +3,7 @@ import RoutesWithNotFound from "@/utilities/RoutesWithNotFound.utility";
 import { Navigate, Route } from "react-router";
 import { lazy } from "react";
 import { AppLayout } from "./styled-components";
+import AppContainer from "./components/AppContainer/AppContainer";
 
 const Home = lazy(() => import("./Home/Home"));
 const Dashboard = lazy(() => import("./Dashboard/Dashboard"));
@@ -10,14 +11,27 @@ const Dashboard = lazy(() => import("./Dashboard/Dashboard"));
 export default function Private() {
   return (
     <AppLayout>
-      <RoutesWithNotFound>
-        <Route
-          path="/"
-          element={<Navigate to={PrivateRoutes.DASHBOARD} />}
-        ></Route>
-        <Route path={PrivateRoutes.DASHBOARD} element={<Dashboard />}></Route>
-        <Route path={PrivateRoutes.HOME} element={<Home />}></Route>
-      </RoutesWithNotFound>
+      <AppContainer>
+        <RoutesWithNotFound>
+          <Route
+            path="/"
+            element={<Navigate to={PrivateRoutes.DASHBOARD} />}
+          ></Route>
+          <Route path={PrivateRoutes.DASHBOARD} element={<Dashboard />}></Route>
+          <Route
+            path={PrivateRoutes.CATEGORIES}
+            element={<>CATEGORIES</>}
+          ></Route>
+          <Route path={PrivateRoutes.PRODUCTS} element={<>PRODUCTS</>}></Route>
+          <Route path={PrivateRoutes.SALES} element={<>SALES</>}></Route>
+          <Route
+            path={PrivateRoutes.CUSTOMERS}
+            element={<>CUSTOMERS</>}
+          ></Route>
+          <Route path={PrivateRoutes.RECIPTS} element={<>RECIPTS</>}></Route>
+          <Route path={PrivateRoutes.HOME} element={<Home />}></Route>
+        </RoutesWithNotFound>
+      </AppContainer>
     </AppLayout>
   );
 }
