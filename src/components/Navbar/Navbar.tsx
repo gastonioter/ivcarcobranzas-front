@@ -1,3 +1,4 @@
+import { useAuthToken } from "@/hooks/useAuth";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MenuIcon from "@mui/icons-material/Menu";
 import AppBar from "@mui/material/AppBar";
@@ -8,10 +9,16 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
 import { dialogOpenSubject$ } from "../Sidebar";
+import { clearCredentials } from "@/redux/slices/auth";
+import { useNavigate } from "react-router";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
 
 export default function Navbar() {
-  const [auth, setAuth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const isAuth = useAuthToken();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -19,6 +26,11 @@ export default function Navbar() {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const logout = () => {
+    dispatch(clearCredentials());
+    navigate("/", { replace: true });
   };
 
   const openSidebar = () => {
@@ -41,7 +53,7 @@ export default function Navbar() {
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           SISTEMA FACTURACION IVCAR
         </Typography>
-        {auth && (
+        {isAuth && (
           <div>
             <IconButton
               size="large"
@@ -57,19 +69,18 @@ export default function Navbar() {
               id="menu-appbar"
               anchorEl={anchorEl}
               anchorOrigin={{
-                vertical: "top",
+                vertical: "bottom",
                 horizontal: "right",
               }}
               keepMounted
               transformOrigin={{
-                vertical: "top",
+                vertical: "bottom",
                 horizontal: "right",
               }}
               open={Boolean(anchorEl)}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>My account</MenuItem>
+              <MenuItem onClick={logout}>Cerrar Sesion</MenuItem>
             </Menu>
           </div>
         )}

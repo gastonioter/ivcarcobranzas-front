@@ -1,4 +1,7 @@
 import { PrivateRoutes } from "@/models/routes";
+import { store } from "@/redux";
+import { setCredentials } from "@/redux/slices/auth";
+import { useLoginMutation } from "@/services/auth";
 import {
   Box,
   Button,
@@ -12,10 +15,23 @@ import { useNavigate } from "react-router";
 
 export function LoginForm() {
   const navigate = useNavigate();
-  const handleSubmit = (e: FormEvent) => {
+  const [login, { isError, isLoading }] = useLoginMutation();
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    localStorage.setItem("auth", "true");
-    navigate(`/${PrivateRoutes.PRIVATE}`);
+    const formData = new FormData(e.target as HTMLFormElement);
+    const { password, email } = Object.fromEntries(formData.entries());
+    try {
+      const { token } = await login({
+        password,
+        email,
+      }).unwrap();
+
+      navigate(`/${PrivateRoutes.PRIVATE}`);
+      store.dispatch(setCredentials({ token }));
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -43,8 +59,14 @@ export function LoginForm() {
             required
             fullWidth
           />
+
+          {isError && (
+            <Typography color="error">
+              Credenciales incorrectas, por favor intente de nuevo.
+            </Typography>
+          )}
           <Button type="submit" variant="contained" color="primary" fullWidth>
-            Ingresar
+            {isLoading ? "Ingresando..." : "Ingresar"}
           </Button>
         </Box>
       </Paper>
