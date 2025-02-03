@@ -1,11 +1,16 @@
 import AddIcon from "@mui/icons-material/Add";
 import { Button, Paper, Stack } from "@mui/material";
+import { dialogOpenSubject$ } from "../CustomDialog";
 
 interface Props {
   children: React.ReactNode;
 }
 
 export default function SectionHeader({ children }: Props) {
+  const handleClick = () => {
+    dialogOpenSubject$.setSubject = true;
+  };
+
   return (
     <Paper
       sx={{
@@ -18,7 +23,11 @@ export default function SectionHeader({ children }: Props) {
       <Stack direction="row" spacing={2} justifyContent="space-between">
         {children}
 
-        <Button variant="contained" startIcon={<AddIcon />}>
+        <Button
+          onClick={handleClick}
+          variant="contained"
+          startIcon={<AddIcon />}
+        >
           Nuevo
         </Button>
       </Stack>
