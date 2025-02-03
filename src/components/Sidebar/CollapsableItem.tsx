@@ -37,6 +37,7 @@ export default function CollapsableItem({
         <List component="div" disablePadding>
           {items.map((item) => (
             <SimpleItem
+              selected={location.pathname.includes(item.to)}
               isNested
               key={item.name}
               name={item.name}

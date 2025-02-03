@@ -1,15 +1,38 @@
-import { GridRowsProp, GridColDef, DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 
-export default function CategoriesTable() {
-  const rows: GridRowsProp = [
-    { id: 1, col1: "Hello", col2: "World" },
-    { id: 2, col1: "DataGridPro", col2: "is Awesome" },
-    { id: 3, col1: "MUI", col2: "is Amazing" },
-  ];
+export default function CategoriesTable({ data, isLoading, error }) {
+  if (error) return <div>Error al cargar los datos</div>;
+
+  const rows: GridRowsProp = data;
 
   const columns: GridColDef[] = [
-    { field: "col1", headerName: "Column 1", width: 150 },
-    { field: "col2", headerName: "Column 2", width: 150 },
+    { field: "name", headerName: "Nombre", width: 250 },
+    {
+      field: "description",
+      headerName: "Descripcion",
+      flex: 1,
+      sortable: false,
+      filterable: false,
+    },
+    { field: "actions", headerName: "Acciones", width: 100, sortable: false },
   ];
-  return <DataGrid rows={rows} columns={columns} />;
+  return (
+    <DataGrid
+      slotProps={{
+        toolbar: {
+          showQuickFilter: true,
+        },
+        loadingOverlay: {
+          variant: "skeleton",
+          noRowsVariant: "skeleton",
+        },
+      }}
+      pageSizeOptions={[5, 10, 25]}
+      disableRowSelectionOnClick
+      getRowId={(row) => row.uuid}
+      rows={rows}
+      columns={columns}
+      loading={isLoading}
+    />
+  );
 }

@@ -12,6 +12,7 @@ export interface SimpleItemProps {
   name: string;
   isNested?: boolean;
   to: string;
+  selected: boolean;
 }
 
 export default function SimpleItem({
@@ -19,6 +20,7 @@ export default function SimpleItem({
   name,
   to,
   isNested,
+  selected,
 }: SimpleItemProps) {
   const navigate = useNavigate();
 
@@ -32,7 +34,7 @@ export default function SimpleItem({
       onClick={closeSidebar}
       sx={{ pl: isNested ? 4 : 0 }}
     >
-      <ListItemButton onClick={() => navigate(to)}>
+      <ListItemButton selected={selected} onClick={() => navigate(to)}>
         <ListItemIcon>{icon}</ListItemIcon>
         <ListItemText primary={name} />
       </ListItemButton>

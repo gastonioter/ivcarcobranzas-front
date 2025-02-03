@@ -12,6 +12,7 @@ import "@fontsource/inter/500.css";
 import "@fontsource/inter/700.css";
 import { ThemeProvider } from "@mui/material";
 import theme from "./theme";
+import SnackbarProvider from "./context/SnackbarContext";
 
 const Login = lazy(() => import("./pages/Login/Login"));
 const Private = lazy(() => import("./pages/Private/Private"));
@@ -21,22 +22,27 @@ function App() {
     <ThemeProvider theme={theme}>
       <Suspense fallback={<div>Loading...</div>}>
         <Provider store={store}>
-          <BrowserRouter>
-            <RoutesWithNotFound>
-              <Route
-                path="/"
-                element={<Navigate to={PrivateRoutes.PRIVATE} />}
-              ></Route>
-              <Route path={`${PublicRoutes.LOGIN}`} element={<Login />}></Route>
-
-              <Route element={<AuthGuard />}>
+          <SnackbarProvider>
+            <BrowserRouter>
+              <RoutesWithNotFound>
                 <Route
-                  path={`${PrivateRoutes.PRIVATE}/*`}
-                  element={<Private />}
+                  path="/"
+                  element={<Navigate to={PrivateRoutes.PRIVATE} />}
                 ></Route>
-              </Route>
-            </RoutesWithNotFound>
-          </BrowserRouter>
+                <Route
+                  path={`${PublicRoutes.LOGIN}`}
+                  element={<Login />}
+                ></Route>
+
+                <Route element={<AuthGuard />}>
+                  <Route
+                    path={`${PrivateRoutes.PRIVATE}/*`}
+                    element={<Private />}
+                  ></Route>
+                </Route>
+              </RoutesWithNotFound>
+            </BrowserRouter>
+          </SnackbarProvider>
         </Provider>
       </Suspense>
     </ThemeProvider>

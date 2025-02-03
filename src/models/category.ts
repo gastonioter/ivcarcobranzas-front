@@ -1,7 +1,13 @@
 import { z } from "zod";
 
+export interface Category {
+  uuid: string;
+  name: string;
+  description?: string;
+}
+
 export const categorySchema = z.object({
-  categoryName: z.string().min(1, "Ingresa un nombre válido"),
+  name: z.string().min(1, "Ingresa un nombre válido"),
   description: z.string().optional(),
 });
 

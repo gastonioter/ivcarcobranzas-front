@@ -9,6 +9,8 @@ import CollapsableItem from "./CollapsableItem";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import SimpleItem from "./SimpleItem";
 import { PrivateRoutes } from "@/models/routes";
+import { useLocation } from "react-router";
+
 const items = [
   {
     name: "Dashboard",
@@ -51,6 +53,8 @@ const items = [
 ];
 
 export default function SidebarNavigationItems() {
+  const location = useLocation();
+
   return (
     <Box sx={{ width: 250 }} role="presentation">
       <Typography sx={{ textAlign: "center", mt: 3 }} variant="h5" gutterBottom>
@@ -64,12 +68,15 @@ export default function SidebarNavigationItems() {
               icon={navItem.icon}
               name={navItem.name}
               to={navItem.to}
+              key={navItem.name}
+              selected={location.pathname.includes(navItem.to)}
             />
           ) : (
             <CollapsableItem
               icon={navItem.icon}
               name={navItem.name}
               items={navItem.items}
+              key={navItem.name}
             />
           )
         )}
