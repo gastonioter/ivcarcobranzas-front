@@ -5,8 +5,12 @@ interface Props {
 }
 export default function SectionTitle({ children }: Props) {
   return (
-    <Typography gutterBottom variant="h1">
-      {children.toUpperCase()}
+    <Typography
+      gutterBottom
+      variant="h5"
+      sx={{ borderRight: 2, borderColor: "#D3D3D3", px: 2, py: 1 }}
+    >
+      {children}
     </Typography>
   );
 }

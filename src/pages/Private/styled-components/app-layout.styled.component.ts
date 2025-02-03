@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const AppLayout = styled.div`
-  background-color: aliceblue;
+  background-color: #fafafa;
   min-height: 100vh;
   display: grid;
   grid-template-columns: 250px 1fr;
