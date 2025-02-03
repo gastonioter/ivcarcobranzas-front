@@ -1,5 +1,4 @@
 import {
-  Box,
   ListItem,
   ListItemButton,
   ListItemIcon,
@@ -22,9 +21,11 @@ export default function SimpleItem({
   isNested,
 }: SimpleItemProps) {
   const navigate = useNavigate();
+
   const closeSidebar = () => {
-    dialogCloseSubject$.setSubject = false;
+    dialogCloseSubject$.setSubject = true;
   };
+
   return (
     <ListItem
       disablePadding

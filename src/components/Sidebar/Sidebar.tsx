@@ -14,17 +14,6 @@ export default function Sidebar() {
   let openSubject$ = new Subscription();
   let closeSubject$ = new Subscription();
 
-  const toggleDrawer =
-    (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-      if (
-        event.type === "keydown" &&
-        ((event as React.KeyboardEvent).key === "Tab" ||
-          (event as React.KeyboardEvent).key === "Shift")
-      ) {
-        return;
-      }
-    };
-
   useEffect(() => {
     openSubject$ = dialogOpenSubject$.getSubject.subscribe(() => handleOpen());
     closeSubject$ = dialogCloseSubject$.getSubject.subscribe(() =>
@@ -49,7 +38,12 @@ export default function Sidebar() {
   };
 
   return (
-    <Drawer anchor={"left"} variant="temporary" open={open} onClose={() => handleExit()}>
+    <Drawer
+      anchor={"left"}
+      variant="temporary"
+      open={open}
+      onClose={() => handleExit()}
+    >
       <SidebarNavigationItems />
     </Drawer>
   );
