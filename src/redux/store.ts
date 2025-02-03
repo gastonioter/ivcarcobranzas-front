@@ -1,8 +1,9 @@
 // app/store.ts
 import authReducer from "@/redux/slices/auth";
-import { authApi } from "@/services/auth";
+
 import { configureStore } from "@reduxjs/toolkit";
-import { tokenMiddleware } from "./middlewares/localstorage";
+import { tokenMiddleware } from "./middlewares";
+import { authApi } from "@/services";
 
 export const store = configureStore({
   reducer: {

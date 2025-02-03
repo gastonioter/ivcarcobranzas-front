@@ -1,7 +1,7 @@
 import { PrivateRoutes } from "@/models/routes";
 import { store } from "@/redux";
 import { setCredentials } from "@/redux/slices/auth";
-import { useLoginMutation } from "@/services/auth";
+import { useLoginMutation } from "@/services/authApi";
 import {
   Box,
   Button,

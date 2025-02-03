@@ -40,7 +40,7 @@ export default function Sidebar() {
   return (
     <Drawer
       anchor={"left"}
-      variant="temporary"
+      variant={"permanent"}
       open={open}
       onClose={() => handleExit()}
     >

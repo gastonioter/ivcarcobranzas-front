@@ -1,7 +1,9 @@
+import SectionTitle from "@/components/SectionTitle/SectionTitle";
+
 export default function Dashboard() {
   return (
     <div>
-      <h1 style={{ margin: 0 }}>DASHBOARD</h1>
+      <SectionTitle>Dashboard</SectionTitle>
     </div>
   );
 }
