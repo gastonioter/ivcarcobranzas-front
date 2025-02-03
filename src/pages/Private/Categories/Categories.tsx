@@ -6,9 +6,7 @@ import { Box, Typography } from "@mui/material";
 import CategoriesTable from "./components/CategoriesTable/CategoriesTable";
 import CategoryForm from "./components/CategoryForm/CategoryForm";
 export default function Categories() {
-  const { data, isLoading, error } = useGetCategoriesQuery({});
-  
-
+  const { data, isLoading, error } = useGetCategoriesQuery();
 
   return (
     <>
@@ -23,7 +21,7 @@ export default function Categories() {
           <Typography variant="h5" sx={{ mb: 5 }}>
             Nueva Categoría
           </Typography>
-          <CategoryForm  />
+          <CategoryForm />
         </Box>
       </CustomDialog>
     </>

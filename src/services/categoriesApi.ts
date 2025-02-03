@@ -10,7 +10,7 @@ export const categoriesApi = createApi({
   }),
   tagTypes: ["Categories"],
   endpoints: (builder) => ({
-    getCategories: builder.query({
+    getCategories: builder.query<Category[], void>({
       query: () => "/",
       providesTags: ["Categories"],
     }),
@@ -21,6 +21,7 @@ export const categoriesApi = createApi({
         method: "POST",
         body: data,
       }),
+
       invalidatesTags: ["Categories"],
     }),
   }),
