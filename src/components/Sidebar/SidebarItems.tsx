@@ -1,16 +1,16 @@
+import { PrivateRoutes } from "@/models/routes";
 import CategoryIcon from "@mui/icons-material/Category";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import LocalGroceryStoreIcon from "@mui/icons-material/LocalGroceryStore";
-import PersonIcon from "@mui/icons-material/Person";
-import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
-import StorefrontIcon from "@mui/icons-material/Storefront";
-import { Box, Divider, List, Typography } from "@mui/material";
-import CollapsableItem from "./CollapsableItem";
 import InventoryIcon from "@mui/icons-material/Inventory";
-import SimpleItem from "./SimpleItem";
-import { PrivateRoutes } from "@/models/routes";
+import LocalGroceryStoreIcon from "@mui/icons-material/LocalGroceryStore";
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import PersonIcon from "@mui/icons-material/Person";
+import StorefrontIcon from "@mui/icons-material/Storefront";
+import SummarizeIcon from "@mui/icons-material/Summarize";
+import { Box, Divider, List, Typography } from "@mui/material";
 import { useLocation } from "react-router";
-
+import CollapsableItem from "./CollapsableItem";
+import SimpleItem from "./SimpleItem";
 const items = [
   {
     name: "Dashboard",
@@ -46,9 +46,14 @@ const items = [
     to: PrivateRoutes.CUSTOMERS,
   },
   {
-    name: "Recibos",
-    to: PrivateRoutes.RECIPTS,
-    icon: <RequestQuoteIcon />,
+    name: "Mensualidades",
+    to: PrivateRoutes.MONTHLY_FEES,
+    icon: <SummarizeIcon />,
+  },
+  {
+    name: "Pagos",
+    to: PrivateRoutes.PAYMENTS,
+    icon: <MonetizationOnIcon />,
   },
 ];
 

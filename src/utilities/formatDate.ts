@@ -3,6 +3,5 @@ export const formattedDate = (ISODate: Date) => {
     dateStyle: "medium",
     timeZone: "America/Argentina/Buenos_Aires",
   });
-  console.log(date);
-  return date.toString();
+  return date.toUpperCase();
 };

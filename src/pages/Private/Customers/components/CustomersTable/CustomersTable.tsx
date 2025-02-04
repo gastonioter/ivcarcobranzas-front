@@ -44,6 +44,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
       field: "type",
       headerName: "Tipo",
       flex: 0.5,
+      valueFormatter: (value) => (value as string).toUpperCase(),
       editable: false,
       sortable: false,
       filterable: false,

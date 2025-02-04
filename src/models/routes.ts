@@ -10,7 +10,8 @@ export const PrivateRoutes = {
   CATEGORIES: "categorias",
   SALES: "ventas",
   CUSTOMERS: "clientes",
-  RECIPTS: "recibos",
+  MONTHLY_FEES: "mensualidades",
+  PAYMENTS: "pagos",
 };
 
 export enum Roles {
