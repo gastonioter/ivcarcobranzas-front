@@ -1,4 +1,5 @@
 import { useSnackbar } from "@/context/SnackbarContext";
+import { Category } from "@/models/category";
 import { useGetProductsQuery } from "@/services/productApi";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 
@@ -22,7 +23,7 @@ export default function ProductsTable() {
     {
       field: "category",
       headerName: "Categoria",
-      valueGetter: (params) => params.name,
+      valueGetter: (params) => (params as Category).name,
       width: 250,
     },
     {
