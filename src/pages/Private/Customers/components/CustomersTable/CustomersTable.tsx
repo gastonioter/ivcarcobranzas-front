@@ -1,19 +1,26 @@
 import { CustomGridToolbar } from "@/components/CustomGridToolbar";
 import TableMenuActions from "@/components/TableMenuActions/TableMenuActions";
-import { useGetCustomersQuery } from "@/services/customerApi";
+import {
+  useGetCustomersQuery,
+  useUpdateStatusMutation,
+} from "@/services/customerApi";
 import { formattedDate } from "@/utilities";
 import { Alert } from "@mui/material";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import CustomerStatusIndicator from "../CustomerStatusIndicator/CustomerStatusIndicator";
 import { dialogOpenSubject$ } from "@/components/CustomDialog";
-import { Customer } from "@/models/customer";
+import { Customer, CustomerStatus } from "@/models/customer";
+import { useSnackbar } from "@/context/SnackbarContext";
 
 interface CustomerTableProps {
   setCustomer: (customer: Customer | null) => void;
 }
 function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
   const { data, isLoading, error } = useGetCustomersQuery();
+  const [changeCustomerStatus, { isLoading: isChangingStatus }] =
+    useUpdateStatusMutation();
 
+  const snackbar = useSnackbar();
   if (error) {
     return (
       <Alert severity="error">Ocurrió un error al cargar los clientes</Alert>
@@ -36,8 +43,31 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
           onClick: () => {},
         },
         {
-          name: "Dar de baja",
-          onClick: () => {},
+          name: `${
+            params.row.status === CustomerStatus.ACTIVE
+              ? "Dar de baja"
+              : "Activar"
+          }`,
+          onClick: async () => {
+            try {
+              if (params.row.status === CustomerStatus.ACTIVE) {
+                await changeCustomerStatus({
+                  uuid: params.row.uuid,
+                  status: CustomerStatus.INACTIVE,
+                });
+              } else {
+                await changeCustomerStatus({
+                  uuid: params.row.uuid,
+                  status: CustomerStatus.ACTIVE,
+                });
+              }
+
+              snackbar.openSnackbar("Estado actualizado con éxito");
+            } catch (e) {
+              console.log(e);
+              snackbar.openSnackbar(`${e.data.error}`, "error");
+            }
+          },
         },
       ]}
     />

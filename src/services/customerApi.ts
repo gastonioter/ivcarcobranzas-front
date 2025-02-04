@@ -1,23 +1,46 @@
 import { addToken } from "@/interceptors";
-import { CreateCustomerFormData, Customer } from "@/models/customer";
+import {
+  BajaCustomerFormData,
+  CreateCustomerFormData,
+  Customer,
+  EditCustomerFormData,
+} from "@/models/customer";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const customerApi = createApi({
   reducerPath: "customerApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3001/api/customers",
+    baseUrl: "http://localhost:3001/api",
     prepareHeaders: addToken,
   }),
   tagTypes: ["Customers"],
   endpoints: (builder) => ({
     getCustomers: builder.query<Customer[], void>({
-      query: () => "/",
+      query: () => "/customers",
       providesTags: ["Customers"],
     }),
 
     createCustomer: builder.mutation<Customer, CreateCustomerFormData>({
       query: (body) => ({
-        url: "/",
+        url: "/customers",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Customers"],
+    }),
+
+    editCustomer: builder.mutation<Customer, EditCustomerFormData>({
+      query: ({ uuid, ...updatedCustomerData }) => ({
+        url: `/customers/${uuid}`,
+        method: "PATCH",
+        body: updatedCustomerData,
+      }),
+      invalidatesTags: ["Customers"],
+    }),
+
+    updateStatus: builder.mutation<Customer, BajaCustomerFormData>({
+      query: (body) => ({
+        url: `/customers/status`,
         method: "POST",
         body,
       }),
@@ -26,4 +49,9 @@ export const customerApi = createApi({
   }),
 });
 
-export const { useCreateCustomerMutation, useGetCustomersQuery } = customerApi;
+export const {
+  useCreateCustomerMutation,
+  useGetCustomersQuery,
+  useEditCustomerMutation,
+  useUpdateStatusMutation,
+} = customerApi;

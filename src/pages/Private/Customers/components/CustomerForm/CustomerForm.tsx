@@ -6,7 +6,10 @@ import {
   Customer,
   CustomerType,
 } from "@/models/customer";
-import { useCreateCustomerMutation } from "@/services/customerApi";
+import {
+  useCreateCustomerMutation,
+  useEditCustomerMutation,
+} from "@/services/customerApi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Box,
@@ -29,30 +32,52 @@ function CustomerForm({
   setCostumer: React.Dispatch<React.SetStateAction<Customer | null>>;
 }) {
   const [create, { isLoading }] = useCreateCustomerMutation();
+  const [edit, { isLoading: isEditing }] = useEditCustomerMutation();
+
   const [typeSelected, setTypeSelected] = useState<string>("");
   const snackbar = useSnackbar();
 
-  useEffect(() => {
-    if (customer) {
-      setTypeSelected(customer.type);
-    }
-  }, [customer]);
+  const editMode = !!customer;
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<CreateCustomerFormData>({
     resolver: zodResolver(CreateCustomerSchema),
   });
 
+  useEffect(() => {
+    if (customer) {
+      setValue("firstName", customer.firstName);
+      setValue("lastName", customer.lastName);
+      setValue("email", customer.email);
+      setValue("phone", customer.phone);
+      setValue("type", customer.type);
+      setTypeSelected(customer.type);
+      if (customer.montoMes) setValue("montoMes", customer.montoMes);
+    }
+  }, [customer, setValue]);
+
   const onSubmit = async (data: CreateCustomerFormData) => {
+    console.log("submit");
     try {
-      await create(data).unwrap();
-      snackbar.openSnackbar(`Cliente ${data.firstName} creado con éxito`);
-    } catch (error) {
-      snackbar.openSnackbar(`${error.data.error}`, "error");
-      console.error(error);
+      if (!editMode) {
+        await create(data).unwrap();
+      } else {
+        await edit({ uuid: customer?.uuid, ...data }).unwrap();
+      }
+
+      dialogCloseSubject$.setSubject = false;
+      snackbar.openSnackbar(
+        `Cliente ${editMode ? "editado" : "creado"} con éxito`
+      );
+    } catch (e) {
+      console.log(e);
+      snackbar.openSnackbar(`${e.data.error}`, "error");
+    } finally {
+      console.log("finally");
     }
   };
   return (
@@ -114,9 +139,12 @@ function CustomerForm({
           <Select
             value={typeSelected}
             label="Tipo de Cliente"
-            {...register("type", {
-              onChange: (e) => setTypeSelected(e.target.value as string),
-            })}
+            {...register("type")}
+            onChange={(e) => {
+              const value = e.target.value as CustomerType;
+              setTypeSelected(value);
+              setValue("type", value);
+            }}
           >
             {Object.values(CustomerType).map((type) => {
               return (
@@ -157,7 +185,7 @@ function CustomerForm({
           type="submit"
           variant="contained"
           color="primary"
-          loading={isLoading}
+          loading={isLoading || isEditing}
           loadingPosition="end"
         >
           {customer ? "Editar" : "Agregar"}

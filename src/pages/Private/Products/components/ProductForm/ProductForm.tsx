@@ -56,7 +56,9 @@ export default function ProductForm({ product, setProduct }: ProductFormProps) {
 
       dialogCloseSubject$.setSubject = false;
       snackbar.openSnackbar(
-        `Producto ${data.name} ${editMode ? "editado" : "creado"} con éxito`
+        `Producto  ${!editMode && data.name} ${
+          editMode ? "editado" : "creado"
+        } con éxito`
       );
     } catch (e) {
       console.log(e);

@@ -21,7 +21,7 @@ export default function Products() {
       <CustomDialog>
         <Box sx={{ p: 5 }}>
           <Typography variant="h5" sx={{ mb: 5 }}>
-            Nuevo Producto
+            {productToEdit ? "Editar" : "Nuevo"} Producto
           </Typography>
           <ProductForm product={productToEdit} setProduct={setProductToEdit} />
         </Box>
