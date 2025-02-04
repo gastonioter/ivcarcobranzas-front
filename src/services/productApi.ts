@@ -1,5 +1,5 @@
 import { addToken } from "@/interceptors";
-import { CreateProductSchemaType, Product } from "@/models/product";
+import { CreateProductFormValues, Product } from "@/models/product";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const productApi = createApi({
@@ -14,7 +14,7 @@ export const productApi = createApi({
       query: () => "/products",
       providesTags: ["Product"],
     }),
-    createProduct: builder.mutation<Product, CreateProductSchemaType>({
+    createProduct: builder.mutation<Product, CreateProductFormValues>({
       query: (newProduct) => ({
         url: `/products`,
         method: "POST",

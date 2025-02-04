@@ -1,9 +1,16 @@
+import { useSnackbar } from "@/context/SnackbarContext";
+import { useGetCategoriesQuery } from "@/services/categoriesApi";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 
-export default function CategoriesTable({ data, isLoading, error }) {
-  if (error) return <div>Error al cargar los datos</div>;
+export default function CategoriesTable() {
+  const { data, isLoading, error } = useGetCategoriesQuery();
+  const snackbar = useSnackbar();
 
-  const rows: GridRowsProp = data;
+  if (error) {
+    snackbar.openSnackbar("Ocurrió un error al cargar las categorías", "error");
+  }
+
+  const rows: GridRowsProp = data || [];
 
   const columns: GridColDef[] = [
     { field: "name", headerName: "Nombre", width: 250 },
