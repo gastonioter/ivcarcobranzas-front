@@ -1,6 +1,10 @@
 import { dialogCloseSubject$ } from "@/components/CustomDialog";
 import { useSnackbar } from "@/context/SnackbarContext";
-import { CreateProductFormValues, CreateProductSchema } from "@/models/product";
+import {
+  CreateProductFormValues,
+  CreateProductSchema,
+  Product,
+} from "@/models/product";
 import { useGetCategoriesQuery } from "@/services/categoriesApi";
 import { useCreateProductMutation } from "@/services/productApi";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,11 +15,18 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Stack,
   TextField,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 
-export default function ProductForm() {
+interface ProductFormProps {
+  product: Product | null;
+  setProduct: React.Dispatch<React.SetStateAction<Product | null>>;
+}
+
+export default function ProductForm({ product, setProduct }: ProductFormProps) {
+  console.log(product);
   const [create, { isLoading }] = useCreateProductMutation();
 
   const { data: categories, isLoading: isLoadingCategories } =
@@ -52,12 +63,14 @@ export default function ProductForm() {
           label="Nombre del producto"
           {...register("name")}
           error={!!errors.name}
+          defaultValue={product?.name}
           helperText={errors.name?.message}
         />
         <TextField
           label="Precio de venta"
           {...register("price")}
           type="number"
+          defaultValue={product?.price}
           error={!!errors.price}
           helperText={errors.price?.message}
         />
@@ -67,6 +80,7 @@ export default function ProductForm() {
             disabled={isLoadingCategories}
             labelId="category"
             id="demo-simple-select-helper"
+            defaultValue={product?.categoryId}
             label="Categoria"
             {...register("categoryId")}
           >
@@ -79,16 +93,27 @@ export default function ProductForm() {
             }
           </Select>
         </FormControl>
-        <Button
-          sx={{ mt: 2, width: "fit-content", alignSelf: "flex-end" }}
-          type="submit"
-          variant="contained"
-          color="primary"
-          loading={isLoading}
-          loadingPosition="end"
-        >
-          Agregar
-        </Button>
+        <Stack direction="row" spacing={2} justifyContent="space-between">
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => {
+              setProduct(null);
+              dialogCloseSubject$.setSubject = true;
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            loading={isLoading}
+            loadingPosition="end"
+          >
+            {product ? "Editar" : "Agregar"}
+          </Button>
+        </Stack>
       </Box>
     </>
   );

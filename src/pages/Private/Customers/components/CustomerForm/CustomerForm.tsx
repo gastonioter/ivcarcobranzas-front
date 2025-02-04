@@ -1,7 +1,9 @@
+import { dialogCloseSubject$ } from "@/components/CustomDialog";
 import { useSnackbar } from "@/context/SnackbarContext";
 import {
   CreateCustomerFormData,
   CreateCustomerSchema,
+  Customer,
   CustomerType,
 } from "@/models/customer";
 import { useCreateCustomerMutation } from "@/services/customerApi";
@@ -16,13 +18,26 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-function CustomerForm() {
+function CustomerForm({
+  customer,
+  setCostumer,
+}: {
+  customer: Customer | null;
+  setCostumer: React.Dispatch<React.SetStateAction<Customer | null>>;
+}) {
   const [create, { isLoading }] = useCreateCustomerMutation();
   const [typeSelected, setTypeSelected] = useState<string>("");
   const snackbar = useSnackbar();
+
+  useEffect(() => {
+    if (customer) {
+      setTypeSelected(customer.type);
+    }
+  }, [customer]);
+
   const {
     register,
     handleSubmit,
@@ -50,6 +65,7 @@ function CustomerForm() {
       <Stack direction="row" spacing={2} justifyContent="space-between">
         <FormControl fullWidth>
           <TextField
+            defaultValue={customer?.firstName}
             id="firstName"
             label="Nombre"
             {...register("firstName")}
@@ -60,6 +76,7 @@ function CustomerForm() {
         <FormControl fullWidth>
           <TextField
             id="lastName"
+            defaultValue={customer?.lastName}
             label="Apellido"
             {...register("lastName")}
             error={!!errors.lastName}
@@ -73,6 +90,7 @@ function CustomerForm() {
           id="email"
           label="Correo electrónico"
           {...register("email")}
+          defaultValue={customer?.email}
           type="email"
           error={!!errors.email}
           helperText={errors.email?.message}
@@ -84,6 +102,7 @@ function CustomerForm() {
           <TextField
             id="phone"
             label="Teléfono"
+            defaultValue={customer?.phone}
             {...register("phone")}
             error={!!errors.phone}
             helperText={errors.phone?.message}
@@ -91,18 +110,21 @@ function CustomerForm() {
         </FormControl>
 
         <FormControl fullWidth>
-          <InputLabel id="type">Tipo de Cliente</InputLabel>
+          <InputLabel>Tipo de Cliente</InputLabel>
           <Select
             value={typeSelected}
-            labelId="type"
             label="Tipo de Cliente"
             {...register("type", {
               onChange: (e) => setTypeSelected(e.target.value as string),
             })}
           >
-            {Object.values(CustomerType).map((type) => (
-              <MenuItem value={type}>{type}</MenuItem>
-            ))}
+            {Object.values(CustomerType).map((type) => {
+              return (
+                <MenuItem key={type} value={type}>
+                  {type.toUpperCase()}
+                </MenuItem>
+              );
+            })}
           </Select>
         </FormControl>
       </Stack>
@@ -110,6 +132,7 @@ function CustomerForm() {
         <FormControl>
           <TextField
             id="montoMes"
+            defaultValue={customer?.montoMes}
             label="Monto mensual"
             {...register("montoMes")}
             type="number"
@@ -119,16 +142,27 @@ function CustomerForm() {
           ></TextField>
         </FormControl>
       )}
-      <Button
-        sx={{ mt: 2, width: "fit-content", alignSelf: "flex-end" }}
-        type="submit"
-        variant="contained"
-        color="primary"
-        loading={isLoading}
-        loadingPosition="end"
-      >
-        Agregar
-      </Button>
+      <Stack direction="row" spacing={2} justifyContent="space-between">
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={() => {
+            setCostumer(null);
+            dialogCloseSubject$.setSubject = true;
+          }}
+        >
+          Cancelar
+        </Button>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          loading={isLoading}
+          loadingPosition="end"
+        >
+          {customer ? "Editar" : "Agregar"}
+        </Button>
+      </Stack>
     </Box>
   );
 }

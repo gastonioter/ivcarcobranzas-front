@@ -1,10 +1,17 @@
-import { useSnackbar } from "@/context/SnackbarContext";
+import { dialogOpenSubject$ } from "@/components/CustomDialog";
+import TableMenuActions from "@/components/TableMenuActions/TableMenuActions";
 import { Category } from "@/models/category";
+import { Product } from "@/models/product";
 import { useGetProductsQuery } from "@/services/productApi";
 import { Alert } from "@mui/material";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 
-export default function ProductsTable() {
+interface ProductsTableProps {
+  setProduct: React.Dispatch<React.SetStateAction<Product | null>>;
+}
+export default function ProductsTable({
+  setProduct,
+}: ProductsTableProps): JSX.Element {
   const { data, isLoading, error } = useGetProductsQuery();
 
   if (error) {
@@ -33,7 +40,29 @@ export default function ProductsTable() {
       headerName: "Codigo",
       width: 250,
     },
-    { field: "actions", headerName: "Acciones", width: 100, sortable: false },
+    {
+      field: "actions",
+      headerName: "Acciones",
+      width: 100,
+      sortable: false,
+      renderCell: (params) => (
+        <TableMenuActions
+          actions={[
+            {
+              name: "Editar",
+              onClick: () => {
+                dialogOpenSubject$.setSubject = true;
+                setProduct(params.row);
+              },
+            },
+            {
+              name: "Eliminar",
+              onClick: () => {},
+            },
+          ]}
+        />
+      ),
+    },
   ];
 
   return (
