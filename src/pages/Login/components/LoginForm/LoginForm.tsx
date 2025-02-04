@@ -11,6 +11,8 @@ import {
   Typography,
 } from "@mui/material";
 import { FormEvent } from "react";
+import logo from "../../../../assets/logo-azul.png";
+
 import { useNavigate } from "react-router";
 
 export function LoginForm() {
@@ -36,10 +38,11 @@ export function LoginForm() {
 
   return (
     <Container maxWidth="xs">
-      <Paper elevation={3} sx={{ p: 3, textAlign: "center" }}>
-        <Typography variant="h5" gutterBottom>
+      <Paper elevation={3} sx={{ px:6, pb:8, pt:4,textAlign: "center" }}>
+        <Typography variant="h6" gutterBottom>
           Iniciar Sesión a IvcarVentas
         </Typography>
+        <img src={logo}></img>
         <Box
           component="form"
           onSubmit={handleSubmit}

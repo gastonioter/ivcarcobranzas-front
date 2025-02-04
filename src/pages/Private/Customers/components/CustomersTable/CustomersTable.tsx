@@ -57,7 +57,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
     },
     {
       field: "createdAt",
-      headerName: "Agregado",
+      headerName: "Creación",
       flex: 0.5,
       editable: false,
       valueFormatter: (value) => formattedDate(value),

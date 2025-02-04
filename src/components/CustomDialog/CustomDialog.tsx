@@ -36,15 +36,15 @@ export const CustomDialog = ({ children }: Props) => {
     setOpen(false);
   };
 
-  const handleExit = () => {
-    dialogCloseSubject$.setSubject = false;
-  };
+  // const handleExit = () => {
+  //   dialogCloseSubject$.setSubject = false;
+  // };
 
   return (
     <div>
       <Dialog
         open={open}
-        onClose={() => handleExit()}
+        // onClose={() => handleExit()}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
         fullWidth

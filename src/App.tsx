@@ -13,6 +13,7 @@ import "@fontsource/inter/700.css";
 import { ThemeProvider } from "@mui/material";
 import theme from "./theme";
 import SnackbarProvider from "./context/SnackbarContext";
+import LoadingState from "./components/LoadingState/LoadingState";
 
 const Login = lazy(() => import("./pages/Login/Login"));
 const Private = lazy(() => import("./pages/Private/Private"));
@@ -20,7 +21,7 @@ const Private = lazy(() => import("./pages/Private/Private"));
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<LoadingState />}>
         <Provider store={store}>
           <SnackbarProvider>
             <BrowserRouter>
