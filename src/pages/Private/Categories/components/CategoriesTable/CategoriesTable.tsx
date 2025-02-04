@@ -1,13 +1,14 @@
-import { useSnackbar } from "@/context/SnackbarContext";
 import { useGetCategoriesQuery } from "@/services/categoriesApi";
+import { Alert } from "@mui/material";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 
 export default function CategoriesTable() {
   const { data, isLoading, error } = useGetCategoriesQuery();
-  const snackbar = useSnackbar();
 
   if (error) {
-    snackbar.openSnackbar("Ocurrió un error al cargar las categorías", "error");
+    return (
+      <Alert severity="error">Ocurrió un error al cargar las categorias</Alert>
+    );
   }
 
   const rows: GridRowsProp = data || [];

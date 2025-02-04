@@ -6,19 +6,24 @@ import { tokenMiddleware } from "./middlewares";
 import { authApi } from "@/services";
 import { categoriesApi } from "@/services/categoriesApi";
 import { productApi } from "@/services/productApi";
+import { customerApi } from "@/services/customerApi";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+
+    // generated API reducers here
     [authApi.reducerPath]: authApi.reducer,
     [categoriesApi.reducerPath]: categoriesApi.reducer,
     [productApi.reducerPath]: productApi.reducer,
+    [customerApi.reducerPath]: customerApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
       authApi.middleware,
       categoriesApi.middleware,
       productApi.middleware,
+      customerApi.middleware,
       tokenMiddleware
     ),
 });

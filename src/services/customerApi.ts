@@ -25,3 +25,5 @@ export const customerApi = createApi({
     }),
   }),
 });
+
+export const { useCreateCustomerMutation, useGetCustomersQuery } = customerApi;

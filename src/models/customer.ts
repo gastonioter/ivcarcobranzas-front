@@ -23,12 +23,18 @@ export enum CustomerStatus {
 }
 
 export const CreateCustomerSchema = z.object({
-  firstName: z.string().min(3).max(255),
-  lastName: z.string().min(3).max(255),
-  email: z.string().email().optional(),
-  type: z.nativeEnum(CustomerType),
-  phone: z.string().min(3).max(255),
-  montoMes: z.number().optional(),
+  firstName: z.string().max(255).nonempty("El nombre es obligatorio"),
+  lastName: z.string().max(255).nonempty("El apellido es obligatorio"),
+  email: z.string().optional(),
+  type: z.nativeEnum(CustomerType, {
+    message: "El tipo de cliente no es valido",
+    required_error: "El tipo de cliente es obligatorio",
+  }),
+  phone: z.string().max(255).nonempty("El teléfono es obligatorio"),
+  montoMes: z
+    .string()
+    .optional()
+    .transform((val) => parseInt(val ?? "0")),
 });
 
 export const EditCustumerSchema = CreateCustomerSchema.extend({
