@@ -6,7 +6,10 @@ import {
   Product,
 } from "@/models/product";
 import { useGetCategoriesQuery } from "@/services/categoriesApi";
-import { useCreateProductMutation } from "@/services/productApi";
+import {
+  useCreateProductMutation,
+  useEditProductMutation,
+} from "@/services/productApi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Box,
@@ -26,8 +29,10 @@ interface ProductFormProps {
 }
 
 export default function ProductForm({ product, setProduct }: ProductFormProps) {
-  console.log(product);
   const [create, { isLoading }] = useCreateProductMutation();
+  const [edit, { isLoading: isEditing }] = useEditProductMutation();
+
+  const editMode = !!product;
 
   const { data: categories, isLoading: isLoadingCategories } =
     useGetCategoriesQuery();
@@ -43,9 +48,16 @@ export default function ProductForm({ product, setProduct }: ProductFormProps) {
 
   const onSubmit = async (data: CreateProductFormValues) => {
     try {
-      await create(data).unwrap();
-      snackbar.openSnackbar(`Producto ${data.name} creado con éxito`);
+      if (!editMode) {
+        await create(data).unwrap();
+      } else {
+        await edit({ uuid: product?.uuid, ...data }).unwrap();
+      }
+
       dialogCloseSubject$.setSubject = false;
+      snackbar.openSnackbar(
+        `Producto ${data.name} ${editMode ? "editado" : "creado"} con éxito`
+      );
     } catch (e) {
       console.log(e);
       snackbar.openSnackbar(`${e.data.error}`, "error");
@@ -108,7 +120,7 @@ export default function ProductForm({ product, setProduct }: ProductFormProps) {
             type="submit"
             variant="contained"
             color="primary"
-            loading={isLoading}
+            loading={isLoading || isEditing}
             loadingPosition="end"
           >
             {product ? "Editar" : "Agregar"}

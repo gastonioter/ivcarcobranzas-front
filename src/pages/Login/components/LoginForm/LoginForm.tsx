@@ -38,7 +38,7 @@ export function LoginForm() {
 
   return (
     <Container maxWidth="xs">
-      <Paper elevation={3} sx={{ px:6, pb:8, pt:4,textAlign: "center" }}>
+      <Paper elevation={3} sx={{ px: 6, pb: 8, pt: 4, textAlign: "center" }}>
         <Typography variant="h6" gutterBottom>
           Iniciar Sesión a IvcarVentas
         </Typography>

@@ -1,5 +1,9 @@
 import { addToken } from "@/interceptors";
-import { CreateProductFormValues, Product } from "@/models/product";
+import {
+  CreateProductFormValues,
+  EditProductFormValues,
+  Product,
+} from "@/models/product";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const productApi = createApi({
@@ -22,7 +26,20 @@ export const productApi = createApi({
       }),
       invalidatesTags: ["Product"],
     }),
+
+    editProduct: builder.mutation<Product, EditProductFormValues>({
+      query: ({ uuid, ...updatedProductData }) => ({
+        url: `/products/${uuid}`,
+        method: "PATCH",
+        body: updatedProductData,
+      }),
+      invalidatesTags: ["Product"],
+    }),
   }),
 });
 
-export const { useCreateProductMutation, useGetProductsQuery } = productApi;
+export const {
+  useCreateProductMutation,
+  useGetProductsQuery,
+  useEditProductMutation,
+} = productApi;

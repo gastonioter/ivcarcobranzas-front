@@ -13,18 +13,17 @@ export type ProducWithCategories = Product & {
 };
 
 export const CreateProductSchema = z.object({
-  name: z.string().nonempty("El nombre es obligatorio"),
+  name: z.string().nonempty(),
   price: z
     .string()
-    .nonempty("El precio es obligatorio")
-    .transform((val) => parseFloat(val)),
-  categoryId: z.string().nonempty("La categoría es obligatoria"),
+    .nonempty()
+    .transform((v) => parseFloat(v)),
+  categoryId: z.string().nonempty(),
 });
 
 export const EditProductSchema = CreateProductSchema.extend({
   uuid: z.string().nonempty(),
 });
 
-export type EditProductFormValues = z.infer<typeof EditProductSchema>;
-
 export type CreateProductFormValues = z.infer<typeof CreateProductSchema>;
+export type EditProductFormValues = z.infer<typeof EditProductSchema>;

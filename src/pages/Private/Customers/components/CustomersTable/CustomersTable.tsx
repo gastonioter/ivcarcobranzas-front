@@ -20,6 +20,29 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
     );
   }
 
+  const actions = (params) => (
+    <TableMenuActions
+      actions={[
+        {
+          name: "Editar",
+          onClick: () => {
+            // open the dialog with the data;
+            setCustomer(params.row);
+            dialogOpenSubject$.setSubject = true;
+          },
+        },
+        {
+          name: "Resumen Cta", // TODO: Implementar con filtros en la tabla Mensualidades
+          onClick: () => {},
+        },
+        {
+          name: "Dar de baja",
+          onClick: () => {},
+        },
+      ]}
+    />
+  );
+
   const rows: GridRowsProp = data || [];
 
   const columns: GridColDef[] = [
@@ -75,24 +98,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
     },
     {
       field: "actions",
-      renderCell: (params) => (
-        <TableMenuActions
-          actions={[
-            {
-              name: "Editar",
-              onClick: () => {
-                // open the dialog with the data;
-                setCustomer(params.row);
-                dialogOpenSubject$.setSubject = true;
-              },
-            },
-            {
-              name: "Dar de baja",
-              onClick: () => {},
-            },
-          ]}
-        />
-      ),
+      renderCell: actions,
       headerName: "Acciones",
       width: 100,
       sortable: false,
