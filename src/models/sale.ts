@@ -1,27 +1,42 @@
 import { z } from "zod";
 
-export interface SaleEntity {
+export interface Sale {
   uuid: string;
   serie: string;
-  payments: PaymentEntity[];
+  payments: SalePayment[];
   status: SaleStatuses;
   seller: string;
   customer: string;
-  items: SaleDetailEntity[];
+  items: SaleDetail[];
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface SaleDetailEntity {
+export interface SaleItemTable {
+  uuid: string;
+  seller: {
+    email: string;
+  };
+  customer: {
+    firstName: string;
+    lastName: string;
+  };
+  serie: string;
+  status: SaleStatuses;
+  monto: number;
+  createdAt: Date;
+}
+
+export interface SaleDetail {
   product: string;
   quantity: number;
   price: number;
 }
 
 export enum SaleStatuses {
-  PENDING = "PENDING",
-  PAID = "PAID",
-  CANCELLED = "CANCELLED",
+  PENDING = "PENDIENTE",
+  PAID = "PAGO",
+  CANCELLED = "CANCELADA",
 }
 export enum PaymentMethods {
   CASH = "CASH",
@@ -29,7 +44,7 @@ export enum PaymentMethods {
   TRANSFER = "TRANSFER",
 }
 
-export interface PaymentEntity {
+export interface SalePayment {
   amount: number;
   paymentMethod: PaymentMethods;
   createdAt: Date;
@@ -60,4 +75,4 @@ export const paymentSchema = z.object({
 
 export type CreateSaleFromData = z.infer<typeof createSaleSchema>;
 
-export type AddSalePaymentData = z.infer<typeof paymentSchema>;
+export type AddSalePaymentFormData = z.infer<typeof paymentSchema>;

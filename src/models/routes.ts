@@ -9,6 +9,8 @@ export const PrivateRoutes = {
   PRODUCTS: "productos",
   CATEGORIES: "categorias",
   SALES: "ventas",
+  NEW_SALE: "nueva",
+  DETAIL_SALE: "/:uuid",
   CUSTOMERS: "clientes",
   MONTHLY_FEES: "mensualidades",
   PAYMENTS: "pagos",

@@ -4,10 +4,20 @@ import { dialogOpenSubject$ } from "../CustomDialog";
 
 interface Props {
   children: React.ReactNode;
+  customClickHandler?: () => void;
+  showButton?: boolean;
 }
 
-export default function SectionHeader({ children }: Props) {
+export default function SectionHeader({
+  children,
+  customClickHandler,
+  showButton = true,
+}: Props) {
   const handleClick = () => {
+    if (customClickHandler) {
+      customClickHandler();
+      return;
+    }
     dialogOpenSubject$.setSubject = true;
   };
 
@@ -22,14 +32,15 @@ export default function SectionHeader({ children }: Props) {
     >
       <Stack direction="row" spacing={2} justifyContent="space-between">
         {children}
-
-        <Button
-          onClick={handleClick}
-          variant="contained"
-          startIcon={<AddIcon />}
-        >
-          Nuevo
-        </Button>
+        {showButton && (
+          <Button
+            onClick={handleClick}
+            variant="contained"
+            startIcon={<AddIcon />}
+          >
+            Nuevo
+          </Button>
+        )}
       </Stack>
     </Paper>
   );

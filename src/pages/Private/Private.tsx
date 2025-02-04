@@ -8,6 +8,8 @@ import Categories from "./Categories/Categories";
 import Products from "./Products/Products";
 import Customers from "./Customers/Customers";
 import Sales from "./Sales/Sales";
+import SaleForm from "./Sales/components/SaleForm/SaleForm";
+import NewSale from "./Sales/NewSale/NewSale";
 
 const Home = lazy(() => import("./Home/Home"));
 const Dashboard = lazy(() => import("./Dashboard/Dashboard"));
@@ -28,9 +30,20 @@ export default function Private() {
           ></Route>
           <Route path={PrivateRoutes.PRODUCTS} element={<Products />}></Route>
           <Route path={PrivateRoutes.SALES} element={<Sales />}></Route>
+          <Route
+            path={`ventas/${PrivateRoutes.NEW_SALE}`}
+            element={<NewSale />}
+          ></Route>
+          <Route
+            path={PrivateRoutes.DETAIL_SALE}
+            element={<SaleForm />}
+          ></Route>
           <Route path={PrivateRoutes.CUSTOMERS} element={<Customers />}></Route>
-          <Route path={PrivateRoutes.RECIPTS} element={<>RECIPTS</>}></Route>
-          <Route path={PrivateRoutes.HOME} element={<Home />}></Route>
+          <Route
+            path={PrivateRoutes.MONTHLY_FEES}
+            element={<>RECIPTS</>}
+          ></Route>
+          <Route path={PrivateRoutes.PAYMENTS} element={<Home />}></Route>
         </RoutesWithNotFound>
       </AppContainer>
     </AppLayout>

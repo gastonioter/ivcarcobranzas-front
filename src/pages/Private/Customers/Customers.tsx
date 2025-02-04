@@ -21,7 +21,7 @@ function Customers() {
       <CustomDialog>
         <Box sx={{ p: 5 }}>
           <Typography variant="h5" sx={{ mb: 5 }}>
-            Nuevo Cliente
+            {customer ? "Editar" : "Nuevo"} Cliente
           </Typography>
           <CustomerForm customer={customer} setCostumer={setCustomer} />
         </Box>

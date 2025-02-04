@@ -20,6 +20,24 @@ export default function ProductsTable({
     );
   }
 
+  const actions = (params) => (
+    <TableMenuActions
+      actions={[
+        {
+          name: "Editar",
+          onClick: () => {
+            dialogOpenSubject$.setSubject = true;
+            setProduct(params.row);
+          },
+        },
+        {
+          name: "Eliminar",
+          onClick: () => {},
+        },
+      ]}
+    />
+  );
+
   const rows: GridRowsProp = data || [];
   const columns: GridColDef[] = [
     { field: "name", headerName: "Nombre", width: 250, flex: 1 },
@@ -45,23 +63,7 @@ export default function ProductsTable({
       headerName: "Acciones",
       width: 100,
       sortable: false,
-      renderCell: (params) => (
-        <TableMenuActions
-          actions={[
-            {
-              name: "Editar",
-              onClick: () => {
-                dialogOpenSubject$.setSubject = true;
-                setProduct(params.row);
-              },
-            },
-            {
-              name: "Eliminar",
-              onClick: () => {},
-            },
-          ]}
-        />
-      ),
+      renderCell: actions,
     },
   ];
 
