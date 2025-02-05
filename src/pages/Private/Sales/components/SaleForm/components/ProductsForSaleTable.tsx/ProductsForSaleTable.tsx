@@ -1,6 +1,7 @@
 import { Category } from "@/models/category";
 import { Product } from "@/models/product";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { formattedCurrency } from "@/utilities/formatPrice";
+import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
 
 interface ProductsForSaleTableProps {
   products: Product[];
@@ -12,12 +13,13 @@ export default function ProductsForSaleTable({
   isLoading,
   onClickRow,
 }: ProductsForSaleTableProps): JSX.Element {
-  const columns = [
+  const columns: GridColDef[] = [
     { field: "name", headerName: "Nombre", flex: 1 },
     {
       field: "price",
       headerName: "Precio",
       flex: 1,
+      valueFormatter: (value) => `${formattedCurrency(value)}`,
     },
     {
       field: "category",

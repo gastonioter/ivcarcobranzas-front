@@ -58,6 +58,7 @@ export interface SaleItemTable {
 
 // DTO que me manda el backend
 export interface SaleDetailsDTO {
+  payments: SalePayment[];
   uuid: string;
   customer: {
     firstName: string;
@@ -65,6 +66,13 @@ export interface SaleDetailsDTO {
   };
   iva: number;
   items: SaleDetailItem[];
+  totalAmount: number;
+}
+export interface SalePayment {
+  amount: number;
+  paymentMethod: PaymentMethods;
+  createdAt: Date;
+  status: SalePaymentStatuses;
 }
 
 export enum SaleStatuses {
@@ -73,15 +81,17 @@ export enum SaleStatuses {
   CANCELLED = "ANULADA",
 }
 export enum PaymentMethods {
-  CASH = "CASH",
-  CARD = "CARD",
-  TRANSFER = "TRANSFER",
+  CASH = "EFECTIVO",
+  CARD = "DEBITO/CREDITO",
+  TRANSFER = "TRANSFERENCIA BANCARIA",
+  CHECK = "CHEQUE",
+  MP = "MERCADO PAGO",
+  OTHER = "OTRO",
 }
 
-export interface SalePayment {
-  amount: number;
-  paymentMethod: PaymentMethods;
-  createdAt: Date;
+export enum SalePaymentStatuses {
+  ACTIVE = "ACTIVO",
+  CANCELLED = "ANULADO",
 }
 
 const saleDetailSchema = z.object({
@@ -99,17 +109,42 @@ export const createSaleSchema = z.object({
   items: z.array(saleDetailSchema).min(1, "Agrega al menos un producto"),
 });
 
+export const addSale = z.object({
+  uuid: z.string(),
+  status: z.nativeEnum(SaleStatuses),
+});
+
+export const addSalePaymentSchema = z.object({
+  amount: z
+    .string()
+    .min(1, "El campo es obligatorio")
+    .refine((val) => !isNaN(Number(val)), {
+      message: "Debe ser un número válido",
+    })
+    .transform(Number)
+    .refine((val) => val > 0, {
+      message: "El número debe ser mayor a 0",
+    }),
+
+  paymentMethod: z.nativeEnum(PaymentMethods),
+});
+
 export const updateSaleStatusSchema = z.object({
   uuid: z.string(),
   status: z.nativeEnum(SaleStatuses),
 });
 
+export const updateSalePaymentStatusSchema = z.object({
+  uuid: z.string(),
+  status: z.nativeEnum(SalePaymentStatuses),
+});
+
+export type UpdateSalePaymentStatusFormData = z.infer<
+  typeof updateSaleStatusSchema
+>;
+
 export type UpdateSaleStatusFormData = z.infer<typeof updateSaleStatusSchema>;
 
 export type CreateSaleFromData = z.infer<typeof createSaleSchema>;
-export const paymentSchema = z.object({
-  amount: z.number(),
-  paymentMethod: z.nativeEnum(PaymentMethods),
-});
 
-export type AddSalePaymentFormData = z.infer<typeof paymentSchema>;
+export type AddSalePaymentFormData = z.infer<typeof addSalePaymentSchema>;

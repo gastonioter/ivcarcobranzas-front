@@ -1,3 +1,4 @@
+import { formattedCurrency } from "@/utilities/formatPrice";
 import { Card, CardContent, Typography } from "@mui/material";
 
 interface SaleSummaryProps {
@@ -19,13 +20,13 @@ export default function SaleSummary({ subtotal, tax, sx }: SaleSummaryProps) {
           Resumen de Venta
         </Typography>
         <Typography variant="body1">
-          Subtotal: ${subtotal.toFixed(2)}
+          Subtotal: {formattedCurrency(subtotal)}
         </Typography>
         <Typography variant="body1">
-          IVA ({`${tax}%`}): ${getTaxAmount(subtotal, tax).toFixed(2)}
+          IVA ({`${tax}%`}): {formattedCurrency(getTaxAmount(subtotal, tax))}
         </Typography>
         <Typography variant="h6" color="primary" sx={{ mt: 2 }}>
-          Total: ${total.toFixed(2)}
+          Total: {formattedCurrency(total)}
         </Typography>
       </CardContent>
     </Card>

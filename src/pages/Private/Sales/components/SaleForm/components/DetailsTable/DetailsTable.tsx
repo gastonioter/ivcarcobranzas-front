@@ -1,4 +1,5 @@
 import { SaleDetailItem } from "@/models/sale";
+import { formattedCurrency } from "@/utilities/formatPrice";
 import { Delete } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
@@ -29,8 +30,19 @@ export default function DetailsTable({
     },
     { field: "product", headerName: "Producto", flex: 1 },
     { field: "quantity", headerName: "Cantidad", flex: 1, editable: true },
-    { field: "price", headerName: "Precio Unitario", flex: 1, editable: true },
-    { field: "total", headerName: "Total", flex: 1 },
+    {
+      field: "price",
+      headerName: "Precio Unitario",
+      flex: 1,
+      editable: true,
+      valueFormatter: (value) => `${formattedCurrency(value)}`,
+    },
+    {
+      field: "total",
+      headerName: "Total",
+      flex: 1,
+      valueFormatter: (value) => `${formattedCurrency(value)}`,
+    },
   ];
 
   return (

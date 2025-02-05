@@ -11,6 +11,7 @@ import { formattedDate } from "@/utilities";
 import { Alert } from "@mui/material";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import CustomerStatusIndicator from "../CustomerStatusIndicator/CustomerStatusIndicator";
+import { formatFullName } from "@/utilities/formatFullName";
 
 interface CustomerTableProps {
   setCustomer: (customer: Customer | null) => void;
@@ -82,9 +83,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
       minWidth: 150,
       flex: 1,
       valueGetter: (value, row) => {
-        return `${row.firstName.toUpperCase() || ""} ${
-          row.lastName.toUpperCase() || ""
-        }`;
+        return formatFullName(row.firstName, row.lastName);
       },
     },
     {

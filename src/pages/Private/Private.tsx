@@ -10,6 +10,7 @@ import DetailSale from "./Sales/DetailSale/DetailSale";
 import NewSale from "./Sales/NewSale/NewSale";
 import Sales from "./Sales/Sales";
 import { AppLayout } from "./styled-components";
+import SalePaymentsManagment from "./Sales/SalePaymentsManagment/SalePaymentsManagment";
 
 const Home = lazy(() => import("./Home/Home"));
 const Dashboard = lazy(() => import("./Dashboard/Dashboard"));
@@ -37,6 +38,11 @@ export default function Private() {
           <Route
             path={`ventas/${PrivateRoutes.DETAIL_SALE}`}
             element={<DetailSale />}
+          ></Route>
+
+          <Route
+            path={`ventas/${PrivateRoutes.PAYMENTS_SALE}`}
+            element={<SalePaymentsManagment />}
           ></Route>
           <Route path={PrivateRoutes.CUSTOMERS} element={<Customers />}></Route>
           <Route

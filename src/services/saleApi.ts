@@ -1,17 +1,30 @@
 import {
+  AddSalePaymentFormData,
   CreateSaleFromData,
   Sale,
   SaleDetailsDTO,
   SaleItemTable,
-  SaleStatuses,
+  SalePayment,
+  SalePaymentStatuses,
   UpdateSaleStatusFormData,
 } from "@/models/sale";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+interface UpdatePaymentArgs {
+  saleID: string;
+  paymentID: string;
+  status: SalePaymentStatuses;
+}
+interface CreatePaymentArgs {
+  uuid: string;
+  data: AddSalePaymentFormData;
+}
 
 export const saleApi = createApi({
   reducerPath: "saleApi",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3001/api/sales" }),
   tagTypes: ["Sales"],
+
   endpoints: (builder) => ({
     getSales: builder.query<SaleItemTable[], void>({
       query: () => "/",
@@ -20,6 +33,12 @@ export const saleApi = createApi({
 
     getSale: builder.query<SaleDetailsDTO, string>({
       query: (uuid) => `/${uuid}`,
+      providesTags: ["Sales"],
+    }),
+
+    getSalePayments: builder.query<SalePayment[], string>({
+      query: (uuid) => `/${uuid}/payments`,
+      providesTags: ["Sales"],
     }),
 
     createSale: builder.mutation<Sale, CreateSaleFromData>({
@@ -39,6 +58,24 @@ export const saleApi = createApi({
       }),
       invalidatesTags: ["Sales"],
     }),
+
+    updateSalePaymentStatus: builder.mutation<Sale, UpdatePaymentArgs>({
+      query: ({ saleID, paymentID, status }) => ({
+        url: `${saleID}/payments/${paymentID}/`,
+        method: "PATCH",
+        body: { status },
+      }),
+      invalidatesTags: ["Sales"],
+    }),
+
+    createPaymentForSale: builder.mutation<Sale, CreatePaymentArgs>({
+      query: ({ uuid, data }) => ({
+        url: `/${uuid}/payments`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Sales"],
+    }),
   }),
 });
 
@@ -47,4 +84,7 @@ export const {
   useCreateSaleMutation,
   useGetSaleQuery,
   useUpdateSaleStatusMutation,
+  useCreatePaymentForSaleMutation,
+  useGetSalePaymentsQuery,
+  useUpdateSalePaymentStatusMutation,
 } = saleApi;

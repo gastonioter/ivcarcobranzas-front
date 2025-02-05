@@ -1,9 +1,15 @@
+import SectionHeader from "@/components/SectionHeader/SectionHeader";
 import SectionTitle from "@/components/SectionTitle/SectionTitle";
+import { Paper } from "@mui/material";
 
 export default function Dashboard() {
   return (
-    <div>
-      <SectionTitle>Dashboard</SectionTitle>
-    </div>
+    <>
+      <SectionHeader showButton={false}>
+        <SectionTitle>Dashboard</SectionTitle>
+      </SectionHeader>
+
+      <Paper></Paper>
+    </>
   );
 }

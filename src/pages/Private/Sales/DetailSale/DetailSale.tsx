@@ -1,13 +1,15 @@
 import { useGetSaleQuery } from "@/services/saleApi";
 import { Alert, Paper } from "@mui/material";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import SaleForm from "../components/SaleForm/SaleForm";
 import SectionHeader from "@/components/SectionHeader/SectionHeader";
 import SectionTitle from "@/components/SectionTitle/SectionTitle";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 export default function DetailSale() {
   //const snackbar = useSnackbar();
   const { uuid } = useParams();
+  const navigate = useNavigate();
 
   const {
     data: sale,
@@ -25,8 +27,18 @@ export default function DetailSale() {
 
   return (
     <>
-      <SectionHeader showButton={false}>
-        <SectionTitle>Detalle de Venta</SectionTitle>
+      <SectionHeader
+        showButton={true}
+        buttonProps={{
+          text: "Atras",
+          variant: "outlined",
+          icon: <ArrowBackIcon />,
+        }}
+        customClickHandler={() => {
+          navigate(-1);
+        }}
+      >
+        <SectionTitle>Nueva Venta</SectionTitle>
       </SectionHeader>
 
       <Paper sx={{ p: 2, height: "100%" }}>

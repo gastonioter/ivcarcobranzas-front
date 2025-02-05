@@ -165,8 +165,11 @@ export default function SaleForm({ sale }: { sale?: SaleDetailsDTO }) {
       component={"form"}
       sx={{ display: "flex", flexDirection: "column", gap: 2 }}
     >
-      <Stack spacing={2} direction={"row"}>
-        <FormControl sx={{ flex: 1 }}>
+      <Stack spacing={{
+        xs: 0,
+        sm: 4,
+      }} direction={"row"} flexWrap={"wrap"}>
+        <FormControl sx={{ flex: 2, flexBasis: 200 }}>
           <Autocomplete
             sx={{ width: "100%" }}
             onChange={(event, value) => {
@@ -187,11 +190,17 @@ export default function SaleForm({ sale }: { sale?: SaleDetailsDTO }) {
         </FormControl>
 
         <TextField
+          sx={{ flex: 1, flexBasis: 200 }}
           label={"IVA"}
           type="number"
           defaultValue={sale?.iva ?? 0}
           disabled={!!sale}
-          onBlur={(e) => setTax(parseInt(e.target.value))}
+          onChange={(e) => {
+            const tax: number = !Number.isNaN(parseFloat(e.target.value))
+              ? parseInt(e.target.value)
+              : 0;
+            setTax(tax);
+          }}
         ></TextField>
       </Stack>
 

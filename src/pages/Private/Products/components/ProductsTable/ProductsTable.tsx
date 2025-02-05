@@ -3,6 +3,7 @@ import TableMenuActions from "@/components/TableMenuActions/TableMenuActions";
 import { Category } from "@/models/category";
 import { Product } from "@/models/product";
 import { useGetProductsQuery } from "@/services/productApi";
+import { formattedCurrency } from "@/utilities/formatPrice";
 import { Alert } from "@mui/material";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 
@@ -45,6 +46,7 @@ export default function ProductsTable({
       field: "price",
       headerName: "Precio",
       width: 250,
+      valueFormatter: (value) => `${formattedCurrency(value)}`,
     },
 
     {

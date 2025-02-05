@@ -9,7 +9,7 @@ export default function RealTimeClock() {
       setDateTime(new Date());
     }, 1000);
 
-    return () => clearInterval(interval); // Limpia el intervalo al desmontar
+    return () => clearInterval(interval);
   }, []);
 
   return (

@@ -8,6 +8,7 @@ import {
   useUpdateSaleStatusMutation,
 } from "@/services/saleApi";
 import { formattedDate } from "@/utilities";
+import { formattedCurrency } from "@/utilities/formatPrice";
 import { Alert, Chip } from "@mui/material";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import { useNavigate } from "react-router";
@@ -25,7 +26,9 @@ export default function SalesTable() {
       actions={[
         {
           name: "Gestionar Pagos",
-          onClick: () => {},
+          onClick: () => {
+            navigate(`${"pagos"}/${params.row.uuid}`);
+          },
         },
         {
           name: "Ver Detalle",
@@ -95,7 +98,12 @@ export default function SalesTable() {
       flex: 1,
       valueGetter: (seller) => `${seller.email}`,
     },
-    { field: "totalAmount", headerName: "Total", flex: 0.5 },
+    {
+      field: "totalAmount",
+      headerName: "Total",
+      flex: 0.5,
+      valueFormatter: (value: string) => formattedCurrency(value),
+    },
     {
       field: "status",
       headerName: "Estado",

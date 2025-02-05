@@ -1,14 +1,23 @@
 import { Stack, Button } from "@mui/material";
 import { dialogCloseSubject$ } from "../CustomDialog";
 
-export default function FooterCustomDialog({ onClose, isLoading, editMode }) {
+interface FooterCustomDialogProps {
+  onClose?: () => void;
+  isLoading?: boolean;
+  editMode?: boolean;
+}
+export default function FooterCustomDialog({
+  onClose,
+  isLoading,
+  editMode,
+}: FooterCustomDialogProps) {
   return (
     <Stack direction="row" spacing={2} justifyContent="space-between">
       <Button
         variant="outlined"
         color="primary"
         onClick={() => {
-          onClose();
+          onClose?.();
           dialogCloseSubject$.setSubject = true;
         }}
       >
