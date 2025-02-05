@@ -35,10 +35,24 @@ export default function Sidebar() {
 
   return (
     <Drawer
-      anchor={"left"}
-      variant={"permanent"}
-      // open={open}
-      // onClose={() => handleExit()}
+      sx={{
+        width: {
+          lg: 250,
+          md: 200,
+          xs: 0,
+        },
+        flexShrink: 0,
+        "& .MuiDrawer-paper": {
+          width: {
+            lg: 250,
+            md: 200,
+            xs: 0,
+          },
+          boxSizing: "border-box",
+        },
+      }}
+      variant="permanent"
+      anchor="left"
     >
       <SidebarNavigationItems />
     </Drawer>

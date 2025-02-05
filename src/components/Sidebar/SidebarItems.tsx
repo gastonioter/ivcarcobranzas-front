@@ -11,6 +11,7 @@ import { Box, Divider, List, Typography } from "@mui/material";
 import { useLocation } from "react-router";
 import CollapsableItem from "./CollapsableItem";
 import SimpleItem from "./SimpleItem";
+
 const items = [
   {
     name: "Dashboard",
@@ -61,9 +62,13 @@ export default function SidebarNavigationItems() {
   const location = useLocation();
 
   return (
-    <Box sx={{ width: 250 }} role="presentation">
-      <Typography sx={{ textAlign: "center", mt: 3 }} variant="h5" gutterBottom>
-        MENU VENTAS/MONITOREO
+    <Box role="presentation">
+      <Typography
+        sx={{ textAlign: "center", mt: 3, p: 8 }}
+        variant="h6"
+        gutterBottom
+      >
+        Navegacion
       </Typography>
       <Divider sx={{ mt: 0 }} />
       <List>

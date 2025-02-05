@@ -6,12 +6,18 @@ interface Props {
   children: React.ReactNode;
   customClickHandler?: () => void;
   showButton?: boolean;
+  buttonProps?: {
+    text: string;
+    variant: "text" | "outlined" | "contained";
+    icon: React.ReactNode;
+  };
 }
 
 export default function SectionHeader({
   children,
   customClickHandler,
   showButton = true,
+  buttonProps = { text: "Nuevo", variant: "contained", icon: <AddIcon /> },
 }: Props) {
   const handleClick = () => {
     if (customClickHandler) {
@@ -35,10 +41,10 @@ export default function SectionHeader({
         {showButton && (
           <Button
             onClick={handleClick}
-            variant="contained"
-            startIcon={<AddIcon />}
+            variant={buttonProps.variant}
+            startIcon={buttonProps.icon}
           >
-            Nuevo
+            {buttonProps.text}
           </Button>
         )}
       </Stack>
