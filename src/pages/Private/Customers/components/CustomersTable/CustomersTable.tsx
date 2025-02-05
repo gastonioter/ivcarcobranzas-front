@@ -79,6 +79,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
       field: "fullName",
       headerName: "Nombre Completo",
       editable: false,
+      minWidth: 150,
       flex: 1,
       valueGetter: (value, row) => {
         return `${row.firstName.toUpperCase() || ""} ${
@@ -90,6 +91,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
       field: "phone",
       headerName: "Teléfono",
       flex: 1,
+      minWidth: 100,
       sortable: false,
     },
     {

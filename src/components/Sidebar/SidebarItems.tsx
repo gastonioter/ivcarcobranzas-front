@@ -11,7 +11,7 @@ import { Box, Divider, List, Typography } from "@mui/material";
 import { useLocation } from "react-router";
 import CollapsableItem from "./CollapsableItem";
 import SimpleItem from "./SimpleItem";
-
+import logo from "../../assets/logo.png";
 const items = [
   {
     name: "Dashboard",
@@ -64,14 +64,14 @@ export default function SidebarNavigationItems() {
   return (
     <Box role="presentation">
       <Typography
-        sx={{ textAlign: "center", mt: 3, p: 8 }}
+        sx={{ textAlign: "center", m: 4, p: 0.4 }}
         variant="h6"
         gutterBottom
       >
-        Navegacion
+        <img src={logo} alt="" />
       </Typography>
-      <Divider sx={{ mt: 0 }} />
-      <List>
+      <Divider sx={{ mt: -6.5 }} />
+      <List sx={{ mt: 0 }}>
         {items.map((navItem) =>
           navItem.to ? (
             <SimpleItem

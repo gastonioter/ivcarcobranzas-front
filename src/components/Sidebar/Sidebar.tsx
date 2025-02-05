@@ -1,5 +1,6 @@
 import Drawer from "@mui/material/Drawer";
 import SidebarNavigationItems from "./SidebarItems";
+import RealTimeClock from "../RealTimeClock/RealTimeClock";
 
 // export const dialogOpenSubject$ = new SubjectManager<boolean>();
 // export const dialogCloseSubject$ = new SubjectManager<boolean>();
@@ -55,6 +56,7 @@ export default function Sidebar() {
       anchor="left"
     >
       <SidebarNavigationItems />
+      <RealTimeClock />
     </Drawer>
   );
 }
