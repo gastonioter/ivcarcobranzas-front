@@ -3,6 +3,8 @@ import {
   Sale,
   SaleDetailsDTO,
   SaleItemTable,
+  SaleStatuses,
+  UpdateSaleStatusFormData,
 } from "@/models/sale";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
@@ -28,8 +30,21 @@ export const saleApi = createApi({
       }),
       invalidatesTags: ["Sales"],
     }),
+
+    updateSaleStatus: builder.mutation<Sale, UpdateSaleStatusFormData>({
+      query: (body) => ({
+        url: "/status",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Sales"],
+    }),
   }),
 });
 
-export const { useGetSalesQuery, useCreateSaleMutation, useGetSaleQuery } =
-  saleApi;
+export const {
+  useGetSalesQuery,
+  useCreateSaleMutation,
+  useGetSaleQuery,
+  useUpdateSaleStatusMutation,
+} = saleApi;

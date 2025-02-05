@@ -70,7 +70,7 @@ export interface SaleDetailsDTO {
 export enum SaleStatuses {
   PENDING = "PENDIENTE",
   PAID = "PAGO",
-  CANCELLED = "CANCELADA",
+  CANCELLED = "ANULADA",
 }
 export enum PaymentMethods {
   CASH = "CASH",
@@ -99,8 +99,14 @@ export const createSaleSchema = z.object({
   items: z.array(saleDetailSchema).min(1, "Agrega al menos un producto"),
 });
 
-export type CreateSaleFromData = z.infer<typeof createSaleSchema>;
+export const updateSaleStatusSchema = z.object({
+  uuid: z.string(),
+  status: z.nativeEnum(SaleStatuses),
+});
 
+export type UpdateSaleStatusFormData = z.infer<typeof updateSaleStatusSchema>;
+
+export type CreateSaleFromData = z.infer<typeof createSaleSchema>;
 export const paymentSchema = z.object({
   amount: z.number(),
   paymentMethod: z.nativeEnum(PaymentMethods),

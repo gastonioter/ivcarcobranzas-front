@@ -1,5 +1,8 @@
+import { dialogOpenSubject$ } from "@/components/CustomDialog";
 import { CustomGridToolbar } from "@/components/CustomGridToolbar";
 import TableMenuActions from "@/components/TableMenuActions/TableMenuActions";
+import { useSnackbar } from "@/context/SnackbarContext";
+import { Customer, CustomerStatus } from "@/models/customer";
 import {
   useGetCustomersQuery,
   useUpdateStatusMutation,
@@ -8,17 +11,13 @@ import { formattedDate } from "@/utilities";
 import { Alert } from "@mui/material";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import CustomerStatusIndicator from "../CustomerStatusIndicator/CustomerStatusIndicator";
-import { dialogOpenSubject$ } from "@/components/CustomDialog";
-import { Customer, CustomerStatus } from "@/models/customer";
-import { useSnackbar } from "@/context/SnackbarContext";
 
 interface CustomerTableProps {
   setCustomer: (customer: Customer | null) => void;
 }
 function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
   const { data, isLoading, error } = useGetCustomersQuery();
-  const [changeCustomerStatus, { isLoading: isChangingStatus }] =
-    useUpdateStatusMutation();
+  const [changeCustomerStatus] = useUpdateStatusMutation();
 
   const snackbar = useSnackbar();
   if (error) {

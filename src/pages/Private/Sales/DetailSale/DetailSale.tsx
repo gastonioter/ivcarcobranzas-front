@@ -1,7 +1,9 @@
 import { useGetSaleQuery } from "@/services/saleApi";
-import { Alert } from "@mui/material";
+import { Alert, Paper } from "@mui/material";
 import { useParams } from "react-router";
 import SaleForm from "../components/SaleForm/SaleForm";
+import SectionHeader from "@/components/SectionHeader/SectionHeader";
+import SectionTitle from "@/components/SectionTitle/SectionTitle";
 
 export default function DetailSale() {
   //const snackbar = useSnackbar();
@@ -21,5 +23,15 @@ export default function DetailSale() {
     return <Alert severity="info">Cargando venta...</Alert>;
   }
 
-  return sale ? <SaleForm sale={sale} /> : null;
+  return (
+    <>
+      <SectionHeader showButton={false}>
+        <SectionTitle>Detalle de Venta</SectionTitle>
+      </SectionHeader>
+
+      <Paper sx={{ p: 2, height: "100%" }}>
+        {sale && <SaleForm sale={sale} />}
+      </Paper>
+    </>
+  );
 }

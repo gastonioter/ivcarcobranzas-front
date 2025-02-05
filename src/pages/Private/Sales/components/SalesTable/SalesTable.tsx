@@ -1,8 +1,12 @@
 import { CustomGridToolbar } from "@/components/CustomGridToolbar";
 import TableMenuActions from "@/components/TableMenuActions/TableMenuActions";
+import { useSnackbar } from "@/context/SnackbarContext";
 import { Customer } from "@/models/customer";
 import { SaleStatuses } from "@/models/sale";
-import { useGetSalesQuery } from "@/services/saleApi";
+import {
+  useGetSalesQuery,
+  useUpdateSaleStatusMutation,
+} from "@/services/saleApi";
 import { formattedDate } from "@/utilities";
 import { Alert, Chip } from "@mui/material";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
@@ -10,13 +14,11 @@ import { useNavigate } from "react-router";
 
 export default function SalesTable() {
   const { data, isLoading, error } = useGetSalesQuery();
-  //const snackbar = useSnackbar();
+  const [toggleStatus, { error: changeStatusError, isSuccess: saleUpdated }] =
+    useUpdateSaleStatusMutation();
+
+  const snackbar = useSnackbar();
   const navigate = useNavigate();
-  if (error) {
-    return (
-      <Alert severity="error">Ocurrió un error al cargar los clientes</Alert>
-    );
-  }
 
   const actions = (params) => (
     <TableMenuActions
@@ -29,6 +31,37 @@ export default function SalesTable() {
           name: "Ver Detalle",
           onClick: () => {
             navigate(`${params.row.uuid}/`);
+          },
+        },
+        {
+          name: `${
+            params.row.status === SaleStatuses.CANCELLED ? "Activar" : "Anular"
+          }`,
+          onClick: async () => {
+            try {
+              if (params.row.status === SaleStatuses.PAID) {
+                snackbar.openSnackbar(
+                  "No se puede anular una venta pagada",
+                  "error"
+                );
+                return;
+              }
+              if (params.row.status === SaleStatuses.PENDING) {
+                await toggleStatus({
+                  uuid: params.row.uuid,
+                  status: SaleStatuses.CANCELLED,
+                }).unwrap();
+              } else {
+                await toggleStatus({
+                  uuid: params.row.uuid,
+                  status: SaleStatuses.PENDING,
+                }).unwrap();
+              }
+              snackbar.openSnackbar("Venta actualizada", "success");
+            } catch (e) {
+              console.log(e);
+              snackbar.openSnackbar("No se pudo actualizar la venta", "error");
+            }
           },
         },
         {
