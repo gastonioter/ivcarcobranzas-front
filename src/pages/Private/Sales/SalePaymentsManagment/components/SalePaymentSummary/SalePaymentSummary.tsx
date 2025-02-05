@@ -14,7 +14,7 @@ export default function SalePaymentSummary({
     <Card
       sx={{
         boxShadow: 3,
-        flex: .4,
+        flex: 0.4,
         flexBasis: 200,
         maxWidth: "100%",
         position: "relative",

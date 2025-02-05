@@ -165,10 +165,14 @@ export default function SaleForm({ sale }: { sale?: SaleDetailsDTO }) {
       component={"form"}
       sx={{ display: "flex", flexDirection: "column", gap: 2 }}
     >
-      <Stack spacing={{
-        xs: 0,
-        sm: 4,
-      }} direction={"row"} flexWrap={"wrap"}>
+      <Stack
+        spacing={{
+          xs: 0,
+          sm: 4,
+        }}
+        direction={"row"}
+        flexWrap={"wrap"}
+      >
         <FormControl sx={{ flex: 2, flexBasis: 200 }}>
           <Autocomplete
             sx={{ width: "100%" }}
@@ -227,9 +231,9 @@ export default function SaleForm({ sale }: { sale?: SaleDetailsDTO }) {
         <SaleSummary
           subtotal={subtotal}
           tax={tax}
-          sx={{ flex: 1, width: 400 }}
+          sx={{ flex: 1, width: 400, maxWidth: "100%" }}
         />
-        {!sale ? (
+        {!sale && (
           <Button
             sx={{}}
             loading={isLoading}
@@ -238,10 +242,6 @@ export default function SaleForm({ sale }: { sale?: SaleDetailsDTO }) {
             onClick={onSubmit}
           >
             Crear Venta
-          </Button>
-        ) : (
-          <Button variant="outlined" onClick={() => navigate(-1)}>
-            Volver
           </Button>
         )}
       </Stack>
