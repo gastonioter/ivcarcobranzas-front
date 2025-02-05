@@ -1,4 +1,9 @@
-import { CreateSaleFromData, Sale, SaleItemTable } from "@/models/sale";
+import {
+  CreateSaleFromData,
+  Sale,
+  SaleDetailsDTO,
+  SaleItemTable,
+} from "@/models/sale";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const saleApi = createApi({
@@ -9,6 +14,10 @@ export const saleApi = createApi({
     getSales: builder.query<SaleItemTable[], void>({
       query: () => "/",
       providesTags: ["Sales"],
+    }),
+
+    getSale: builder.query<SaleDetailsDTO, string>({
+      query: (uuid) => `/${uuid}`,
     }),
 
     createSale: builder.mutation<Sale, CreateSaleFromData>({
@@ -22,4 +31,5 @@ export const saleApi = createApi({
   }),
 });
 
-export const { useGetSalesQuery, useCreateSaleMutation } = saleApi;
+export const { useGetSalesQuery, useCreateSaleMutation, useGetSaleQuery } =
+  saleApi;

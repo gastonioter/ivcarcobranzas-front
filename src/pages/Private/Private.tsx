@@ -1,15 +1,15 @@
 import { PrivateRoutes } from "@/models/routes";
 import RoutesWithNotFound from "@/utilities/RoutesWithNotFound.utility";
-import { Navigate, Route } from "react-router";
 import { lazy } from "react";
-import { AppLayout } from "./styled-components";
-import AppContainer from "./components/AppContainer/AppContainer";
+import { Navigate, Route } from "react-router";
 import Categories from "./Categories/Categories";
-import Products from "./Products/Products";
+import AppContainer from "./components/AppContainer/AppContainer";
 import Customers from "./Customers/Customers";
-import Sales from "./Sales/Sales";
-import SaleForm from "./Sales/components/SaleForm/SaleForm";
+import Products from "./Products/Products";
+import DetailSale from "./Sales/DetailSale/DetailSale";
 import NewSale from "./Sales/NewSale/NewSale";
+import Sales from "./Sales/Sales";
+import { AppLayout } from "./styled-components";
 
 const Home = lazy(() => import("./Home/Home"));
 const Dashboard = lazy(() => import("./Dashboard/Dashboard"));
@@ -31,12 +31,12 @@ export default function Private() {
           <Route path={PrivateRoutes.PRODUCTS} element={<Products />}></Route>
           <Route path={PrivateRoutes.SALES} element={<Sales />}></Route>
           <Route
-            path={`ventas/${PrivateRoutes.NEW_SALE}`}
+            path={`ventas/${PrivateRoutes.NEW_SALE}/`}
             element={<NewSale />}
           ></Route>
           <Route
-            path={PrivateRoutes.DETAIL_SALE}
-            element={<SaleForm />}
+            path={`ventas/${PrivateRoutes.DETAIL_SALE}`}
+            element={<DetailSale />}
           ></Route>
           <Route path={PrivateRoutes.CUSTOMERS} element={<Customers />}></Route>
           <Route

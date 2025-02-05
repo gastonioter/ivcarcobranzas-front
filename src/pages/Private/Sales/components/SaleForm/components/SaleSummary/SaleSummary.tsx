@@ -3,19 +3,17 @@ import { Card, CardContent, Typography } from "@mui/material";
 interface SaleSummaryProps {
   subtotal: number;
   tax: number;
-  total: number;
+  sx: object;
 }
 
-export default function SaleSummary({
-  subtotal,
-  tax,
-  total,
-}: SaleSummaryProps) {
+export default function SaleSummary({ subtotal, tax, sx }: SaleSummaryProps) {
+  const total = subtotal + (subtotal * tax) / 100;
+
   const getTaxAmount = (subtotal: number, tax: number) => {
     return (subtotal * tax) / 100;
   };
   return (
-    <Card sx={{ maxWidth: 400, p: 2, boxShadow: 3 }}>
+    <Card sx={{ p: 0, boxShadow: 3, ...sx }}>
       <CardContent>
         <Typography variant="h6" gutterBottom>
           Resumen de Venta

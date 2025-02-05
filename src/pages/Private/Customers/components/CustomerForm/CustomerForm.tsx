@@ -1,4 +1,5 @@
 import { dialogCloseSubject$ } from "@/components/CustomDialog";
+import FooterCustomDialog from "@/components/FooterCustomDialog/FooterCustomDialog";
 import { useSnackbar } from "@/context/SnackbarContext";
 import {
   CreateCustomerFormData,
@@ -13,7 +14,6 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Box,
-  Button,
   FormControl,
   InputLabel,
   MenuItem,
@@ -170,27 +170,13 @@ function CustomerForm({
           ></TextField>
         </FormControl>
       )}
-      <Stack direction="row" spacing={2} justifyContent="space-between">
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={() => {
-            setCostumer(null);
-            dialogCloseSubject$.setSubject = true;
-          }}
-        >
-          Cancelar
-        </Button>
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          loading={isLoading || isEditing}
-          loadingPosition="end"
-        >
-          {customer ? "Editar" : "Agregar"}
-        </Button>
-      </Stack>
+      <FooterCustomDialog
+        isLoading={isLoading || isEditing}
+        onClose={() => {
+          setCostumer(null);
+        }}
+        editMode={editMode}
+      />
     </Box>
   );
 }

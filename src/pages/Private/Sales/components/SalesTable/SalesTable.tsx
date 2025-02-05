@@ -6,11 +6,12 @@ import { useGetSalesQuery } from "@/services/saleApi";
 import { formattedDate } from "@/utilities";
 import { Alert, Chip } from "@mui/material";
 import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
+import { useNavigate } from "react-router";
 
 export default function SalesTable() {
   const { data, isLoading, error } = useGetSalesQuery();
   //const snackbar = useSnackbar();
-
+  const navigate = useNavigate();
   if (error) {
     return (
       <Alert severity="error">Ocurrió un error al cargar los clientes</Alert>
@@ -26,7 +27,9 @@ export default function SalesTable() {
         },
         {
           name: "Ver Detalle",
-          onClick: () => {},
+          onClick: () => {
+            navigate(`${params.row.uuid}/`);
+          },
         },
         {
           name: "Imprimir",

@@ -1,4 +1,5 @@
 import { dialogCloseSubject$ } from "@/components/CustomDialog";
+import FooterCustomDialog from "@/components/FooterCustomDialog/FooterCustomDialog";
 import { useSnackbar } from "@/context/SnackbarContext";
 import {
   CreateProductFormValues,
@@ -13,12 +14,10 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Box,
-  Button,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
-  Stack,
   TextField,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
@@ -107,27 +106,12 @@ export default function ProductForm({ product, setProduct }: ProductFormProps) {
             }
           </Select>
         </FormControl>
-        <Stack direction="row" spacing={2} justifyContent="space-between">
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => {
-              setProduct(null);
-              dialogCloseSubject$.setSubject = true;
-            }}
-          >
-            Cancelar
-          </Button>
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            loading={isLoading || isEditing}
-            loadingPosition="end"
-          >
-            {product ? "Editar" : "Agregar"}
-          </Button>
-        </Stack>
+
+        <FooterCustomDialog
+          isLoading={isLoading || isEditing}
+          onClose={() => setProduct(null)}
+          editMode={editMode}
+        />
       </Box>
     </>
   );

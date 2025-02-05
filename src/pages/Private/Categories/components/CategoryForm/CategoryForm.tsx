@@ -6,6 +6,7 @@ import { useCreateCategoryMutation } from "@/services/categoriesApi";
 import { Box, Button, TextField } from "@mui/material";
 import { dialogCloseSubject$ } from "@/components/CustomDialog";
 import { useSnackbar } from "@/context/SnackbarContext";
+import FooterCustomDialog from "@/components/FooterCustomDialog/FooterCustomDialog";
 
 export default function CategoryForm() {
   const [create, { isLoading }] = useCreateCategoryMutation();
@@ -49,16 +50,11 @@ export default function CategoryForm() {
           error={!!errors.description}
           helperText={errors.description?.message}
         />
-        <Button
-          sx={{ mt: 2, width: "fit-content", alignSelf: "flex-end" }}
-          type="submit"
-          variant="contained"
-          color="primary"
-          loading={isLoading}
-          loadingPosition="end"
-        >
-          Agregar
-        </Button>
+        <FooterCustomDialog
+          isLoading={isLoading}
+          onClose={() => {}}
+          editMode={false}
+        />
       </Box>
     </>
   );
