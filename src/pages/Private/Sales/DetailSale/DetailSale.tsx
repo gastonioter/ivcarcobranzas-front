@@ -38,7 +38,7 @@ export default function DetailSale() {
           navigate(-1);
         }}
       >
-        <SectionTitle>Nueva Venta</SectionTitle>
+        <SectionTitle>Detalle de Venta Nro: {sale?.serie}</SectionTitle>
       </SectionHeader>
 
       <Paper sx={{ p: 2, height: "100%" }}>

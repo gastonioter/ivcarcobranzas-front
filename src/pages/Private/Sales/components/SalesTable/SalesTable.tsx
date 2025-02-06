@@ -1,15 +1,15 @@
-import { CustomGridToolbar } from "@/components/CustomGridToolbar";
 import TableMenuActions from "@/components/TableMenuActions/TableMenuActions";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { Customer } from "@/models/customer";
-import { SaleStatuses } from "@/models/sale";
+import { SaleDetailsDTO, SaleStatuses } from "@/models/sale";
 import {
   useGetSalesQuery,
   useUpdateSaleStatusMutation,
 } from "@/services/saleApi";
 import { formattedDate } from "@/utilities";
+import { formatFullName } from "@/utilities/formatFullName";
 import { formattedCurrency } from "@/utilities/formatPrice";
-import { Alert, Chip } from "@mui/material";
+import { Chip } from "@mui/material";
 import {
   DataGrid,
   GridColDef,
@@ -19,49 +19,55 @@ import {
 import { useNavigate } from "react-router";
 
 export default function SalesTable() {
-  const { data, isLoading, error } = useGetSalesQuery();
-  const [toggleStatus, { error: changeStatusError, isSuccess: saleUpdated }] =
-    useUpdateSaleStatusMutation();
+  const { data, isLoading } = useGetSalesQuery();
+  const [toggleStatus] = useUpdateSaleStatusMutation();
 
   const snackbar = useSnackbar();
   const navigate = useNavigate();
 
-  const actions = (params) => (
+  const actions = ({ row: sale }: { row: SaleDetailsDTO }) => (
     <TableMenuActions
       actions={[
         {
           name: "Gestionar Pagos",
           onClick: () => {
-            navigate(`${"pagos"}/${params.row.uuid}`);
+            if (sale.status !== SaleStatuses.CANCELLED) {
+              navigate(`${"pagos"}/${sale.uuid}`);
+            } else {
+              snackbar.openSnackbar(
+                "No se puede gestionar pagos de una venta anulada",
+                "error"
+              );
+            }
           },
         },
         {
           name: "Ver Detalle",
           onClick: () => {
-            navigate(`${params.row.uuid}/`);
+            navigate(`${sale.uuid}/`);
           },
         },
         {
           name: `${
-            params.row.status === SaleStatuses.CANCELLED ? "Activar" : "Anular"
+            sale.status === SaleStatuses.CANCELLED ? "Activar" : "Anular"
           }`,
           onClick: async () => {
             try {
-              if (params.row.status === SaleStatuses.PAID) {
+              if (sale.status === SaleStatuses.PAID) {
                 snackbar.openSnackbar(
                   "No se puede anular una venta pagada",
                   "error"
                 );
                 return;
               }
-              if (params.row.status === SaleStatuses.PENDING) {
+              if (sale.status === SaleStatuses.PENDING) {
                 await toggleStatus({
-                  uuid: params.row.uuid,
+                  uuid: sale.uuid,
                   status: SaleStatuses.CANCELLED,
                 }).unwrap();
               } else {
                 await toggleStatus({
-                  uuid: params.row.uuid,
+                  uuid: sale.uuid,
                   status: SaleStatuses.PENDING,
                 }).unwrap();
               }
@@ -96,7 +102,7 @@ export default function SalesTable() {
       headerName: "Cliente",
       flex: 1,
       valueGetter: (customer: Customer) =>
-        `${customer.firstName} ${customer.lastName}`,
+        formatFullName(customer.firstName, customer.lastName),
     },
     {
       field: "seller",
@@ -125,6 +131,7 @@ export default function SalesTable() {
               ? "warning"
               : "error"
           }
+          sx={{ textTransform: "capitalize" }}
           label={status}
           size="small"
         />

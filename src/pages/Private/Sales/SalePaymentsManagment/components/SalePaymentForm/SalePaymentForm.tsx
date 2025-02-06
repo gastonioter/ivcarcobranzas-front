@@ -38,8 +38,8 @@ export default function SalePaymentForm() {
       snackbar.openSnackbar("Pago creado con exito");
       dialogCloseSubject$.setSubject = true;
     } catch (e) {
-      console.error(e);
-      snackbar.openSnackbar("Error al crear el pago", "error");
+      //console.error(e);
+      snackbar.openSnackbar(e.data.error, "error");
     }
   };
   return (

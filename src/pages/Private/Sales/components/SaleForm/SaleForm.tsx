@@ -12,6 +12,7 @@ import {
   createSaleSchema,
   SaleDetailItem,
   SaleDetailsDTO,
+  SaleStatuses,
 } from "@/models/sale";
 import { useGetCustomersQuery } from "@/services/customerApi";
 import { useGetProductsQuery } from "@/services/productApi";
@@ -232,6 +233,7 @@ export default function SaleForm({ sale }: { sale?: SaleDetailsDTO }) {
           subtotal={subtotal}
           tax={tax}
           sx={{ flex: 1, width: 400, maxWidth: "100%" }}
+          isCancelled={sale?.status === SaleStatuses.CANCELLED}
         />
         {!sale && (
           <Button

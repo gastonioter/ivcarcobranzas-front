@@ -1,7 +1,7 @@
 import { CustomDialog, dialogOpenSubject$ } from "@/components";
 import SectionHeader from "@/components/SectionHeader/SectionHeader";
 import SectionTitle from "@/components/SectionTitle/SectionTitle";
-import { SaleDetailsDTO, SalePaymentStatuses } from "@/models";
+import { SaleDetailsDTO, SalePaymentStatuses, SaleStatuses } from "@/models";
 import { useGetSaleQuery } from "@/services/saleApi";
 import { formatFullName } from "@/utilities/formatFullName";
 import { AddCircleRounded } from "@mui/icons-material";
@@ -34,8 +34,8 @@ export default function SalePaymentsManagment() {
   const isPaid = saleSummary.saldo <= 0;
 
   const computeSaleSummary = (sale: SaleDetailsDTO) => {
-    console.log(sale);
     const debe = sale.totalAmount;
+
     const haber = sale.payments.reduce(
       (acc, payment) =>
         payment.status == SalePaymentStatuses.ACTIVE

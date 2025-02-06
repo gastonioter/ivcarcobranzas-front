@@ -67,6 +67,8 @@ export interface SaleDetailsDTO {
   iva: number;
   items: SaleDetailItem[];
   totalAmount: number;
+  status: SaleStatuses;
+  serie: string;
 }
 export interface SalePayment {
   amount: number;
