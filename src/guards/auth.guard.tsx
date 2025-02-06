@@ -4,7 +4,7 @@ import { Navigate, Outlet } from "react-router";
 
 export default function AuthGuard() {
   const isAuth = useAuthToken();
-  
+
   return isAuth ? (
     <Outlet />
   ) : (

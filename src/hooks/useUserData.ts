@@ -1,13 +1,5 @@
-import { TokenPayload } from "@/models";
-import { decodeToken } from "@/utilities/decodeToken";
-import { useAuthToken } from "./useAuth";
+import { useAppSelector } from "./useAppSelector";
 
-export const useUserData = (): TokenPayload | null => {
-  const token = useAuthToken();
-
-  if (!token) return null;
-
-  const decodedToken = decodeToken(token);
-  //console.log(decodedToken);
-  return decodedToken;
+export const useUserData = () => {
+  return useAppSelector((state) => state.auth.user);
 };

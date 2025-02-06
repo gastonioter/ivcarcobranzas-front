@@ -10,7 +10,12 @@ import {
 import { formattedDate } from "@/utilities";
 import { formattedCurrency } from "@/utilities/formatPrice";
 import { Alert, Chip } from "@mui/material";
-import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridRowsProp,
+  GridToolbar,
+} from "@mui/x-data-grid";
 import { useNavigate } from "react-router";
 
 export default function SalesTable() {
@@ -82,6 +87,7 @@ export default function SalesTable() {
     {
       field: "createdAt",
       headerName: "Fecha",
+      filterable: false,
       flex: 1,
       valueFormatter: (value: string) => formattedDate(value),
     },
@@ -96,6 +102,8 @@ export default function SalesTable() {
       field: "seller",
       headerName: "Vendedor",
       flex: 1,
+      filterable: false,
+      sortable: false,
       valueGetter: (seller) => `${seller.email}`,
     },
     {
@@ -126,6 +134,8 @@ export default function SalesTable() {
       field: "actions",
       headerName: "Acciones",
       flex: 0.5,
+      sortable: false,
+      filterable: false,
       renderCell: actions,
     },
   ];
@@ -142,8 +152,11 @@ export default function SalesTable() {
         },
       }}
       slots={{
-        toolbar: CustomGridToolbar,
+        toolbar: GridToolbar,
       }}
+      disableDensitySelector
+      disableRowSelectionOnClick
+      disableColumnMenu
       pageSizeOptions={[5, 10, 25]}
       getRowId={(row) => row.uuid}
       rows={rows}

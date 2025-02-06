@@ -24,13 +24,13 @@ export function LoginForm() {
     const formData = new FormData(e.target as HTMLFormElement);
     const { password, email } = Object.fromEntries(formData.entries());
     try {
-      const { token } = await login({
+     await login({
         password,
         email,
       }).unwrap();
 
       navigate(`/${PrivateRoutes.PRIVATE}`);
-      store.dispatch(setCredentials({ token }));
+      //store.dispatch(setCredentials({ token }));
     } catch (e) {
       console.log(e);
     }

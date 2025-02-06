@@ -9,7 +9,7 @@ import {
 } from "@/services/customerApi";
 import { formattedDate } from "@/utilities";
 import { Alert } from "@mui/material";
-import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridRowsProp, GridToolbar } from "@mui/x-data-grid";
 import CustomerStatusIndicator from "../CustomerStatusIndicator/CustomerStatusIndicator";
 import { formatFullName } from "@/utilities/formatFullName";
 
@@ -148,11 +148,15 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
         },
       }}
       slots={{
-        toolbar: CustomGridToolbar,
+        toolbar: GridToolbar,
       }}
+      disableDensitySelector
+      disableColumnMenu
       pageSizeOptions={[5, 10, 25]}
       getRowId={(row) => row.uuid}
       rows={rows}
+      disableRowSelectionOnClick
+
       // onRowClick={(row) => console.log(row)}
       columns={columns}
       // processRowUpdate={() => {}} // TODO: Implementar
