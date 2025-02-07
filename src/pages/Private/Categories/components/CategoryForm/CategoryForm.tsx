@@ -1,12 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
+import { dialogCloseSubject$ } from "@/components/CustomDialog";
+import FooterCustomDialog from "@/components/FooterCustomDialog/FooterCustomDialog";
+import { useSnackbar } from "@/context/SnackbarContext";
 import { CategoryFormData, categorySchema } from "@/models/category";
 import { useCreateCategoryMutation } from "@/services/categoriesApi";
-import { Box, Button, TextField } from "@mui/material";
-import { dialogCloseSubject$ } from "@/components/CustomDialog";
-import { useSnackbar } from "@/context/SnackbarContext";
-import FooterCustomDialog from "@/components/FooterCustomDialog/FooterCustomDialog";
+import { Box, TextField } from "@mui/material";
 
 export default function CategoryForm() {
   const [create, { isLoading }] = useCreateCategoryMutation();
@@ -26,7 +26,7 @@ export default function CategoryForm() {
       dialogCloseSubject$.setSubject = false;
       snackbar.openSnackbar(`Categoría ${newCategory.name} creada con éxito`);
     } catch (e) {
-      console.log(e);
+      //console.log(e);
       snackbar.openSnackbar(`${e.data.error}`, "error");
     }
   };

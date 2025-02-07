@@ -45,7 +45,7 @@ export default function SaleForm({ sale, forBudget = false }: SaleFormProps) {
   const [subtotal, setSubtotal] = useState(0);
   const [customer, setCustomer] = useState("");
   const [create, { isLoading }] = useCreateSaleMutation();
-  const { id } = useUserData();
+  const { userId } = useUserData();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -141,7 +141,7 @@ export default function SaleForm({ sale, forBudget = false }: SaleFormProps) {
     e.preventDefault();
 
     const data: CreateSaleFromData = {
-      seller: id,
+      seller: userId,
       iva: tax,
       customer: customer,
       items: details,
@@ -230,17 +230,17 @@ export default function SaleForm({ sale, forBudget = false }: SaleFormProps) {
         handleUpdateDetail={handleUpdateDetail}
       />
 
-      <Stack spacing={2} direction={"column"} alignItems={"flex-start"}>
+      <Stack spacing={2} direction={"row"} alignItems={"flex-end"}>
         <SaleSummary
           forBudget={forBudget}
           subtotal={subtotal}
           tax={tax}
-          sx={{ flex: 1, width: 400, maxWidth: "100%" }}
+          sx={{ width: 400, maxWidth: "100%" }}
           isCancelled={sale?.status.status === SaleStatus.CANCELLED}
         />
         {!sale && (
           <Button
-            sx={{}}
+            sx={{ mr: "auto" }}
             loading={isLoading}
             variant="contained"
             color="success"

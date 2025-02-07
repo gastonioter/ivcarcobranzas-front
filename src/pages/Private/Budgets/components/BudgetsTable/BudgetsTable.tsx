@@ -8,7 +8,7 @@ import {
   BudgetStatus,
   Customer,
   PrivateRoutes,
-  SaleItemTable,
+  SaleDTO,
   Transaction,
   TransactionType,
 } from "@/models";
@@ -155,7 +155,7 @@ export default function BudgetsTable() {
       field: "status",
       headerName: "Estado",
       flex: 1,
-      renderCell: ({ row }: { row: SaleItemTable }) => (
+      renderCell: ({ row }: { row: SaleDTO }) => (
         <Chip
           color={
             row.status.status === BudgetStatus.PENDING_APPROVAL

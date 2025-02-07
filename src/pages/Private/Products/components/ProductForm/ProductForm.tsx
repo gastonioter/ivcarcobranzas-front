@@ -101,7 +101,9 @@ export default function ProductForm({ product, setProduct }: ProductFormProps) {
             {
               // TODO: Fetch categories from the API and render them here
               categories?.map((category) => (
-                <MenuItem value={category.uuid}>{category.name}</MenuItem>
+                <MenuItem key={category.uuid} value={category.uuid}>
+                  {category.name}
+                </MenuItem>
               ))
             }
           </Select>

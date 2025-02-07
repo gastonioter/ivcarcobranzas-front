@@ -1,14 +1,12 @@
 // app/store.ts
 import authReducer from "@/redux/slices/auth";
 
-import { configureStore } from "@reduxjs/toolkit";
-import { tokenMiddleware } from "./middlewares";
 import { authApi } from "@/services";
 import { categoriesApi } from "@/services/categoriesApi";
-import { productApi } from "@/services/productApi";
 import { customerApi } from "@/services/customerApi";
+import { productApi } from "@/services/productApi";
 import { saleApi } from "@/services/saleApi";
-import { budgetApi } from "@/services/bidgetApi";
+import { configureStore } from "@reduxjs/toolkit";
 
 export const store = configureStore({
   reducer: {
@@ -20,7 +18,6 @@ export const store = configureStore({
     [productApi.reducerPath]: productApi.reducer,
     [customerApi.reducerPath]: customerApi.reducer,
     [saleApi.reducerPath]: saleApi.reducer,
-    [budgetApi.reducerPath]: budgetApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -28,9 +25,7 @@ export const store = configureStore({
       categoriesApi.middleware,
       productApi.middleware,
       customerApi.middleware,
-      saleApi.middleware,
-      budgetApi.middleware,
-      tokenMiddleware
+      saleApi.middleware
     ),
 });
 

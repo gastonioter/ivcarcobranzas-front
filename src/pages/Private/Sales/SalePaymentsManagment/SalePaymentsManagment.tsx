@@ -7,7 +7,13 @@ import { formatFullName } from "@/utilities/formatFullName";
 import { AddCircleRounded } from "@mui/icons-material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PrintIcon from "@mui/icons-material/Print";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Stack,
+  Typography
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import SalePaymentForm from "./components/SalePaymentForm/SalePaymentForm";
@@ -23,7 +29,7 @@ export default function SalePaymentsManagment() {
   const navigate = useNavigate();
   const { uuid } = useParams();
 
-  const { data: sale } = useGetSaleQuery(uuid as string);
+  const { data: sale, isLoading } = useGetSaleQuery(uuid as string);
 
   const [saleSummary, setSaleSummary] = useState<ISaleSummary>({
     debe: 0,
@@ -55,6 +61,8 @@ export default function SalePaymentsManagment() {
   const back = () => {
     navigate(-1);
   };
+
+  if (isLoading) return <CircularProgress size={50} color="primary" />;
 
   if (!sale) return null;
 

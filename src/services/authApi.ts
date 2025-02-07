@@ -1,5 +1,4 @@
 // features/api/authApi.ts
-import { setCredentials } from "@/redux/slices/auth";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 interface LoginCredentials {
@@ -22,14 +21,14 @@ export const authApi = createApi({
         method: "POST",
         body: credentials,
       }),
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          dispatch(setCredentials({ token: data.token }));
-        } catch (err) {
-          console.error("Error en login:", err);
-        }
-      },
+      // async onQueryStarted(_, { dispatch, queryFulfilled }) {
+      //   try {
+      //     const { data } = await queryFulfilled;
+      //     dispatch(setCredentials({ token: data.token }));
+      //   } catch (err) {
+      //     console.error("Error en login:", err);
+      //   }
+      // },
     }),
   }),
 });

@@ -5,24 +5,35 @@ import {
   Customer,
   EditCustomerFormData,
 } from "@/models/customer";
+import { clearCredentials } from "@/redux/slices";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+const baseQuery = async (args: any, api: any, extraOptions: any) => {
+  const result = await fetchBaseQuery({
+    baseUrl: "http://localhost:3001/api/customers",
+    prepareHeaders: addToken,
+  })(args, api, extraOptions);
+
+  if (result.error && result.error.status === 401) {
+    api.dispatch(clearCredentials());
+  }
+
+  return result;
+};
 
 export const customerApi = createApi({
   reducerPath: "customerApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3001/api",
-    prepareHeaders: addToken,
-  }),
+  baseQuery,
   tagTypes: ["Customers"],
   endpoints: (builder) => ({
     getCustomers: builder.query<Customer[], void>({
-      query: () => "/customers",
+      query: () => "/",
       providesTags: ["Customers"],
     }),
 
     createCustomer: builder.mutation<Customer, CreateCustomerFormData>({
       query: (body) => ({
-        url: "/customers",
+        url: "/",
         method: "POST",
         body,
       }),
@@ -31,7 +42,7 @@ export const customerApi = createApi({
 
     editCustomer: builder.mutation<Customer, EditCustomerFormData>({
       query: ({ uuid, ...updatedCustomerData }) => ({
-        url: `/customers/${uuid}`,
+        url: `/${uuid}`,
         method: "PATCH",
         body: updatedCustomerData,
       }),
@@ -40,7 +51,7 @@ export const customerApi = createApi({
 
     updateStatus: builder.mutation<Customer, BajaCustomerFormData>({
       query: (body) => ({
-        url: `/customers/status`,
+        url: `/status`,
         method: "POST",
         body,
       }),

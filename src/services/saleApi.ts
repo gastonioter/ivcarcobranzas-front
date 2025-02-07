@@ -1,13 +1,15 @@
+import { addToken } from "@/interceptors";
 import {
   AddSalePaymentFormData,
   CreateSaleFromData,
   Transaction,
   SaleDetailsDTO,
-  SaleItemTable,
+  SaleDTO,
   SalePayment,
   SalePaymentStatuses,
   UpdateSaleStatusFormData,
 } from "@/models/sale";
+import { clearCredentials } from "@/redux/slices";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 interface UpdatePaymentArgs {
@@ -20,13 +22,26 @@ interface CreatePaymentArgs {
   data: AddSalePaymentFormData;
 }
 
+const baseQuery = async (args: any, api: any, extraOptions: any) => {
+  const result = await fetchBaseQuery({
+    baseUrl: "http://localhost:3001/api/sales",
+    prepareHeaders: addToken,
+  })(args, api, extraOptions);
+
+  if (result.error && result.error.status === 401) {
+    api.dispatch(clearCredentials());
+  }
+
+  return result;
+};
+
 export const saleApi = createApi({
   reducerPath: "saleApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3001/api/sales" }),
+  baseQuery,
   tagTypes: ["Sales"],
 
   endpoints: (builder) => ({
-    getSales: builder.query<SaleItemTable[], void>({
+    getSales: builder.query<SaleDTO[], void>({
       query: () => "/",
       providesTags: ["Sales"],
     }),

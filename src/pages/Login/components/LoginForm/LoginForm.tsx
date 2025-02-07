@@ -1,6 +1,5 @@
 import { PrivateRoutes } from "@/models/routes";
-import { store } from "@/redux";
-import { setCredentials } from "@/redux/slices/auth";
+
 import { useLoginMutation } from "@/services/authApi";
 import {
   Box,
@@ -24,13 +23,12 @@ export function LoginForm() {
     const formData = new FormData(e.target as HTMLFormElement);
     const { password, email } = Object.fromEntries(formData.entries());
     try {
-     await login({
+      await login({
         password,
         email,
       }).unwrap();
 
       navigate(`/${PrivateRoutes.PRIVATE}`);
-      //store.dispatch(setCredentials({ token }));
     } catch (e) {
       console.log(e);
     }

@@ -3,7 +3,8 @@ import { useSnackbar } from "@/context/SnackbarContext";
 import { Customer } from "@/models/customer";
 import {
   BudgetStatus,
-  SaleItemTable,
+  SaleDTO,
+  SalePaymentStatuses,
   SaleStatus,
   TransactionType,
 } from "@/models/sale";
@@ -25,11 +26,21 @@ import { useNavigate } from "react-router";
 
 export default function SalesTable() {
   const { data, isLoading } = useGetSalesQuery();
-  const [toggleStatus] = useUpdateSaleStatusMutation();
+  const [updatSaleStatus] = useUpdateSaleStatusMutation();
   const snackbar = useSnackbar();
   const navigate = useNavigate();
 
-  const actions = ({ row }: { row: SaleItemTable }) => (
+  const isSalePaid = (sale: SaleDTO) => {
+    return sale.payments.reduce(
+      (acc, payment) =>
+        payment.status == SalePaymentStatuses.ACTIVE
+          ? payment.amount + acc
+          : acc,
+      0
+    );
+  };
+
+  const actions = ({ row }: { row: SaleDTO }) => (
     <TableMenuActions
       actions={[
         {
@@ -58,24 +69,19 @@ export default function SalesTable() {
           onClick: async () => {
             try {
               if (
-                row.status.type === TransactionType.SALE &&
+                row.status.status === SaleStatus.PENDING_PAYMENT ||
                 row.status.status === SaleStatus.PAID
               ) {
-                snackbar.openSnackbar(
-                  "No se puede anular una venta pagada",
-                  "error"
-                );
-                return;
-              }
-              if (row.status.status === SaleStatus.PENDING_PAYMENT) {
-                await toggleStatus({
+                await updatSaleStatus({
                   uuid: row.uuid,
                   status: SaleStatus.CANCELLED,
                 }).unwrap();
-              } else {
-                await toggleStatus({
+              } else if (row.status.status === SaleStatus.CANCELLED) {
+                await updatSaleStatus({
                   uuid: row.uuid,
-                  status: SaleStatus.PENDING_PAYMENT,
+                  status: isSalePaid(row)
+                    ? SaleStatus.PAID
+                    : SaleStatus.PENDING_PAYMENT,
                 }).unwrap();
               }
               snackbar.openSnackbar("Venta actualizada", "success");
@@ -134,7 +140,7 @@ export default function SalesTable() {
       field: "status",
       headerName: "Estado",
       flex: 1,
-      renderCell: ({ row }: { row: SaleItemTable }) => (
+      renderCell: ({ row }: { row: SaleDTO }) => (
         <Chip
           color={
             row.status.status === SaleStatus.PAID

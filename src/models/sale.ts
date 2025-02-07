@@ -66,7 +66,8 @@ export interface SaleDetailItem {
 }
 
 // DTO que me manda el backend
-export interface SaleItemTable {
+export interface SaleDTO {
+  payments: SalePayment[];
   uuid: string;
   seller: {
     email: string;

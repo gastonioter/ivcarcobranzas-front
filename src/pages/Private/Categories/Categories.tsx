@@ -11,7 +11,7 @@ export default function Categories() {
         <SectionTitle>Categorías</SectionTitle>
       </SectionHeader>
 
-      <CategoriesTable />
+    <CategoriesTable />
 
       <CustomDialog>
         <Box sx={{ p: 5 }}>
