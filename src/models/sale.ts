@@ -1,23 +1,48 @@
 import { z } from "zod";
 
-export interface Sale {
+export interface Transaction {
   uuid: string;
   serie: string;
   payments: SalePayment[];
-  status: SaleStatuses;
+  status: TransactionStatus;
   seller: string;
   customer: string;
+  totalAmount: number;
   items: SaleDetailItem[];
-  iva: number;
   createdAt: Date;
   updatedAt: Date;
+  isBudget?: boolean;
+  iva: number;
 }
+
+export enum BudgetStatus {
+  PENDING_APPROVAL = "SUJETO A APROBACION",
+  APPROVED = "APROBADO",
+  REJECTED = "RECHAZADO",
+}
+
+export enum SaleStatus {
+  PENDING_PAYMENT = "PAGO PENDIENTE",
+  PAID = "PAGO",
+  CANCELLED = "ANULADA",
+}
+
+export type TransactionStatusString = `${BudgetStatus}` | `${SaleStatus}`;
+
+export enum TransactionType {
+  BUDGET = "BUDGET",
+  SALE = "SALE",
+}
+
+export type TransactionStatus =
+  | { type: TransactionType.BUDGET; status: BudgetStatus }
+  | { type: TransactionType.SALE; status: SaleStatus };
 
 export interface SaleDetailView {
   uuid: string;
   serie: string;
   payments: SalePayment[];
-  status: SaleStatuses;
+  status: SaleStatus;
   seller: {
     email: string;
   };
@@ -51,7 +76,7 @@ export interface SaleItemTable {
     lastName: string;
   };
   serie: string;
-  status: SaleStatuses;
+  status: TransactionStatus;
   monto: number;
   createdAt: Date;
 }
@@ -67,7 +92,7 @@ export interface SaleDetailsDTO {
   iva: number;
   items: SaleDetailItem[];
   totalAmount: number;
-  status: SaleStatuses;
+  status: TransactionStatus;
   serie: string;
 }
 export interface SalePayment {
@@ -77,11 +102,6 @@ export interface SalePayment {
   status: SalePaymentStatuses;
 }
 
-export enum SaleStatuses {
-  PENDING = "PENDIENTE",
-  PAID = "PAGO",
-  CANCELLED = "ANULADA",
-}
 export enum PaymentMethods {
   CASH = "EFECTIVO",
   CARD = "DEBITO/CREDITO",
@@ -109,11 +129,7 @@ export const createSaleSchema = z.object({
   iva: z.number().min(0, "El IVA no puede ser negativo"),
   customer: z.string().nonempty("Selecciona un cliente"),
   items: z.array(saleDetailSchema).min(1, "Agrega al menos un producto"),
-});
-
-export const addSale = z.object({
-  uuid: z.string(),
-  status: z.nativeEnum(SaleStatuses),
+  isBudget: z.boolean().optional().default(false),
 });
 
 export const addSalePaymentSchema = z.object({
@@ -133,7 +149,7 @@ export const addSalePaymentSchema = z.object({
 
 export const updateSaleStatusSchema = z.object({
   uuid: z.string(),
-  status: z.nativeEnum(SaleStatuses),
+  status: z.union([z.nativeEnum(BudgetStatus), z.nativeEnum(SaleStatus)]),
 });
 
 export const updateSalePaymentStatusSchema = z.object({

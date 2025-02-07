@@ -5,6 +5,7 @@ import { MouseEvent, useState } from "react";
 type Action = {
   name: string;
   onClick: () => void;
+  isDisabled?: boolean;
 };
 
 type TableMenuActionsProps = {
@@ -48,6 +49,7 @@ export default function TableMenuActions({ actions }: TableMenuActionsProps) {
       >
         {actions.map((action) => (
           <MenuItem
+            disabled={action.isDisabled}
             key={action.name}
             onClick={() => {
               action.onClick();

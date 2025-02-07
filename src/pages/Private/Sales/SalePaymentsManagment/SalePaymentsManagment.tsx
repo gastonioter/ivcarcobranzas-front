@@ -1,7 +1,7 @@
 import { CustomDialog, dialogOpenSubject$ } from "@/components";
 import SectionHeader from "@/components/SectionHeader/SectionHeader";
 import SectionTitle from "@/components/SectionTitle/SectionTitle";
-import { SaleDetailsDTO, SalePaymentStatuses, SaleStatuses } from "@/models";
+import { SaleDetailsDTO, SalePaymentStatuses } from "@/models";
 import { useGetSaleQuery } from "@/services/saleApi";
 import { formatFullName } from "@/utilities/formatFullName";
 import { AddCircleRounded } from "@mui/icons-material";

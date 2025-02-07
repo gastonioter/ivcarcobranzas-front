@@ -1,7 +1,7 @@
 import {
   AddSalePaymentFormData,
   CreateSaleFromData,
-  Sale,
+  Transaction,
   SaleDetailsDTO,
   SaleItemTable,
   SalePayment,
@@ -41,7 +41,7 @@ export const saleApi = createApi({
       providesTags: ["Sales"],
     }),
 
-    createSale: builder.mutation<Sale, CreateSaleFromData>({
+    createSale: builder.mutation<Transaction, CreateSaleFromData>({
       query: (data) => ({
         url: "/",
         method: "POST",
@@ -50,7 +50,7 @@ export const saleApi = createApi({
       invalidatesTags: ["Sales"],
     }),
 
-    updateSaleStatus: builder.mutation<Sale, UpdateSaleStatusFormData>({
+    updateSaleStatus: builder.mutation<Transaction, UpdateSaleStatusFormData>({
       query: (body) => ({
         url: "/status",
         method: "POST",
@@ -59,7 +59,7 @@ export const saleApi = createApi({
       invalidatesTags: ["Sales"],
     }),
 
-    updateSalePaymentStatus: builder.mutation<Sale, UpdatePaymentArgs>({
+    updateSalePaymentStatus: builder.mutation<Transaction, UpdatePaymentArgs>({
       query: ({ saleID, paymentID, status }) => ({
         url: `${saleID}/payments/${paymentID}/`,
         method: "PATCH",
@@ -68,7 +68,7 @@ export const saleApi = createApi({
       invalidatesTags: ["Sales"],
     }),
 
-    createPaymentForSale: builder.mutation<Sale, CreatePaymentArgs>({
+    createPaymentForSale: builder.mutation<Transaction, CreatePaymentArgs>({
       query: ({ uuid, data }) => ({
         url: `/${uuid}/payments`,
         method: "POST",

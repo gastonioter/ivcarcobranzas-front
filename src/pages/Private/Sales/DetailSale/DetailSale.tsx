@@ -5,6 +5,7 @@ import SaleForm from "../components/SaleForm/SaleForm";
 import SectionHeader from "@/components/SectionHeader/SectionHeader";
 import SectionTitle from "@/components/SectionTitle/SectionTitle";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { TransactionType } from "@/models";
 
 export default function DetailSale() {
   //const snackbar = useSnackbar();
@@ -38,7 +39,11 @@ export default function DetailSale() {
           navigate(-1);
         }}
       >
-        <SectionTitle>Detalle de Venta Nro: {sale?.serie}</SectionTitle>
+        <SectionTitle>
+          Detalle de{" "}
+          {sale?.status.type == TransactionType.SALE ? "Venta" : "Presupuesto"}{" "}
+          Nro: {sale?.serie}
+        </SectionTitle>
       </SectionHeader>
 
       <Paper sx={{ p: 2, height: "100%" }}>

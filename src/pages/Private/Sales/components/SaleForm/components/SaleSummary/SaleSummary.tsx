@@ -7,6 +7,7 @@ interface SaleSummaryProps {
   tax: number;
   sx: object;
   isCancelled: boolean;
+  forBudget: boolean;
 }
 
 export default function SaleSummary({
@@ -14,7 +15,9 @@ export default function SaleSummary({
   tax,
   sx,
   isCancelled,
+  forBudget = false,
 }: SaleSummaryProps) {
+  const entity = forBudget ? "Presupuesto" : "Venta";
   const total = subtotal + (subtotal * tax) / 100;
 
   const getTaxAmount = (subtotal: number, tax: number) => {
@@ -37,7 +40,7 @@ export default function SaleSummary({
         >
           <div>
             <Typography variant="h6" gutterBottom>
-              Resumen de Venta
+              Resumen de {entity}
             </Typography>
             <Typography variant="body1">
               Subtotal: {formattedCurrency(subtotal)}
@@ -51,7 +54,7 @@ export default function SaleSummary({
             </Typography>
           </div>
 
-          {isCancelled && (
+          {isCancelled && !forBudget && (
             <Tooltip title="Venta Cancelada" arrow>
               <Circle color="error" />
             </Tooltip>

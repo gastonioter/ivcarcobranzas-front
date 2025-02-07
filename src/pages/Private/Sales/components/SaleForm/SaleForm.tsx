@@ -12,7 +12,7 @@ import {
   createSaleSchema,
   SaleDetailItem,
   SaleDetailsDTO,
-  SaleStatuses,
+  SaleStatus,
 } from "@/models/sale";
 import { useGetCustomersQuery } from "@/services/customerApi";
 import { useGetProductsQuery } from "@/services/productApi";
@@ -34,13 +34,17 @@ import DetailsTable from "./components/DetailsTable/DetailsTable";
 import ProductsForSaleTable from "./components/ProductsForSaleTable.tsx/ProductsForSaleTable";
 import SaleSummary from "./components/SaleSummary/SaleSummary";
 
-export default function SaleForm({ sale }: { sale?: SaleDetailsDTO }) {
+interface SaleFormProps {
+  sale?: SaleDetailsDTO;
+  forBudget?: boolean;
+}
+export default function SaleForm({ sale, forBudget = false }: SaleFormProps) {
   const [details, setDetails] = useState<SaleDetailItem[]>([]);
   const snackbar = useSnackbar();
   const [tax, setTax] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
   const [customer, setCustomer] = useState("");
-  const [create, { isLoading, error }] = useCreateSaleMutation();
+  const [create, { isLoading }] = useCreateSaleMutation();
   const { id } = useUserData();
   const navigate = useNavigate();
 
@@ -72,9 +76,8 @@ export default function SaleForm({ sale }: { sale?: SaleDetailsDTO }) {
     error: errorCostumers,
   } = useGetCustomersQuery();
 
-  if (error) {
-    return <Alert severity="error">Ocurrió un error al crear la venta</Alert>;
-  }
+  const entity = forBudget ? "Presupuesto" : "Venta";
+
   if (errorProducts || errorCostumers) {
     return (
       <Alert severity="error">
@@ -117,7 +120,6 @@ export default function SaleForm({ sale }: { sale?: SaleDetailsDTO }) {
     price: number,
     quantity: number
   ) => {
-    console.log(uuid, price, quantity);
     const updatedDetails = details.map((item) => {
       if (item.uuid === uuid) {
         const updatedTotal = +price * +quantity;
@@ -138,24 +140,24 @@ export default function SaleForm({ sale }: { sale?: SaleDetailsDTO }) {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    const saleData: CreateSaleFromData = {
+    const data: CreateSaleFromData = {
       seller: id,
       iva: tax,
       customer: customer,
       items: details,
+      isBudget: forBudget,
     };
 
-    const result = createSaleSchema.safeParse(saleData);
+    const result = createSaleSchema.safeParse(data);
 
     if (result.success) {
       try {
-        await create(result.data);
+        await create(result.data).unwrap();
       } catch (e) {
         console.error(e);
-        snackbar.openSnackbar("Ocurrió un error al crear la venta", "error");
+        snackbar.openSnackbar("Ups, algo salio mal...", "error");
       }
-
-      snackbar.openSnackbar("Venta creada con éxito!");
+      snackbar.openSnackbar(`${entity} creada con exito!`);
       navigate(-1);
     } else {
       snackbar.openSnackbar(result.error.issues[0].message, "error");
@@ -230,10 +232,11 @@ export default function SaleForm({ sale }: { sale?: SaleDetailsDTO }) {
 
       <Stack spacing={2} direction={"column"} alignItems={"flex-start"}>
         <SaleSummary
+          forBudget={forBudget}
           subtotal={subtotal}
           tax={tax}
           sx={{ flex: 1, width: 400, maxWidth: "100%" }}
-          isCancelled={sale?.status === SaleStatuses.CANCELLED}
+          isCancelled={sale?.status.status === SaleStatus.CANCELLED}
         />
         {!sale && (
           <Button
@@ -243,7 +246,7 @@ export default function SaleForm({ sale }: { sale?: SaleDetailsDTO }) {
             color="success"
             onClick={onSubmit}
           >
-            Crear Venta
+            Crear {entity}
           </Button>
         )}
       </Stack>

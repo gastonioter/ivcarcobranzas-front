@@ -42,6 +42,11 @@ const items = [
     icon: <StorefrontIcon />,
   },
   {
+    name: "Presupuestos",
+    to: PrivateRoutes.BUDGETS,
+    icon: <StorefrontIcon />,
+  },
+  {
     name: "Clientes",
     icon: <PersonIcon />,
     to: PrivateRoutes.CUSTOMERS,

@@ -1,7 +1,12 @@
 import TableMenuActions from "@/components/TableMenuActions/TableMenuActions";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { Customer } from "@/models/customer";
-import { SaleDetailsDTO, SaleStatuses } from "@/models/sale";
+import {
+  BudgetStatus,
+  SaleItemTable,
+  SaleStatus,
+  TransactionType,
+} from "@/models/sale";
 import {
   useGetSalesQuery,
   useUpdateSaleStatusMutation,
@@ -21,18 +26,17 @@ import { useNavigate } from "react-router";
 export default function SalesTable() {
   const { data, isLoading } = useGetSalesQuery();
   const [toggleStatus] = useUpdateSaleStatusMutation();
-
   const snackbar = useSnackbar();
   const navigate = useNavigate();
 
-  const actions = ({ row: sale }: { row: SaleDetailsDTO }) => (
+  const actions = ({ row }: { row: SaleItemTable }) => (
     <TableMenuActions
       actions={[
         {
           name: "Gestionar Pagos",
           onClick: () => {
-            if (sale.status !== SaleStatuses.CANCELLED) {
-              navigate(`${"pagos"}/${sale.uuid}`);
+            if (row.status.status !== SaleStatus.CANCELLED) {
+              navigate(`${"pagos"}/${row.uuid}`);
             } else {
               snackbar.openSnackbar(
                 "No se puede gestionar pagos de una venta anulada",
@@ -44,31 +48,34 @@ export default function SalesTable() {
         {
           name: "Ver Detalle",
           onClick: () => {
-            navigate(`${sale.uuid}/`);
+            navigate(`${row.uuid}/`);
           },
         },
         {
           name: `${
-            sale.status === SaleStatuses.CANCELLED ? "Activar" : "Anular"
+            row.status.status === SaleStatus.CANCELLED ? "Activar" : "Anular"
           }`,
           onClick: async () => {
             try {
-              if (sale.status === SaleStatuses.PAID) {
+              if (
+                row.status.type === TransactionType.SALE &&
+                row.status.status === SaleStatus.PAID
+              ) {
                 snackbar.openSnackbar(
                   "No se puede anular una venta pagada",
                   "error"
                 );
                 return;
               }
-              if (sale.status === SaleStatuses.PENDING) {
+              if (row.status.status === SaleStatus.PENDING_PAYMENT) {
                 await toggleStatus({
-                  uuid: sale.uuid,
-                  status: SaleStatuses.CANCELLED,
+                  uuid: row.uuid,
+                  status: SaleStatus.CANCELLED,
                 }).unwrap();
               } else {
                 await toggleStatus({
-                  uuid: sale.uuid,
-                  status: SaleStatuses.PENDING,
+                  uuid: row.uuid,
+                  status: SaleStatus.PENDING_PAYMENT,
                 }).unwrap();
               }
               snackbar.openSnackbar("Venta actualizada", "success");
@@ -86,7 +93,12 @@ export default function SalesTable() {
     />
   );
 
-  const rows: GridRowsProp = data || [];
+  const rows: GridRowsProp = (data || []).filter(
+    (transaction) =>
+      transaction.status.type === TransactionType.SALE ||
+      (transaction.status.type === TransactionType.BUDGET &&
+        transaction.status.status === BudgetStatus.APPROVED)
+  );
 
   const columns: GridColDef[] = [
     { field: "serie", headerName: "Serie", flex: 1 },
@@ -122,17 +134,21 @@ export default function SalesTable() {
       field: "status",
       headerName: "Estado",
       flex: 1,
-      renderCell: ({ row: { status } }) => (
+      renderCell: ({ row }: { row: SaleItemTable }) => (
         <Chip
           color={
-            status === SaleStatuses.PAID
+            row.status.status === SaleStatus.PAID
               ? "success"
-              : status === SaleStatuses.PENDING
+              : row.status.status === SaleStatus.PENDING_PAYMENT
               ? "warning"
-              : "error"
+              : row.status.status === SaleStatus.CANCELLED
+              ? "error"
+              : row.status.status === BudgetStatus.APPROVED
+              ? "primary"
+              : "default"
           }
           sx={{ textTransform: "capitalize" }}
-          label={status}
+          label={row.status.status}
           size="small"
         />
       ),
@@ -163,8 +179,15 @@ export default function SalesTable() {
       }}
       disableDensitySelector
       disableRowSelectionOnClick
+      pagination
       disableColumnMenu
-      pageSizeOptions={[5, 10, 25]}
+      pageSizeOptions={[10, 20, 30]}
+      initialState={{
+        pagination: {
+          paginationModel: { pageSize: 10, page: 0 }, // Establece la página y cantidad inicial de filas
+        },
+      }}
+      //onPaginationModelChange={(model) => setPageSize(model.pageSize)}
       getRowId={(row) => row.uuid}
       rows={rows}
       columns={columns}
