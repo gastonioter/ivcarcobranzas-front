@@ -1,4 +1,4 @@
-import { SaleDetailItem } from "@/models/sale";
+import { SaleDetailItem } from "@/models/Sale";
 import { formattedCurrency } from "@/utilities/formatPrice";
 import { Delete } from "@mui/icons-material";
 import { IconButton } from "@mui/material";

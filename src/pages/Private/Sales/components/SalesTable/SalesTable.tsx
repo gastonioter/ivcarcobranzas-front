@@ -7,7 +7,7 @@ import {
   SalePaymentStatuses,
   SaleStatus,
   TransactionType,
-} from "@/models/sale";
+} from "@/models/Sale";
 import {
   useGetSalesQuery,
   useUpdateSaleStatusMutation,

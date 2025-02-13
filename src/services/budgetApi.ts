@@ -1,14 +1,13 @@
 import { addToken } from "@/interceptors";
-import { Sale } from "@/models/Sale";
-import { TransactionFormData } from "@/models/Transaction";
+import { Budget, BudgetFormData } from "@/models/Budget";
 import { clearCredentials } from "@/redux/slices";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 import {
   BaseQueryFn,
-  createApi,
   FetchArgs,
-  fetchBaseQuery,
   FetchBaseQueryError,
-} from "@reduxjs/toolkit/query/react";
+} from "@reduxjs/toolkit/query";
 
 const baseQuery: BaseQueryFn<
   string | FetchArgs,
@@ -16,7 +15,7 @@ const baseQuery: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
   const result = await fetchBaseQuery({
-    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/sales`,
+    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/budgets`,
     prepareHeaders: addToken,
   })(args, api, extraOptions);
 
@@ -26,33 +25,23 @@ const baseQuery: BaseQueryFn<
 
   return result;
 };
-
-export const saleApi = createApi({
-  reducerPath: "saleApi",
+export const budgetApi = createApi({
+  reducerPath: "budgetApi",
   baseQuery,
-  tagTypes: ["Sales"],
-
+  tagTypes: ["Budget"],
   endpoints: (builder) => ({
-    getSales: builder.query<Sale[], void>({
+    getBudgets: builder.query<Budget[], void>({
       query: () => "/",
-      providesTags: ["Sales"],
+      providesTags: ["Budget"],
     }),
 
-    getSale: builder.query<Sale, string>({
-      query: (uuid) => `/${uuid}`,
-      providesTags: ["Sales"],
-    }),
-
-    createSale: builder.mutation<Sale, TransactionFormData>({
+    createBudget: builder.mutation<Budget, BudgetFormData>({
       query: (data) => ({
         url: "/",
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["Sales"],
+      invalidatesTags: ["Budget"],
     }),
   }),
 });
-
-export const { useGetSalesQuery, useCreateSaleMutation, useGetSaleQuery } =
-  saleApi;

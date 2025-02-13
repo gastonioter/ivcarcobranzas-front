@@ -13,7 +13,7 @@ import {
   SaleDetailItem,
   SaleDetailsDTO,
   SaleStatus,
-} from "@/models/sale";
+} from "@/models/Sale";
 import { useGetCustomersQuery } from "@/services/customerApi";
 import { useGetProductsQuery } from "@/services/productApi";
 import { useCreateSaleMutation } from "@/services/saleApi";
