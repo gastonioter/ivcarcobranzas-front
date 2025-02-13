@@ -2,28 +2,38 @@ import { dialogCloseSubject$ } from "@/components/CustomDialog";
 import FooterCustomDialog from "@/components/FooterCustomDialog/FooterCustomDialog";
 import { useSnackbar } from "@/context/SnackbarContext";
 import {
+  CloudCustomerType,
   CreateCustomerFormData,
-  CreateCustomerSchema,
+  createCustomerSchema,
   Customer,
-  CustomerType,
+  CustomerModalidad,
+  ModalidadData,
 } from "@/models/customer";
+import { useGetCloudCategoriesQuery } from "@/services/cloudCategoriesApi";
 import {
   useCreateCustomerMutation,
   useEditCustomerMutation,
 } from "@/services/customerApi";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { formattedCurrency } from "@/utilities/formatPrice";
 import {
   Box,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
+  SelectChangeEvent,
   Stack,
   TextField,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { set } from "zod";
 
+interface BaseCustomer {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+}
 function CustomerForm({
   customer,
   setCostumer,
@@ -31,59 +41,112 @@ function CustomerForm({
   customer: Customer | null;
   setCostumer: React.Dispatch<React.SetStateAction<Customer | null>>;
 }) {
+  const { data: cloudCategories, isLoading: loadingCloudCategories } =
+    useGetCloudCategoriesQuery();
+
   const [create, { isLoading }] = useCreateCustomerMutation();
   const [edit, { isLoading: isEditing }] = useEditCustomerMutation();
+  const [baseCustomer, setBaseCustomer] = useState<BaseCustomer>({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+  });
 
-  const [typeSelected, setTypeSelected] = useState<string>("");
+  const [cloudModalidadData, setCloudModalidadData] = useState({
+    cloudCategoryId: "",
+  });
+
+  const [modalidad, setModalidad] = useState<CustomerModalidad>(
+    CustomerModalidad.REGULAR
+  );
+
+  const handleInputChange = (
+    e:
+      | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | SelectChangeEvent<any>
+  ) => {
+    const { name, value } = e.target;
+    console.log(name, value);
+    setBaseCustomer((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+  };
+
+  const handleCloudDataChange = (e: any) => {
+    const { name, value } = e.target;
+    setCloudModalidadData((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+  };
+
   const snackbar = useSnackbar();
+
+  useEffect(() => {
+    console.log(customer)
+    /* Update form inputs based on the modalidad customer  */
+    if (customer) {
+      setBaseCustomer({
+        firstName: customer.firstName,
+        lastName: customer.lastName,
+        email: customer.email,
+        phone: customer.phone,
+      });
+
+      setModalidad(customer.modalidadData.modalidad);
+
+      if (customer.modalidadData.modalidad == CustomerModalidad.CLOUD) {
+        console.log(customer.modalidadData.cloudCategory);
+        setCloudModalidadData({
+          cloudCategoryId: customer.modalidadData.cloudCategory.uuid,
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [customer]);
 
   const editMode = !!customer;
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm<CreateCustomerFormData>({
-    resolver: zodResolver(CreateCustomerSchema),
-  });
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    console.log(cloudModalidadData.cloudCategoryId);
+    const result = createCustomerSchema.safeParse({
+      ...baseCustomer,
+      modalidadData: {
+        modalidad,
+        ...cloudModalidadData,
+        //...regularModalidadData,
+      },
+    });
+    if (result.success) {
+      const { data } = result;
+      try {
+        if (!editMode) {
+          await create(data).unwrap();
+        } else {
+          await edit({ uuid: customer.uuid, ...data }).unwrap();
+        }
 
-  useEffect(() => {
-    if (customer) {
-      setValue("firstName", customer.firstName);
-      setValue("lastName", customer.lastName);
-      setValue("email", customer.email);
-      setValue("phone", customer.phone);
-      setValue("type", customer.type);
-      setTypeSelected(customer.type);
-      if (customer.montoMes) setValue("montoMes", customer.montoMes);
-    }
-  }, [customer, setValue]);
-
-  const onSubmit = async (data: CreateCustomerFormData) => {
-    console.log("submit");
-    try {
-      if (!editMode) {
-        await create(data).unwrap();
-      } else {
-        await edit({ uuid: customer?.uuid, ...data }).unwrap();
+        dialogCloseSubject$.setSubject = false;
+        snackbar.openSnackbar(
+          `Cliente ${editMode ? "editado" : "creado"} con éxito`
+        );
+        setCostumer(null);
+      } catch (e) {
+        console.log(e);
+        snackbar.openSnackbar(`${e.data.error}`, "error");
       }
-
-      dialogCloseSubject$.setSubject = false;
-      snackbar.openSnackbar(
-        `Cliente ${editMode ? "editado" : "creado"} con éxito`
-      );
-    } catch (e) {
-      console.log(e);
-      snackbar.openSnackbar(`${e.data.error}`, "error");
-    } finally {
-      console.log("finally");
+    } else {
+      const errorMessage = result.error.errors[0].message;
+      snackbar.openSnackbar(`${errorMessage}`, "error");
     }
   };
   return (
     <Box
       component="form"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={onSubmit}
       noValidate
       sx={{ display: "flex", flexDirection: "column", gap: 4 }}
     >
@@ -93,60 +156,54 @@ function CustomerForm({
             defaultValue={customer?.firstName}
             id="firstName"
             label="Nombre"
-            {...register("firstName")}
-            error={!!errors.firstName}
-            helperText={errors.firstName?.message}
+            name="firstName"
+            value={baseCustomer?.firstName}
+            onChange={handleInputChange}
           />
         </FormControl>
         <FormControl fullWidth>
           <TextField
             id="lastName"
             defaultValue={customer?.lastName}
+            onChange={handleInputChange}
             label="Apellido"
-            {...register("lastName")}
-            error={!!errors.lastName}
-            helperText={errors.lastName?.message}
+            name="lastName"
+            value={baseCustomer?.lastName}
           ></TextField>
         </FormControl>
       </Stack>
-
       <FormControl>
         <TextField
           id="email"
           label="Correo electrónico"
-          {...register("email")}
-          defaultValue={customer?.email}
           type="email"
-          error={!!errors.email}
-          helperText={errors.email?.message}
+          name="email"
+          value={baseCustomer?.email}
+          onChange={handleInputChange}
         ></TextField>
       </FormControl>
-
       <Stack direction="row" spacing={2} justifyContent="space-between">
         <FormControl fullWidth>
           <TextField
             id="phone"
-            label="Teléfono"
-            defaultValue={customer?.phone}
-            {...register("phone")}
-            error={!!errors.phone}
-            helperText={errors.phone?.message}
+            name="phone"
+            placeholder="Caracteristica + Número"
+            label="Celular"
+            value={baseCustomer?.phone}
+            onChange={handleInputChange}
           ></TextField>
         </FormControl>
 
         <FormControl fullWidth>
           <InputLabel>Tipo de Cliente</InputLabel>
           <Select
-            value={typeSelected}
             label="Tipo de Cliente"
-            {...register("type")}
+            value={modalidad}
             onChange={(e) => {
-              const value = e.target.value as CustomerType;
-              setTypeSelected(value);
-              setValue("type", value);
+              setModalidad(e.target.value as CustomerModalidad);
             }}
           >
-            {Object.values(CustomerType).map((type) => {
+            {Object.values(CustomerModalidad).map((type) => {
               return (
                 <MenuItem key={type} value={type}>
                   {type.toUpperCase()}
@@ -156,18 +213,27 @@ function CustomerForm({
           </Select>
         </FormControl>
       </Stack>
-      {typeSelected === CustomerType.CLOUD && (
-        <FormControl>
-          <TextField
-            id="montoMes"
-            defaultValue={customer?.montoMes}
-            label="Monto mensual"
-            {...register("montoMes")}
-            type="number"
-            error={!!errors.montoMes}
-            helperText={errors.montoMes?.message}
-            required
-          ></TextField>
+      {/* CONDITIONAL FORM BASED ON CUSTOMER MODALIAD */}
+      {modalidad === CustomerModalidad.CLOUD && (
+        <FormControl fullWidth>
+          <InputLabel>Categoria de Pago</InputLabel>
+          <Select
+            disabled={loadingCloudCategories}
+            value={cloudModalidadData.cloudCategoryId}
+            label="Categoria de Pago"
+            onChange={handleCloudDataChange}
+            name="cloudCategoryId"
+          >
+            {cloudCategories?.map((category) => {
+              return (
+                <MenuItem key={category.uuid} value={category.uuid}>
+                  {`${category.name.toUpperCase()} - ${formattedCurrency(
+                    category.price
+                  )}`}
+                </MenuItem>
+              );
+            })}
+          </Select>
         </FormControl>
       )}
       <FooterCustomDialog

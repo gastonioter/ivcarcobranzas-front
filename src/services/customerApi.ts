@@ -1,6 +1,5 @@
 import { addToken } from "@/interceptors";
 import {
-  BajaCustomerFormData,
   CreateCustomerFormData,
   Customer,
   EditCustomerFormData,
@@ -10,7 +9,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const baseQuery = async (args: any, api: any, extraOptions: any) => {
   const result = await fetchBaseQuery({
-    baseUrl: "http://localhost:3001/api/customers",
+    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/customers`,
     prepareHeaders: addToken,
   })(args, api, extraOptions);
 
@@ -49,7 +48,7 @@ export const customerApi = createApi({
       invalidatesTags: ["Customers"],
     }),
 
-    updateStatus: builder.mutation<Customer, BajaCustomerFormData>({
+    updateStatus: builder.mutation<Customer, ChangeStatusFormData>({
       query: (body) => ({
         url: `/status`,
         method: "POST",

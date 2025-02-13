@@ -12,7 +12,9 @@ interface LoginResponse {
 
 export const authApi = createApi({
   reducerPath: "authApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3001/api/auth" }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/auth`,
+  }),
 
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, LoginCredentials>({
@@ -21,14 +23,6 @@ export const authApi = createApi({
         method: "POST",
         body: credentials,
       }),
-      // async onQueryStarted(_, { dispatch, queryFulfilled }) {
-      //   try {
-      //     const { data } = await queryFulfilled;
-      //     dispatch(setCredentials({ token: data.token }));
-      //   } catch (err) {
-      //     console.error("Error en login:", err);
-      //   }
-      // },
     }),
   }),
 });

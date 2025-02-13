@@ -1,55 +1,83 @@
 import { z } from "zod";
 
+export type ModalidadData =
+  | {
+      modalidad: CustomerModalidad.CLOUD;
+      cloudCategory: {
+        name: string;
+        price: number;
+        uuid: string;
+      };
+    }
+  | {
+      modalidad: CustomerModalidad.REGULAR;
+    };
+
 export interface Customer {
   uuid: string;
   firstName: string;
   lastName: string;
   email: string;
-  type: CustomerType;
   phone: string;
-  status: string;
-  montoMes?: number;
+  status: CustomerStatus;
   createdAt: Date;
-  updatedAt: Date;
+  modalidadData: ModalidadData;
 }
 
-export enum CustomerType {
-  REGULAR = "regular",
-  CLOUD = "cloud",
+export enum CustomerModalidad {
+  REGULAR = "Regular",
+  CLOUD = "Cloud",
 }
+
 export enum CustomerStatus {
   ACTIVE = "active",
   INACTIVE = "inactive",
 }
+export enum CloudCustomerType {
+  ALTA = "alta",
+  MEDIA = "media",
+  BAJA = "baja",
+}
+
+/* Schemas for Inputs */
 
 const phoneSchema = z.string().regex(/^\+?\d{10,15}$/, {
   message: "Número de teléfono inválido. Debe contener entre 10 y 15 dígitos.",
 });
 
-export const CreateCustomerSchema = z.object({
-  firstName: z.string().max(255).nonempty("El nombre es obligatorio"),
-  lastName: z.string().max(255).nonempty("El apellido es obligatorio"),
-  email: z
+const LocalCustomerSchema = z.object({
+  modalidad: z.literal(CustomerModalidad.REGULAR),
+});
+
+const CloudCustomerSchema = z.object({
+  modalidad: z.literal(CustomerModalidad.CLOUD),
+  cloudCategoryId: z
     .string()
-    .email("El email no es valido")
-    .nonempty("El email es obligatorio"),
-  type: z.nativeEnum(CustomerType),
-  phone: phoneSchema.nonempty(),
-  montoMes: z
-    .string()
-    .optional()
-    .transform((val) => parseInt(val ?? "0", 10)),
+    .uuid("Los clientes con modulo deben tener una categoria de pago")
+    .nonempty("La categoria de pago es requerida"),
 });
 
-export const EditCustumerSchema = CreateCustomerSchema.extend({
-  uuid: z.string(),
+export const createCustomerSchema = z.object({
+  firstName: z.string().nonempty("El nombre es requerido"),
+  lastName: z.string().nonempty("El apellido es requerido"),
+  email: z.string().email({
+    message: "Ingresa un correo electronico valido ",
+  }),
+  phone: phoneSchema,
+  modalidadData: z.discriminatedUnion("modalidad", [
+    LocalCustomerSchema,
+    CloudCustomerSchema,
+  ]),
 });
 
-export const BajaCustumerSchema = z.object({
-  uuid: z.string(),
-  status: z.nativeEnum(CustomerStatus),
+export const editCustomerSchema = createCustomerSchema.extend({
+  uuid: z.string().uuid(),
 });
 
-export type CreateCustomerFormData = z.infer<typeof CreateCustomerSchema>;
-export type EditCustomerFormData = z.infer<typeof EditCustumerSchema>;
-export type BajaCustomerFormData = z.infer<typeof BajaCustumerSchema>;
+// CREATE
+export type CreateCustomerFormData = z.infer<typeof createCustomerSchema>;
+
+// EDIT
+export type EditCustomerFormData = z.infer<typeof editCustomerSchema>;
+
+// UPDATE STATUS

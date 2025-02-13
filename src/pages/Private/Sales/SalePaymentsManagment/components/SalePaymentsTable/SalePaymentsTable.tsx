@@ -21,17 +21,16 @@ export default function SalePaymentsTable() {
   function updateStatus(status: SalePaymentStatuses) {
     return async function (paymentID: string) {
       try {
-        const res = await triggerChangeStatus({
+        await triggerChangeStatus({
           paymentID,
           saleID: saleID as string,
           status,
         }).unwrap();
 
-        console.log(res);
-        //snackbar.openSnackbar("Pago actualizado correctamente");
+        snackbar.openSnackbar("Pago actualizado!", "info");
       } catch (e) {
         console.log(e);
-        snackbar.openSnackbar("Ocurrio un error al actualizar el pago");
+        snackbar.openSnackbar("Ocurrio un error al actualizar el pago", "error");
       }
     };
   }

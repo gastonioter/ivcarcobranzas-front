@@ -5,7 +5,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const baseQuery = async (args: any, api: any, extraOptions: any) => {
   const result = await fetchBaseQuery({
-    baseUrl: "http://localhost:3001/api/categories",
+    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/categories`,
     prepareHeaders: addToken,
   })(args, api, extraOptions);
 

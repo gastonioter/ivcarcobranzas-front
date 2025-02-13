@@ -1,17 +1,32 @@
 import { dialogOpenSubject$ } from "@/components/CustomDialog";
-import { CustomGridToolbar } from "@/components/CustomGridToolbar";
 import TableMenuActions from "@/components/TableMenuActions/TableMenuActions";
 import { useSnackbar } from "@/context/SnackbarContext";
-import { Customer, CustomerStatus } from "@/models/customer";
+import {
+  Customer,
+  CustomerModalidad,
+  CustomerStatus,
+  ModalidadData,
+} from "@/models/customer";
 import {
   useGetCustomersQuery,
   useUpdateStatusMutation,
 } from "@/services/customerApi";
 import { formattedDate } from "@/utilities";
-import { Alert } from "@mui/material";
-import { DataGrid, GridColDef, GridRowsProp, GridToolbar } from "@mui/x-data-grid";
-import CustomerStatusIndicator from "../CustomerStatusIndicator/CustomerStatusIndicator";
 import { formatFullName } from "@/utilities/formatFullName";
+import { Alert } from "@mui/material";
+import {
+  DataGrid,
+  GridColDef,
+  GridRowsProp,
+  GridToolbar,
+} from "@mui/x-data-grid";
+import CustomerStatusIndicator from "../CustomerStatusIndicator/CustomerStatusIndicator";
+
+function formatCustomerModalidad(data: ModalidadData) {
+  return data.modalidad == CustomerModalidad.CLOUD
+    ? `CLOUD - ${data.cloudCategory.name.toUpperCase()}`
+    : data.modalidad;
+}
 
 interface CustomerTableProps {
   setCustomer: (customer: Customer | null) => void;
@@ -26,6 +41,8 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
       <Alert severity="error">Ocurrió un error al cargar los clientes</Alert>
     );
   }
+
+  console.log(data);
 
   const actions = (params) => (
     <TableMenuActions
@@ -75,7 +92,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
 
   const rows: GridRowsProp = data || [];
 
-  const columns: GridColDef[] = [
+  const columns: GridColDef<Customer>[] = [
     {
       field: "fullName",
       headerName: "Nombre Completo",
@@ -94,10 +111,13 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
       sortable: false,
     },
     {
-      field: "type",
+      field: "modalidadData",
       headerName: "Tipo",
-      flex: 0.5,
-      valueFormatter: (value) => (value as string).toUpperCase(),
+      flex: 1,
+      valueFormatter: (value) => {
+        const modalidadData = value as unknown as ModalidadData;
+        return formatCustomerModalidad(modalidadData);
+      },
       editable: false,
       sortable: false,
       filterable: false,
@@ -156,9 +176,8 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
       getRowId={(row) => row.uuid}
       rows={rows}
       disableRowSelectionOnClick
-
       // onRowClick={(row) => console.log(row)}
-      columns={columns}
+      columns={columns as GridColDef[]}
       // processRowUpdate={() => {}} // TODO: Implementar
       loading={isLoading}
       // sx={{

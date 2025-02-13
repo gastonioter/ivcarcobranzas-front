@@ -1,4 +1,3 @@
-// features/auth/authSlice.ts
 import { User } from "@/models";
 import { authApi } from "@/services";
 import { decodeToken } from "@/utilities/decodeToken";

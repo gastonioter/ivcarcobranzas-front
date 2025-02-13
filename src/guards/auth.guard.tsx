@@ -5,7 +5,6 @@ import { Navigate, Outlet } from "react-router";
 
 export default function AuthGuard() {
   const isAuth = useAuthToken();
-  //const isTokenExpiredValue = isTokenExpired(isAuth);
 
   return isAuth && !isTokenExpired(isAuth) ? (
     <Outlet />

@@ -24,7 +24,7 @@ interface CreatePaymentArgs {
 
 const baseQuery = async (args: any, api: any, extraOptions: any) => {
   const result = await fetchBaseQuery({
-    baseUrl: "http://localhost:3001/api/sales",
+    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/sales`,
     prepareHeaders: addToken,
   })(args, api, extraOptions);
 

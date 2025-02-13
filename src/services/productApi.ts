@@ -9,7 +9,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const baseQuery = async (args: any, api: any, extraOptions: any) => {
   const result = await fetchBaseQuery({
-    baseUrl: "http://localhost:3001/api/products",
+    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/products`,
     prepareHeaders: addToken,
   })(args, api, extraOptions);
 
@@ -26,12 +26,12 @@ export const productApi = createApi({
   tagTypes: ["Product"],
   endpoints: (builder) => ({
     getProducts: builder.query<Product[], void>({
-      query: () => "/products",
+      query: () => "/",
       providesTags: ["Product"],
     }),
     createProduct: builder.mutation<Product, CreateProductFormValues>({
       query: (newProduct) => ({
-        url: `/products`,
+        url: `/`,
         method: "POST",
         body: newProduct,
       }),
@@ -40,7 +40,7 @@ export const productApi = createApi({
 
     editProduct: builder.mutation<Product, EditProductFormValues>({
       query: ({ uuid, ...updatedProductData }) => ({
-        url: `/products/${uuid}`,
+        url: `/${uuid}`,
         method: "PATCH",
         body: updatedProductData,
       }),
