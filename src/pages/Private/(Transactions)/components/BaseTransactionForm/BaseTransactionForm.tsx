@@ -2,15 +2,16 @@ import {
   CustomDialog,
   dialogCloseSubject$,
   dialogOpenSubject$,
-} from "@/components/CustomDialog";
+} from "@/components";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { useUserData } from "@/hooks/useUserData";
-import { Customer } from "@/models/customer";
-import { Product } from "@/models/product";
-import { Sale, SaleStatus } from "@/models/Sale";
+import { Customer, Product, Sale, SaleStatus } from "@/models";
+import { Detail } from "@/models/Transaction";
+import DetailsTable from "@/pages/Private/Sales/components/SaleForm/components/DetailsTable/DetailsTable";
+import ProductsForSaleTable from "@/pages/Private/Sales/components/SaleForm/components/ProductsForSaleTable.tsx/ProductsForSaleTable";
+import SaleSummary from "@/pages/Private/Sales/components/SaleForm/components/SaleSummary/SaleSummary";
 import { useGetCustomersQuery } from "@/services/customerApi";
 import { useGetProductsQuery } from "@/services/productApi";
-import { useCreateSaleMutation } from "@/services/saleApi";
 import { AddCircleRounded } from "@mui/icons-material";
 import {
   Alert,
@@ -23,25 +24,33 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
-import DetailsTable from "./components/DetailsTable/DetailsTable";
-import ProductsForSaleTable from "./components/ProductsForSaleTable.tsx/ProductsForSaleTable";
-import SaleSummary from "./components/SaleSummary/SaleSummary";
-import {
-  CreateTransactionSchema,
-  Detail,
-  TransactionFormData,
-} from "@/models/Transaction";
 
-export default function SaleForm({ sale }: { sale?: Sale }) {
-  const [details, setDetails] = useState<Detail[]>([]);
-  const snackbar = useSnackbar();
+export interface IBaseTransactionFormProps {
+  sale?: Sale;
+}
+
+export default function BaseTransactionForm({
+  sale,
+}: IBaseTransactionFormProps) {
   const [tax, setTax] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
   const [customer, setCustomer] = useState("");
-  const [create, { isLoading }] = useCreateSaleMutation();
+  const [details, setDetails] = useState<Detail[]>([]);
+
   const { userId } = useUserData();
-  const navigate = useNavigate();
+  const snackbar = useSnackbar();
+
+  const {
+    data: products,
+    isLoading: isLoadingProducts,
+    error: errorProducts,
+  } = useGetProductsQuery();
+
+  const {
+    data: customers,
+    isLoading: isLoadingCostumers,
+    error: errorCostumers,
+  } = useGetCustomersQuery();
 
   useEffect(() => {
     const newSubtotal = (details || []).reduce(
@@ -52,43 +61,64 @@ export default function SaleForm({ sale }: { sale?: Sale }) {
     setSubtotal(newSubtotal);
   }, [details]);
 
-  useEffect(() => {
-    if (sale) {
-      setDetails(sale.details || []);
-      setTax(Number(sale.iva));
-    }
-  }, [sale]);
+  const isDuplicatedProduct = (uuid: string) => {
+    return details.some((item) => item.uuid === uuid);
+  };
 
-
-
- 
-  
-
-  const onSubmit = async (e) => {
-    e.preventDefault();
-
-    const data: TransactionFormData = {
-      sellerId: userId,
-      iva: tax,
-      customerId: customer,
-      details,
+  const addDetailItem = ({ row }: { row: Product }) => {
+    const detail: Detail = {
+      unitPrice: row.price,
+      product: row.name,
+      uuid: row.uuid,
+      quantity: 1,
+      total: row.price,
     };
+    if (!isDuplicatedProduct(row.uuid)) {
+      setDetails((prev) => [...prev, detail]);
 
-    const result = CreateTransactionSchema.safeParse(data);
-
-    if (result.success) {
-      try {
-        await create(result.data).unwrap();
-      } catch (e) {
-        console.error(e);
-        snackbar.openSnackbar("Ups, algo salio mal...", "error");
-      }
-      snackbar.openSnackbar(`Venta creada con exito!`);
-      navigate(-1);
+      snackbar.openSnackbar(`${row.name} agregado a al detalle!`);
     } else {
-      snackbar.openSnackbar(result.error.issues[0].message, "error");
+      snackbar.openSnackbar(
+        `El producto ya se encuentra en el detalle!`,
+        "info"
+      );
     }
   };
+
+  const onDeleteItem = (id: string) => {
+    setDetails((prev) => prev.filter((item) => item.uuid !== id));
+    snackbar.openSnackbar(`Producto eliminado del detalle!`);
+  };
+
+  const handleUpdateDetail = (
+    uuid: string,
+    price: number,
+    quantity: number
+  ) => {
+    const updatedDetails = details.map((item) => {
+      if (item.uuid === uuid) {
+        const updatedTotal = +price * +quantity;
+        const updatedItem = {
+          ...item,
+          price: +price,
+          quantity: +quantity,
+          total: updatedTotal,
+        };
+        return updatedItem;
+      }
+      return item;
+    });
+    setDetails(updatedDetails);
+    snackbar.openSnackbar(`Detalle actualizado!`);
+  };
+
+  if (errorProducts || errorCostumers) {
+    return (
+      <Alert severity="error">
+        Ocurrió un error al cargar productos o clientes
+      </Alert>
+    );
+  }
   return (
     <Box
       component={"form"}
@@ -149,14 +179,14 @@ export default function SaleForm({ sale }: { sale?: Sale }) {
         Agregar Productos
       </Button>
 
-      <DetailsTable
-        readOnly={!!sale}
-        details={details}
-        onDeleteItem={onDeleteItem}
-        handleUpdateDetail={handleUpdateDetail}
-      />
-
       <Stack spacing={2} direction={"row"} alignItems={"flex-end"}>
+        <DetailsTable
+          readOnly={!!sale}
+          details={details}
+          onDeleteItem={onDeleteItem}
+          handleUpdateDetail={handleUpdateDetail}
+        />
+
         <SaleSummary
           forBudget={false}
           subtotal={subtotal}
@@ -164,18 +194,8 @@ export default function SaleForm({ sale }: { sale?: Sale }) {
           sx={{ width: 400, maxWidth: "100%" }}
           isCancelled={sale?.status === SaleStatus.CANCELLED}
         />
-        {!sale && (
-          <Button
-            sx={{ mr: "auto" }}
-            loading={isLoading}
-            variant="contained"
-            color="success"
-            onClick={onSubmit}
-          >
-            Crear Venta
-          </Button>
-        )}
       </Stack>
+
       <CustomDialog>
         <Box
           sx={{

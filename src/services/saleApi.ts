@@ -1,5 +1,6 @@
 import { addToken } from "@/interceptors";
-import { Sale } from "@/models/Sale";
+import { Sale, UpdateSaleFormData } from "@/models/Sale";
+import { SalePayment } from "@/models/SalePayment";
 import { TransactionFormData } from "@/models/Transaction";
 import { clearCredentials } from "@/redux/slices";
 import {
@@ -51,8 +52,29 @@ export const saleApi = createApi({
       }),
       invalidatesTags: ["Sales"],
     }),
+
+    updateSale: builder.mutation<Sale, UpdateSaleFormData>({
+      query: ({ uuid, ...body }) => ({
+        url: `/${uuid}`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: ["Sales"],
+    }),
+
+    /* SALE PAYMENTS APIs */
+
+    getSalePayments: builder.query<SalePayment[], string>({
+      query: (saleID) => `/${saleID}/payments`,
+      providesTags: ["Sales"],
+    }),
   }),
 });
 
-export const { useGetSalesQuery, useCreateSaleMutation, useGetSaleQuery } =
-  saleApi;
+export const {
+  useGetSalesQuery,
+  useCreateSaleMutation,
+  useGetSaleQuery,
+  useGetSalePaymentsQuery,
+  useUpdateSaleMutation,
+} = saleApi;

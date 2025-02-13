@@ -1,50 +1,44 @@
-import { dialogOpenSubject$ } from "@/components";
-import ConfirmationDialog, {
-  IConfirmationDialogProps,
-} from "@/components/ConfirmationDialog/ConfirmationDialog";
+import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog";
 import TableMenuActions from "@/components/TableMenuActions/TableMenuActions";
 import { useSnackbar } from "@/context/SnackbarContext";
+import { Customer, PrivateRoutes } from "@/models";
+import { Budget, BudgetStatus } from "@/models/Budget";
 import {
-  BudgetStatus,
-  Customer,
-  PrivateRoutes,
-  SaleDTO,
-  Transaction,
-  TransactionType,
-} from "@/models";
-import {
-  useGetSalesQuery,
-  useUpdateSaleStatusMutation,
-} from "@/services/saleApi";
+  useGetBudgetsQuery,
+  useUpdateBudgetStatusMutation,
+} from "@/services/budgetApi";
 import { formattedDate } from "@/utilities";
 import { formatFullName } from "@/utilities/formatFullName";
 import { formattedCurrency } from "@/utilities/formatPrice";
 import { Chip } from "@mui/material";
-import {
-  DataGrid,
-  GridColDef,
-  GridRowsProp,
-  GridToolbar,
-} from "@mui/x-data-grid";
-import { useState } from "react";
+import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
 import { useNavigate } from "react-router";
 
 export default function BudgetsTable() {
-  const { data, isLoading } = useGetSalesQuery();
-  const [toggleStatus] = useUpdateSaleStatusMutation();
+  const { data, isLoading } = useGetBudgetsQuery();
+  const [updateStatus] = useUpdateBudgetStatusMutation();
+  //const [toggleStatus] = useUpdateSaleStatusMutation();
   const snackbar = useSnackbar();
   const navigate = useNavigate();
-  const [confirmatoinState, setConfirmatoinState] =
-    useState<IConfirmationDialogProps>({
-      message: <></>,
-      onConfirm: () => {},
-    });
+  // const [confirmatoinState, setConfirmatoinState] =
+  //   useState<IConfirmationDialogProps>({
+  //     message: <></>,
+  //     onConfirm: () => {},
+  //   });
 
-  const rows: GridRowsProp = (data || []).filter(
-    (transaction) => transaction.status.type === TransactionType.BUDGET
-  );
+  const changeStatusCreator =
+    (status: BudgetStatus) => async (uuid: string) => {
+      try {
+        await updateStatus({ uuid, status }).unwrap();
+      } catch (e) {
+        snackbar.openSnackbar(e.data.error, "error");
+        console.log(e);
+      }
+    };
 
-  const actions = ({ row: budget }: { row: Transaction }) => (
+  const rows = data || [];
+
+  const actions = ({ row: budget }: { row: Budget }) => (
     <TableMenuActions
       actions={[
         {
@@ -54,74 +48,75 @@ export default function BudgetsTable() {
               `/${PrivateRoutes.PRIVATE}/${PrivateRoutes.SALES}/${budget.uuid}`
             );
           },
-          isDisabled: budget.status.status === BudgetStatus.REJECTED,
         },
         {
           name: `Aprobar`,
           onClick() {
-            setConfirmatoinState({
-              message: (
-                <div>
-                  Al aprobar este presupuesto pasara automaticamente al listado
-                  de ventas con estado <strong>"PENDIENTE DE PAGO"</strong>,
-                  ¿Deseas continuar?
-                </div>
-              ),
-              onConfirm: async () => {
-                try {
-                  await toggleStatus({
-                    uuid: budget.uuid,
-                    status: BudgetStatus.APPROVED,
-                  }).unwrap();
-                } catch (e) {
-                  snackbar.openSnackbar(e.data.error, "error");
-                  console.log(e);
-                }
-              },
-            });
+            // setConfirmatoinState({
+            //   message: (
+            //     <div>
+            //       Al aprobar este presupuesto pasara automaticamente al listado
+            //       de ventas con estado <strong>"PENDIENTE DE PAGO"</strong>,
+            //       ¿Deseas continuar?
+            //     </div>
+            //   ),
+            //   onConfirm: async () => {
+            //     try {
+            //       await toggleStatus({
+            //         uuid: budget.uuid,
+            //         status: BudgetStatus.APPROVED,
+            //       }).unwrap();
+            //     } catch (e) {
+            //       snackbar.openSnackbar(e.data.error, "error");
+            //       console.log(e);
+            //     }
+            //   },
+            // });
+            //dialogOpenSubject$.setSubject = true;
 
-            dialogOpenSubject$.setSubject = true;
+            changeStatusCreator(BudgetStatus.APPROVED)(budget.uuid);
           },
-          isDisabled: budget.status.status === BudgetStatus.REJECTED,
+          //isDisabled: budget.status === BudgetStatus.REJECTED,
         },
         {
           name: `Rechazar`,
           onClick() {
-            setConfirmatoinState({
-              isDanger: true,
-              message: (
-                <div>
-                  Estas a punto de rechazar un presupuesto lo cual es una
-                  operacion <strong>IRREVERSIBLE</strong>, ¿Estas seguro de
-                  continuar?
-                </div>
-              ),
-              onConfirm: async () => {
-                try {
-                  await toggleStatus({
-                    uuid: budget.uuid,
-                    status: BudgetStatus.REJECTED,
-                  }).unwrap();
-                } catch (e) {
-                  snackbar.openSnackbar(e.data.error, "error");
-                  console.log(e);
-                }
-              },
-            });
+            // setConfirmatoinState({
+            //   isDanger: true,
+            //   message: (
+            //     <div>
+            //       Estas a punto de rechazar un presupuesto lo cual es una
+            //       operacion <strong>IRREVERSIBLE</strong>, ¿Estas seguro de
+            //       continuar?
+            //     </div>
+            //   ),
+            //   onConfirm: async () => {
+            //     try {
+            //       await toggleStatus({
+            //         uuid: budget.uuid,
+            //         status: BudgetStatus.REJECTED,
+            //       }).unwrap();
+            //     } catch (e) {
+            //       snackbar.openSnackbar(e.data.error, "error");
+            //       console.log(e);
+            //     }
+            //   },
+            // });
+            //dialogOpenSubject$.setSubject = true;
 
-            dialogOpenSubject$.setSubject = true;
+            changeStatusCreator(BudgetStatus.REJECTED)(budget.uuid);
           },
-          isDisabled: budget.status.status === BudgetStatus.REJECTED,
+          //isDisabled: budget.status === BudgetStatus.REJECTED,
         },
         {
           name: "Imprimir",
           onClick: () => {},
-          isDisabled: budget.status.status === BudgetStatus.REJECTED,
+          //isDisabled: budget.status === BudgetStatus.REJECTED,
         },
       ]}
     />
   );
-  const columns: GridColDef[] = [
+  const columns: GridColDef<Budget>[] = [
     { field: "serie", headerName: "Serie", flex: 1 },
     {
       field: "createdAt",
@@ -155,17 +150,17 @@ export default function BudgetsTable() {
       field: "status",
       headerName: "Estado",
       flex: 1,
-      renderCell: ({ row }: { row: SaleDTO }) => (
+      renderCell: ({ row }: { row: Budget }) => (
         <Chip
           color={
-            row.status.status === BudgetStatus.PENDING_APPROVAL
+            row.status === BudgetStatus.PENDING
               ? "info"
-              : row.status.status === BudgetStatus.REJECTED
+              : row.status === BudgetStatus.REJECTED
               ? "error"
               : "success"
           }
           sx={{ textTransform: "capitalize" }}
-          label={row.status.status}
+          label={row.status}
           size="small"
         />
       ),
@@ -204,7 +199,7 @@ export default function BudgetsTable() {
         disableColumnMenu
       />
 
-      <ConfirmationDialog {...confirmatoinState} />
+      {/* <ConfirmationDialog {...confirmatoinState} /> */}
     </>
   );
 }

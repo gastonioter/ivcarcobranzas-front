@@ -1,4 +1,5 @@
-import { SalePayment } from "./SalePayment";
+import { z } from "zod";
+import { PaymentSchema, SalePayment } from "./SalePayment";
 import { Transaction } from "./Transaction";
 
 export interface Sale extends Transaction {
@@ -17,6 +18,14 @@ interface SaleSummary {
   debe: number;
   haber: number;
 }
+
+export const EditSaleSchema = z.object({
+  uuid: z.string().uuid(),
+  status: z.enum(["ACTIVATE", "DEACTIVATE"]).optional(),
+  payment: PaymentSchema.optional(),
+});
+
+export type UpdateSaleFormData = z.infer<typeof EditSaleSchema>;
 
 // import { z } from "zod";
 

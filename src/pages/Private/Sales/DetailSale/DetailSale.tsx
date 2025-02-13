@@ -1,11 +1,10 @@
+import SectionHeader from "@/components/SectionHeader/SectionHeader";
+import SectionTitle from "@/components/SectionTitle/SectionTitle";
 import { useGetSaleQuery } from "@/services/saleApi";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Alert, Paper } from "@mui/material";
 import { useNavigate, useParams } from "react-router";
 import SaleForm from "../components/SaleForm/SaleForm";
-import SectionHeader from "@/components/SectionHeader/SectionHeader";
-import SectionTitle from "@/components/SectionTitle/SectionTitle";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { TransactionType } from "@/models";
 
 export default function DetailSale() {
   //const snackbar = useSnackbar();
@@ -18,6 +17,7 @@ export default function DetailSale() {
     error: errorSale,
   } = useGetSaleQuery(uuid ?? "");
 
+  console.log(sale);
   if (errorSale) {
     return <Alert severity="error">Ocurrió un error al cargar la venta</Alert>;
   }
@@ -39,11 +39,7 @@ export default function DetailSale() {
           navigate(-1);
         }}
       >
-        <SectionTitle>
-          Detalle de{" "}
-          {sale?.status.type == TransactionType.SALE ? "Venta" : "Presupuesto"}{" "}
-          Nro: {sale?.serie}
-        </SectionTitle>
+        <SectionTitle>Detalle de Venta Nro: {sale?.serie}</SectionTitle>
       </SectionHeader>
 
       <Paper sx={{ p: 2, height: "100%" }}>

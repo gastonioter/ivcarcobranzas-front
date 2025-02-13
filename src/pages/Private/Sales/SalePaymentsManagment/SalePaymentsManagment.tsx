@@ -1,7 +1,6 @@
 import { CustomDialog, dialogOpenSubject$ } from "@/components";
 import SectionHeader from "@/components/SectionHeader/SectionHeader";
 import SectionTitle from "@/components/SectionTitle/SectionTitle";
-import { SaleDetailsDTO, SalePaymentStatuses } from "@/models";
 import { useGetSaleQuery } from "@/services/saleApi";
 import { formatFullName } from "@/utilities/formatFullName";
 import { AddCircleRounded } from "@mui/icons-material";
@@ -12,51 +11,18 @@ import {
   Button,
   CircularProgress,
   Stack,
-  Typography
+  Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import SalePaymentForm from "./components/SalePaymentForm/SalePaymentForm";
 import SalePaymentsTable from "./components/SalePaymentsTable/SalePaymentsTable";
 import SalePaymentSummary from "./components/SalePaymentSummary/SalePaymentSummary";
-export interface ISaleSummary {
-  debe: number;
-  haber: number;
-  saldo: number;
-}
 
 export default function SalePaymentsManagment() {
   const navigate = useNavigate();
   const { uuid } = useParams();
 
   const { data: sale, isLoading } = useGetSaleQuery(uuid as string);
-
-  const [saleSummary, setSaleSummary] = useState<ISaleSummary>({
-    debe: 0,
-    haber: 0,
-    saldo: 0,
-  });
-
-  const isPaid = saleSummary.saldo <= 0;
-
-  const computeSaleSummary = (sale: SaleDetailsDTO) => {
-    const debe = sale.totalAmount;
-
-    const haber = sale.payments.reduce(
-      (acc, payment) =>
-        payment.status == SalePaymentStatuses.ACTIVE
-          ? acc + payment.amount
-          : acc,
-      0
-    );
-    setSaleSummary({ debe, haber, saldo: debe - haber });
-  };
-
-  useEffect(() => {
-    if (sale) {
-      computeSaleSummary(sale);
-    }
-  }, [sale]);
 
   const back = () => {
     navigate(-1);
@@ -99,7 +65,7 @@ export default function SalePaymentsManagment() {
           onClick={() => {
             dialogOpenSubject$.setSubject = true;
           }}
-          disabled={isPaid} // si esta pagando no se puede agregar pagos
+          disabled={false} // si esta pagando no se puede agregar pagos
         >
           Crear Nuevo Pago
         </Button>
@@ -118,7 +84,7 @@ export default function SalePaymentsManagment() {
         sx={{ height: "100%" }}
       >
         <SalePaymentsTable />
-        <SalePaymentSummary {...saleSummary} />
+        <SalePaymentSummary {...sale.summary} />
       </Stack>
 
       <CustomDialog>

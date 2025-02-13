@@ -1,13 +1,14 @@
-import { Card, CardContent, Divider, Tooltip, Typography } from "@mui/material";
-import * as React from "react";
-import { ISaleSummary } from "../../SalePaymentsManagment";
 import { Circle } from "@mui/icons-material";
+import { Card, CardContent, Divider, Tooltip, Typography } from "@mui/material";
 
 export default function SalePaymentSummary({
   debe,
   haber,
-  saldo,
-}: ISaleSummary) {
+}: {
+  debe: number;
+  haber: number;
+}) {
+  const saldo = debe - haber;
   const isPaid = saldo <= 0;
 
   return (

@@ -23,7 +23,8 @@ export default function NewSale() {
       </SectionHeader>
 
       <Paper sx={{ p: 2, height: "100%" }}>
-        <SaleForm forBudget={true} />
+        {/* <SaleForm forBudget={true} /> */}
+        
       </Paper>
     </>
   );

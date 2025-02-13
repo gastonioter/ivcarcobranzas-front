@@ -2,6 +2,7 @@
 import authReducer from "@/redux/slices/auth";
 
 import { authApi } from "@/services";
+import { budgetApi } from "@/services/budgetApi";
 import { categoriesApi } from "@/services/categoriesApi";
 import { cloudCategoryApi } from "@/services/cloudCategoriesApi";
 import { customerApi } from "@/services/customerApi";
@@ -19,6 +20,7 @@ export const store = configureStore({
     [customerApi.reducerPath]: customerApi.reducer,
     [saleApi.reducerPath]: saleApi.reducer,
     [cloudCategoryApi.reducerPath]: cloudCategoryApi.reducer,
+    [budgetApi.reducerPath]: budgetApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -27,6 +29,7 @@ export const store = configureStore({
       productApi.middleware,
       customerApi.middleware,
       saleApi.middleware,
+      budgetApi.middleware,
       cloudCategoryApi.middleware
     ),
 });

@@ -1,59 +1,31 @@
 import TableMenuActions from "@/components/TableMenuActions/TableMenuActions";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { Customer } from "@/models/customer";
-import {
-  BudgetStatus,
-  SaleDTO,
-  SalePaymentStatuses,
-  SaleStatus,
-  TransactionType,
-} from "@/models/Sale";
-import {
-  useGetSalesQuery,
-  useUpdateSaleStatusMutation,
-} from "@/services/saleApi";
+import { Sale, SaleStatus } from "@/models/Sale";
+import { useGetSalesQuery, useUpdateSaleMutation } from "@/services/saleApi";
 import { formattedDate } from "@/utilities";
 import { formatFullName } from "@/utilities/formatFullName";
 import { formattedCurrency } from "@/utilities/formatPrice";
 import { Chip } from "@mui/material";
-import {
-  DataGrid,
-  GridColDef,
-  GridRowsProp,
-  GridToolbar,
-} from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
 import { useNavigate } from "react-router";
 
 export default function SalesTable() {
   const { data, isLoading } = useGetSalesQuery();
-  const [updatSaleStatus] = useUpdateSaleStatusMutation();
   const snackbar = useSnackbar();
   const navigate = useNavigate();
 
-  const isSalePaid = (sale: SaleDTO) => {
-    return sale.payments.reduce(
-      (acc, payment) =>
-        payment.status == SalePaymentStatuses.ACTIVE
-          ? payment.amount + acc
-          : acc,
-      0
-    );
-  };
+  const [updateSalePayment] = useUpdateSaleMutation();
+  const rows = data || [];
 
-  const actions = ({ row }: { row: SaleDTO }) => (
+  console.log(rows);
+  const actions = ({ row }: { row: Sale }) => (
     <TableMenuActions
       actions={[
         {
           name: "Gestionar Pagos",
           onClick: () => {
-            if (row.status.status !== SaleStatus.CANCELLED) {
-              navigate(`${"pagos"}/${row.uuid}`);
-            } else {
-              snackbar.openSnackbar(
-                "No se puede gestionar pagos de una venta anulada",
-                "error"
-              );
-            }
+            navigate(`${"pagos"}/${row.uuid}`);
           },
         },
         {
@@ -63,31 +35,23 @@ export default function SalesTable() {
           },
         },
         {
-          name: `${
-            row.status.status === SaleStatus.CANCELLED ? "Activar" : "Anular"
-          }`,
+          name: `${row.status === SaleStatus.CANCELLED ? "Activar" : "Anular"}`,
           onClick: async () => {
             try {
-              if (
-                row.status.status === SaleStatus.PENDING_PAYMENT ||
-                row.status.status === SaleStatus.PAID
-              ) {
-                await updatSaleStatus({
+              if (row.status === SaleStatus.CANCELLED) {
+                await updateSalePayment({
                   uuid: row.uuid,
-                  status: SaleStatus.CANCELLED,
+                  status: "ACTIVATE",
                 }).unwrap();
-              } else if (row.status.status === SaleStatus.CANCELLED) {
-                await updatSaleStatus({
+              } else {
+                await updateSalePayment({
                   uuid: row.uuid,
-                  status: isSalePaid(row)
-                    ? SaleStatus.PAID
-                    : SaleStatus.PENDING_PAYMENT,
+                  status: "DEACTIVATE",
                 }).unwrap();
               }
-              snackbar.openSnackbar("Venta actualizada", "success");
             } catch (e) {
+              snackbar.openSnackbar(e.data.error, "error");
               console.log(e);
-              snackbar.openSnackbar("No se pudo actualizar la venta", "error");
             }
           },
         },
@@ -99,14 +63,7 @@ export default function SalesTable() {
     />
   );
 
-  const rows: GridRowsProp = (data || []).filter(
-    (transaction) =>
-      transaction.status.type === TransactionType.SALE ||
-      (transaction.status.type === TransactionType.BUDGET &&
-        transaction.status.status === BudgetStatus.APPROVED)
-  );
-
-  const columns: GridColDef[] = [
+  const columns: GridColDef<Sale>[] = [
     { field: "serie", headerName: "Serie", flex: 1 },
     {
       field: "createdAt",
@@ -140,21 +97,17 @@ export default function SalesTable() {
       field: "status",
       headerName: "Estado",
       flex: 1,
-      renderCell: ({ row }: { row: SaleDTO }) => (
+      renderCell: ({ row }: { row: Sale }) => (
         <Chip
           color={
-            row.status.status === SaleStatus.PAID
+            row.status === SaleStatus.PAID
               ? "success"
-              : row.status.status === SaleStatus.PENDING_PAYMENT
+              : row.status === SaleStatus.PENDING
               ? "warning"
-              : row.status.status === SaleStatus.CANCELLED
-              ? "error"
-              : row.status.status === BudgetStatus.APPROVED
-              ? "primary"
-              : "default"
+              : "error"
           }
           sx={{ textTransform: "capitalize" }}
-          label={row.status.status}
+          label={row.status}
           size="small"
         />
       ),
@@ -165,6 +118,7 @@ export default function SalesTable() {
       flex: 0.5,
       sortable: false,
       filterable: false,
+
       renderCell: actions,
     },
   ];

@@ -1,6 +1,7 @@
 import { TransactionFormData, Transaction } from "./Transaction";
 
 export interface Budget extends Transaction {
+  status: BudgetStatus;
   expiresAt?: Date;
   approvalDate?: Date;
 }
@@ -17,3 +18,5 @@ export enum BudgetStatus {
   APPROVED = "APPROVED",
   REJECTED = "REJECTED",
 }
+
+export type UpdateBudgetFormData = { uuid: string; status: BudgetStatus };

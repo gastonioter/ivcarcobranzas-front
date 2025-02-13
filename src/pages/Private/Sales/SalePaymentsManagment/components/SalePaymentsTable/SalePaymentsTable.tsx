@@ -1,40 +1,21 @@
-import { SalePayment, SalePaymentStatuses } from "@/models";
+import { useSnackbar } from "@/context/SnackbarContext";
+import { SalePayment, SalePaymentStatus } from "@/models/SalePayment";
 import {
   useGetSalePaymentsQuery,
-  useUpdateSalePaymentStatusMutation,
+  useUpdateSaleMutation,
 } from "@/services/saleApi";
 import { formattedDate } from "@/utilities";
+import { formattedCurrency } from "@/utilities/formatPrice";
+import BlockIcon from "@mui/icons-material/Block";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import { Chip, IconButton, Tooltip } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useParams } from "react-router";
-import BlockIcon from "@mui/icons-material/Block";
-import TaskAltIcon from "@mui/icons-material/TaskAlt";
-import { useSnackbar } from "@/context/SnackbarContext";
-import { formattedCurrency } from "@/utilities/formatPrice";
 
 export default function SalePaymentsTable() {
   const snackbar = useSnackbar();
   const { uuid: saleID } = useParams();
-
-  const [triggerChangeStatus] = useUpdateSalePaymentStatusMutation();
-
-  function updateStatus(status: SalePaymentStatuses) {
-    return async function (paymentID: string) {
-      try {
-        await triggerChangeStatus({
-          paymentID,
-          saleID: saleID as string,
-          status,
-        }).unwrap();
-
-        snackbar.openSnackbar("Pago actualizado!", "info");
-      } catch (e) {
-        console.log(e);
-        snackbar.openSnackbar("Ocurrio un error al actualizar el pago", "error");
-      }
-    };
-  }
-
+  const [updateStatus] = useUpdateSaleMutation();
   const { data: payments, isLoading } = useGetSalePaymentsQuery(
     saleID as string
   );
@@ -68,7 +49,7 @@ export default function SalePaymentsTable() {
           label={`${row.status}`}
           size="small"
           color={`${
-            row.status === SalePaymentStatuses.ACTIVE ? "success" : "error"
+            row.status === SalePaymentStatus.ACTIVE ? "success" : "error"
           }`}
         />
       ),
@@ -78,11 +59,19 @@ export default function SalePaymentsTable() {
       headerName: "Acciones",
       width: 100,
       renderCell: ({ row }) => {
-        return row.status === SalePaymentStatuses.CANCELLED ? (
+        return row.status === SalePaymentStatus.CANCELLED ? (
           <Tooltip title="Activar Pago" arrow>
             <IconButton
-              onClick={() => {
-                updateStatus(SalePaymentStatuses.ACTIVE)(row.uuid);
+              onClick={async () => {
+                await updateStatus({
+                  uuid: saleID as string,
+                  payment: {
+                    uuid: row.uuid,
+                    type: "UPDATE",
+                    status: SalePaymentStatus.ACTIVE,
+                  },
+                });
+                snackbar.openSnackbar("Pago activado!");
               }}
             >
               <TaskAltIcon />
@@ -91,8 +80,16 @@ export default function SalePaymentsTable() {
         ) : (
           <Tooltip title="Anular Pago" arrow>
             <IconButton
-              onClick={() => {
-                updateStatus(SalePaymentStatuses.CANCELLED)(row.uuid);
+              onClick={async () => {
+                await updateStatus({
+                  uuid: saleID as string,
+                  payment: {
+                    uuid: row.uuid,
+                    type: "UPDATE",
+                    status: SalePaymentStatus.CANCELLED,
+                  },
+                });
+                snackbar.openSnackbar("Pago anulado!");
               }}
             >
               <BlockIcon />
@@ -102,6 +99,7 @@ export default function SalePaymentsTable() {
       },
     },
   ];
+
   return (
     <DataGrid
       rows={rows}

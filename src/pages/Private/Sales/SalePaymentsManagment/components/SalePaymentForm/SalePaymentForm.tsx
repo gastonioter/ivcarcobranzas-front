@@ -1,13 +1,9 @@
 import { dialogCloseSubject$ } from "@/components";
 import FooterCustomDialog from "@/components/FooterCustomDialog/FooterCustomDialog";
 import { useSnackbar } from "@/context/SnackbarContext";
-import {
-  AddSalePaymentFormData,
-  addSalePaymentSchema,
-  PaymentMethods,
-} from "@/models";
-import { useCreatePaymentForSaleMutation } from "@/services/saleApi";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {} from "@/models";
+import { PaymentMethods } from "@/models/SalePayment";
+import { useUpdateSaleMutation } from "@/services/saleApi";
 import {
   Box,
   FormControl,
@@ -16,51 +12,53 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import { useForm } from "react-hook-form";
 import { useParams } from "react-router";
 
 export default function SalePaymentForm() {
   const { uuid } = useParams();
-  const [create, { isLoading }] = useCreatePaymentForSaleMutation();
+  const [addPayment, { isLoading }] = useUpdateSaleMutation();
   const snackbar = useSnackbar();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<AddSalePaymentFormData>({
-    resolver: zodResolver(addSalePaymentSchema),
-  });
-
-  const onSubmit = async (data: AddSalePaymentFormData) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
-      await create({ uuid: uuid as string, data }).unwrap();
-      snackbar.openSnackbar("Pago creado con exito");
+      e.preventDefault();
+      const formData = new FormData(e.currentTarget);
+      const { amount, paymentMethod } = Object.fromEntries(formData.entries());
+
+      if (isNaN(Number(amount))) {
+        snackbar.openSnackbar("El monto de pago debe ser un número", "error");
+        return;
+      }
+
+      await addPayment({
+        uuid: uuid as string,
+        payment: {
+          type: "CREATE",
+          amount: Number(amount),
+          paymentMethod: paymentMethod as PaymentMethods,
+        },
+      }).unwrap();
+      snackbar.openSnackbar("Pago agregado correctamente");
       dialogCloseSubject$.setSubject = true;
     } catch (e) {
+      console.log("error de pago");
       snackbar.openSnackbar(e.data.error, "error");
     }
   };
   return (
     <Box
       component={"form"}
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit}
       sx={{ display: "flex", flexDirection: "column", gap: 8 }}
     >
-      <TextField
-        label="Monto de Pago"
-        {...register("amount")}
-        error={!!errors.amount}
-        helperText={errors.amount?.message}
-      />
+      <TextField label="Monto de Pago" name="amount" />
       <FormControl>
         <InputLabel id="metodo">Seleccione el metodo de pago</InputLabel>
         <Select
           labelId="metodo"
+          name="paymentMethod"
           defaultValue={PaymentMethods.CASH}
           label="Seleccione el metodo de pago"
-          error={!!errors.paymentMethod}
-          {...register("paymentMethod")}
         >
           {Object.values(PaymentMethods).map((method) => (
             <MenuItem key={method} value={method}>

@@ -1,5 +1,10 @@
 import { addToken } from "@/interceptors";
-import { Budget, BudgetFormData } from "@/models/Budget";
+import {
+  Budget,
+  BudgetFormData,
+  BudgetStatus,
+  UpdateBudgetFormData,
+} from "@/models/Budget";
 import { clearCredentials } from "@/redux/slices";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
@@ -8,6 +13,7 @@ import {
   FetchArgs,
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query";
+import { saleApi } from "./saleApi";
 
 const baseQuery: BaseQueryFn<
   string | FetchArgs,
@@ -43,5 +49,30 @@ export const budgetApi = createApi({
       }),
       invalidatesTags: ["Budget"],
     }),
+
+    updateBudgetStatus: builder.mutation<Budget, UpdateBudgetFormData>({
+      query: ({ uuid, status }) => ({
+        url: `/${uuid}`,
+        method: "PATCH",
+        body: { status },
+      }),
+      invalidatesTags: ["Budget"],
+      onQueryStarted: async (
+        { uuid, status },
+        { dispatch, queryFulfilled }
+      ) => {
+        await queryFulfilled;
+        if (status === BudgetStatus.APPROVED) {
+          dispatch(saleApi.util.invalidateTags(["Sales"]));
+        }
+      },
+    }),
   }),
+  refetchOnReconnect: true,
 });
+
+export const {
+  useGetBudgetsQuery,
+  useCreateBudgetMutation,
+  useUpdateBudgetStatusMutation,
+} = budgetApi;
