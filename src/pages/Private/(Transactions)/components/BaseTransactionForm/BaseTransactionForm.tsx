@@ -5,9 +5,6 @@ import {
 } from "@/components";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { Product, SaleStatus } from "@/models";
-import DetailsTable from "@/pages/Private/Sales/components/SaleForm/components/DetailsTable/DetailsTable";
-import ProductsForSaleTable from "@/pages/Private/Sales/components/SaleForm/components/ProductsForSaleTable.tsx/ProductsForSaleTable";
-import SaleSummary from "@/pages/Private/Sales/components/SaleForm/components/SaleSummary/SaleSummary";
 import { useGetCustomersQuery } from "@/services/customerApi";
 import { useGetProductsQuery } from "@/services/productApi";
 import { AddCircleRounded } from "@mui/icons-material";
@@ -29,6 +26,9 @@ import { SaleCustomer } from "../../context/reducer";
 import { useDispatch, useTransaction } from "../../hooks";
 import { NewTransactionsStyled } from "../../styled-components/new.styled.component";
 import { useEffect } from "react";
+import SaleSummary from "./components/SaleSummary/SaleSummary";
+import DetailsTable from "./components/DetailsTable/DetailsTable";
+import ProductsForSaleTable from "./components/ProductsForSaleTable/ProductsForSaleTable";
 
 export interface IBaseTransactionFormProps {
   children?: React.ReactNode;

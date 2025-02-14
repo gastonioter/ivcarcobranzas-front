@@ -42,53 +42,51 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
     );
   }
 
-  console.log(data);
+  // const actions = (params) => (
+  //   <TableMenuActions
+  //     actions={[
+  //       {
+  //         name: "Editar",
+  //         onClick: () => {
+  //           // open the dialog with the data;
+  //           setCustomer(params.row);
+  //           dialogOpenSubject$.setSubject = true;
+  //         },
+  //       },
+  //       {
+  //         name: "Resumen Cta", // TODO: Implementar con filtros en la tabla Mensualidades
+  //         onClick: () => {},
+  //       },
+  //       {
+  //         name: `${
+  //           params.row.status === CustomerStatus.ACTIVE
+  //             ? "Dar de baja"
+  //             : "Activar"
+  //         }`,
+  //         onClick: async () => {
+  //           try {
+  //             if (params.row.status === CustomerStatus.ACTIVE) {
+  //               await changeCustomerStatus({
+  //                 uuid: params.row.uuid,
+  //                 status: CustomerStatus.INACTIVE,
+  //               });
+  //             } else {
+  //               await changeCustomerStatus({
+  //                 uuid: params.row.uuid,
+  //                 status: CustomerStatus.ACTIVE,
+  //               });
+  //             }
 
-  const actions = (params) => (
-    <TableMenuActions
-      actions={[
-        {
-          name: "Editar",
-          onClick: () => {
-            // open the dialog with the data;
-            setCustomer(params.row);
-            dialogOpenSubject$.setSubject = true;
-          },
-        },
-        {
-          name: "Resumen Cta", // TODO: Implementar con filtros en la tabla Mensualidades
-          onClick: () => {},
-        },
-        {
-          name: `${
-            params.row.status === CustomerStatus.ACTIVE
-              ? "Dar de baja"
-              : "Activar"
-          }`,
-          onClick: async () => {
-            try {
-              if (params.row.status === CustomerStatus.ACTIVE) {
-                await changeCustomerStatus({
-                  uuid: params.row.uuid,
-                  status: CustomerStatus.INACTIVE,
-                });
-              } else {
-                await changeCustomerStatus({
-                  uuid: params.row.uuid,
-                  status: CustomerStatus.ACTIVE,
-                });
-              }
-
-              snackbar.openSnackbar("Estado actualizado con éxito");
-            } catch (e) {
-              console.log(e);
-              snackbar.openSnackbar(`${e.data.error}`, "error");
-            }
-          },
-        },
-      ]}
-    />
-  );
+  //             snackbar.openSnackbar("Estado actualizado con éxito");
+  //           } catch (e) {
+  //             console.log(e);
+  //             snackbar.openSnackbar(`${e.data.error}`, "error");
+  //           }
+  //         },
+  //       },
+  //     ]}
+  //   />
+  // );
 
   const rows: GridRowsProp = data || [];
 
@@ -110,18 +108,18 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
       minWidth: 100,
       sortable: false,
     },
-    {
-      field: "modalidadData",
-      headerName: "Tipo",
-      flex: 1,
-      valueFormatter: (value) => {
-        const modalidadData = value as unknown as ModalidadData;
-        return formatCustomerModalidad(modalidadData);
-      },
-      editable: false,
-      sortable: false,
-      filterable: false,
-    },
+    // {
+    //   field: "modalidadData",
+    //   headerName: "Tipo",
+    //   flex: 1,
+    //   valueFormatter: (value) => {
+    //     const modalidadData = value as unknown as ModalidadData;
+    //     return formatCustomerModalidad(modalidadData);
+    //   },
+    //   editable: false,
+    //   sortable: false,
+    //   filterable: false,
+    // },
     {
       field: "email",
       headerName: "Email",
@@ -148,7 +146,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
     },
     {
       field: "actions",
-      renderCell: actions,
+      // renderCell: actions,
       headerName: "Acciones",
       width: 100,
       sortable: false,
