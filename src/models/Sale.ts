@@ -25,7 +25,8 @@ export const CreateSaleSchema = CreateTransactionSchema.extend({
     .transform((val) => Number(val))
     .refine((val) => val > 0, {
       message: "El descuento no puede ser negativo",
-    }),
+    })
+    .optional(),
 });
 export const EditSaleSchema = z.object({
   uuid: z.string().uuid(),

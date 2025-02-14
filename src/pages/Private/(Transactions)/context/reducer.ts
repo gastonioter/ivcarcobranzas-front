@@ -75,6 +75,7 @@ export function reducer(
   }
 
   if (type == "update-item") {
+    console.log("PAYLOAD", payload);
     const details = state.details.map((item) => {
       if (item.uuid === payload.uuid) {
         return {

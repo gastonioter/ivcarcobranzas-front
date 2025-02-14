@@ -31,7 +31,7 @@ export default function DetailsTable({
     { field: "product", headerName: "Producto", flex: 1 },
     { field: "quantity", headerName: "Cantidad", flex: 1, editable: true },
     {
-      field: "price",
+      field: "unitPrice",
       headerName: "Precio Unitario",
       flex: 1,
       editable: true,
@@ -53,7 +53,9 @@ export default function DetailsTable({
       isCellEditable={() => !readOnly}
       disableRowSelectionOnClick
       processRowUpdate={(row) => {
-        handleUpdateDetail(row);
+        handleUpdateDetail({
+          ...row,
+        });
       }}
       getRowId={(row) => row.uuid ?? row._id}
       onProcessRowUpdateError={() => {}}

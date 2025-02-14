@@ -97,12 +97,16 @@ export default function BaseTransactionForm({
   };
 
   const onAddDetail = ({ row }: { row: Product }) => {
+    console.log("PRODUCT SELECTED", row);
     if (isDuplicatedProduct(row.uuid)) {
       snackbar.openSnackbar("El producto ya ha sido agregado!", "info");
     } else {
       dispatch({
         type: "add-item",
-        payload: row,
+        payload: {
+          ...row,
+          price: Number(row.price),
+        },
       });
 
       snackbar.openSnackbar("Producto agregado!", "success");
