@@ -12,7 +12,7 @@ export const PrivateRoutes = {
   BUDGETS: "presupuestos",
   NEW_BUDGET: "nuevo",
   NEW_SALE: "nueva",
-  DETAIL_SALE: ":uuid/",
+  DETAIL_SALE: "ventas/:uuid/",
   DETAIL_BUDGET: "presupuestos/:uuid/",
   PAYMENTS_SALE: "pagos/:uuid",
   CUSTOMERS: "clientes",

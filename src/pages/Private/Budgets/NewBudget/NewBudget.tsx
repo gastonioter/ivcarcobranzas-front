@@ -3,7 +3,6 @@ import SectionTitle from "@/components/SectionTitle/SectionTitle";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Paper } from "@mui/material";
 import { useNavigate } from "react-router";
-import SaleForm from "../../Sales/components/SaleForm/SaleForm";
 export default function NewSale() {
   const navigate = useNavigate();
   return (
@@ -24,7 +23,6 @@ export default function NewSale() {
 
       <Paper sx={{ p: 2, height: "100%" }}>
         {/* <SaleForm forBudget={true} /> */}
-        
       </Paper>
     </>
   );

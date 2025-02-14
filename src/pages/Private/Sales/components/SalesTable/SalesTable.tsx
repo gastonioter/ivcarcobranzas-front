@@ -1,13 +1,10 @@
 import TableMenuActions from "@/components/TableMenuActions/TableMenuActions";
 import { useSnackbar } from "@/context/SnackbarContext";
-import { Customer } from "@/models/customer";
 import { Sale, SaleStatus } from "@/models/Sale";
+import BaseTransactionTable from "@/pages/Private/(Transactions)/components/BaseTransactionTable/BaseTransactionTable";
 import { useGetSalesQuery, useUpdateSaleMutation } from "@/services/saleApi";
-import { formattedDate } from "@/utilities";
-import { formatFullName } from "@/utilities/formatFullName";
-import { formattedCurrency } from "@/utilities/formatPrice";
 import { Chip } from "@mui/material";
-import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid";
 import { useNavigate } from "react-router";
 
 export default function SalesTable() {
@@ -18,7 +15,6 @@ export default function SalesTable() {
   const [updateSalePayment] = useUpdateSaleMutation();
   const rows = data || [];
 
-  console.log(rows);
   const actions = ({ row }: { row: Sale }) => (
     <TableMenuActions
       actions={[
@@ -63,36 +59,7 @@ export default function SalesTable() {
     />
   );
 
-  const columns: GridColDef<Sale>[] = [
-    { field: "serie", headerName: "Serie", flex: 1 },
-    {
-      field: "createdAt",
-      headerName: "Fecha",
-      filterable: false,
-      flex: 1,
-      valueFormatter: (value: string) => formattedDate(value),
-    },
-    {
-      field: "customer",
-      headerName: "Cliente",
-      flex: 1,
-      valueGetter: (customer: Customer) =>
-        formatFullName(customer.firstName, customer.lastName),
-    },
-    {
-      field: "seller",
-      headerName: "Vendedor",
-      flex: 1,
-      filterable: false,
-      sortable: false,
-      valueGetter: (seller) => `${seller.email}`,
-    },
-    {
-      field: "totalAmount",
-      headerName: "Total",
-      flex: 0.5,
-      valueFormatter: (value: string) => formattedCurrency(value),
-    },
+  const columns: GridColDef[] = [
     {
       field: "status",
       headerName: "Estado",
@@ -124,34 +91,6 @@ export default function SalesTable() {
   ];
 
   return (
-    <DataGrid
-      slotProps={{
-        toolbar: {
-          showQuickFilter: true,
-        },
-        loadingOverlay: {
-          variant: "skeleton",
-          noRowsVariant: "skeleton",
-        },
-      }}
-      slots={{
-        toolbar: GridToolbar,
-      }}
-      disableDensitySelector
-      disableRowSelectionOnClick
-      pagination
-      disableColumnMenu
-      pageSizeOptions={[10, 20, 30]}
-      initialState={{
-        pagination: {
-          paginationModel: { pageSize: 10, page: 0 }, // Establece la página y cantidad inicial de filas
-        },
-      }}
-      //onPaginationModelChange={(model) => setPageSize(model.pageSize)}
-      getRowId={(row) => row.uuid}
-      rows={rows}
-      columns={columns}
-      loading={isLoading}
-    />
+    <BaseTransactionTable columns={columns} rows={rows} isLoading={isLoading} />
   );
 }

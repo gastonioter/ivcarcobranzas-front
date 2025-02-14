@@ -1,4 +1,4 @@
-import { SaleDetailItem } from "@/models/Sale";
+import { Detail } from "@/models/Transaction";
 import { formattedCurrency } from "@/utilities/formatPrice";
 import { Delete } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
@@ -6,8 +6,8 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
 interface DetailsTableProps {
   onDeleteItem: (uuid: string) => void;
-  details: SaleDetailItem[];
-  handleUpdateDetail: (uuid: string, price: number, quantity: number) => void;
+  details: Detail[];
+  handleUpdateDetail: (detail: Detail) => void;
   readOnly?: boolean;
 }
 
@@ -17,23 +17,24 @@ export default function DetailsTable({
   handleUpdateDetail,
   readOnly = false,
 }: DetailsTableProps) {
+  console.log(details);
   const columns: GridColDef[] = [
     {
       field: "delete",
       headerName: "Quitar",
-      width: 80,
-      renderCell: ({ row }: { row: SaleDetailItem }) => (
+      flex: 0.3,
+      renderCell: ({ row }: { row: Detail }) => (
         <IconButton disabled={readOnly} onClick={() => onDeleteItem(row.uuid)}>
           <Delete />
         </IconButton>
       ),
     },
-    { field: "product", headerName: "Producto", flex: 1 },
-    { field: "quantity", headerName: "Cantidad", flex: 1, editable: true },
+    { field: "product", headerName: "Producto", flex: 0.8 },
+    { field: "quantity", headerName: "Cantidad", flex: 0.5, editable: true },
     {
-      field: "price",
-      headerName: "Precio Unitario",
-      flex: 1,
+      field: "unitPrice",
+      headerName: "Precio",
+      flex: 0.5,
       editable: true,
       valueFormatter: (value) => `${formattedCurrency(value)}`,
     },
@@ -49,13 +50,17 @@ export default function DetailsTable({
     <DataGrid
       editMode="cell"
       rows={details}
+      autoPageSize
       columns={columns}
       isCellEditable={() => !readOnly}
+      rowHeight={40}
+      hideFooterSelectedRowCount
       disableRowSelectionOnClick
-      processRowUpdate={({ uuid, price, quantity }) => {
-        handleUpdateDetail(uuid, price, quantity);
+      processRowUpdate={(row) => {
+        const detail = row as Detail;
+        handleUpdateDetail(detail);
       }}
-      getRowId={(row) => row.uuid ?? row._id}
+      getRowId={(row) => row.uuid}
       onProcessRowUpdateError={() => {}}
     />
   );

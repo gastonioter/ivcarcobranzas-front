@@ -1,23 +1,18 @@
-import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog";
 import TableMenuActions from "@/components/TableMenuActions/TableMenuActions";
 import { useSnackbar } from "@/context/SnackbarContext";
-import { Customer, PrivateRoutes } from "@/models";
 import { Budget, BudgetStatus } from "@/models/Budget";
+import BaseTransactionTable from "@/pages/Private/(Transactions)/components/BaseTransactionTable/BaseTransactionTable";
 import {
   useGetBudgetsQuery,
   useUpdateBudgetStatusMutation,
 } from "@/services/budgetApi";
-import { formattedDate } from "@/utilities";
-import { formatFullName } from "@/utilities/formatFullName";
-import { formattedCurrency } from "@/utilities/formatPrice";
 import { Chip } from "@mui/material";
-import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid";
 import { useNavigate } from "react-router";
 
 export default function BudgetsTable() {
   const { data, isLoading } = useGetBudgetsQuery();
   const [updateStatus] = useUpdateBudgetStatusMutation();
-  //const [toggleStatus] = useUpdateSaleStatusMutation();
   const snackbar = useSnackbar();
   const navigate = useNavigate();
   // const [confirmatoinState, setConfirmatoinState] =
@@ -44,9 +39,7 @@ export default function BudgetsTable() {
         {
           name: "Ver Detalle",
           onClick: () => {
-            navigate(
-              `/${PrivateRoutes.PRIVATE}/${PrivateRoutes.SALES}/${budget.uuid}`
-            );
+            navigate(`${budget.uuid}/`);
           },
         },
         {
@@ -117,35 +110,6 @@ export default function BudgetsTable() {
     />
   );
   const columns: GridColDef<Budget>[] = [
-    { field: "serie", headerName: "Serie", flex: 1 },
-    {
-      field: "createdAt",
-      headerName: "Fecha",
-      filterable: false,
-      flex: 1,
-      valueFormatter: (value: string) => formattedDate(value),
-    },
-    {
-      field: "customer",
-      headerName: "Cliente",
-      flex: 1,
-      valueGetter: (customer: Customer) =>
-        formatFullName(customer.firstName, customer.lastName),
-    },
-    {
-      field: "seller",
-      headerName: "Creador",
-      flex: 1,
-      filterable: false,
-      sortable: false,
-      valueGetter: (seller) => `${seller.email}`,
-    },
-    {
-      field: "totalAmount",
-      headerName: "Total",
-      flex: 0.5,
-      valueFormatter: (value: string) => formattedCurrency(value),
-    },
     {
       field: "status",
       headerName: "Estado",
@@ -177,26 +141,10 @@ export default function BudgetsTable() {
 
   return (
     <>
-      <DataGrid
-        slotProps={{
-          toolbar: {
-            showQuickFilter: true,
-          },
-          loadingOverlay: {
-            variant: "skeleton",
-            noRowsVariant: "skeleton",
-          },
-        }}
-        slots={{
-          toolbar: GridToolbar,
-        }}
+      <BaseTransactionTable
         rows={rows}
         columns={columns}
-        loading={isLoading}
-        getRowId={(row) => row.uuid}
-        disableDensitySelector
-        disableRowSelectionOnClick
-        disableColumnMenu
+        isLoading={isLoading}
       />
 
       {/* <ConfirmationDialog {...confirmatoinState} /> */}
