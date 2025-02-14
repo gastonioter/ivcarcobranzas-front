@@ -15,6 +15,7 @@ import Customers from "./Customers/Customers";
 import Products from "./Products/Products";
 
 import { AppLayout } from "./styled-components";
+import SalePayments from "./(Transactions)/Sales/SalePayments/SalePayments";
 
 const Home = lazy(() => import("./Home/Home"));
 const Dashboard = lazy(() => import("./Dashboard/Dashboard"));
@@ -66,7 +67,7 @@ export default function Private() {
 
           <Route
             path={`ventas/${PrivateRoutes.PAYMENTS_SALE}`}
-            element={<SalePaymentsManagment />}
+            element={<SalePayments />}
           ></Route>
           {/* CUSTOEMRS */}
 
