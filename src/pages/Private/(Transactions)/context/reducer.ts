@@ -1,26 +1,33 @@
-import { Product } from "@/models";
+import { Customer, Product, SaleStatus } from "@/models";
 import { Detail } from "@/models/Transaction";
 
+export type SaleCustomer = Pick<Customer, "uuid" | "firstName" | "lastName">;
 export interface TransactionState {
   iva: number;
   details: Detail[];
-  customerId: string;
   subtotal: number;
+  customer: SaleCustomer;
+  editMode?: boolean;
+  saleStatus?: SaleStatus;
 }
 
 export const initialState: TransactionState = {
   iva: 0,
   details: [],
-  customerId: "",
+  customer: {
+    uuid: "",
+    firstName: "",
+    lastName: "",
+  },
   subtotal: 0,
 };
 export type Action =
   | { readonly type: "delete-item"; payload: string }
   | { readonly type: "add-item"; payload: Product }
   | { readonly type: "update-item"; payload: Detail }
-  | { readonly type: "update-customer"; payload: string }
+  | { readonly type: "update-customer"; payload: SaleCustomer }
   | { readonly type: "update-iva"; payload: number }
-  | { readonly type: "setState"; payload: TransactionState };
+  | { readonly type: "setState"; payload: Omit<TransactionState, "subtotal"> };
 
 export function reducer(
   state = initialState,
@@ -30,7 +37,7 @@ export function reducer(
   if (type == "update-customer") {
     return {
       ...state,
-      customerId: payload,
+      customer: payload,
     };
   }
 
@@ -85,6 +92,18 @@ export function reducer(
       ...state,
       details,
       subtotal: newSubtotal(details),
+    };
+  }
+
+  if (type == "setState") {
+    const subtotal = newSubtotal(payload.details);
+    return {
+      editMode: payload.editMode,
+      iva: payload.iva,
+      saleStatus: payload.saleStatus,
+      details: payload.details,
+      customer: payload.customer,
+      subtotal,
     };
   }
 

@@ -6,60 +6,21 @@ import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import PersonIcon from "@mui/icons-material/Person";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import SummarizeIcon from "@mui/icons-material/Summarize";
+
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import { AppBar, IconButton, Toolbar, Tooltip } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
-// const items = [
-//   {
-//     name: "Dashboard",
-//     icon: <DashboardIcon />,
-//     to: PrivateRoutes.DASHBOARD,
-//   },
-
-//   {
-//     name: "Catalogo",
-//     icon: <LocalGroceryStoreIcon />,
-
-//     items: [
-//       {
-//         name: "Productos",
-//         to: PrivateRoutes.PRODUCTS,
-//         icon: <InventoryIcon />,
-//       },
-//       {
-//         name: "Categorias",
-//         to: PrivateRoutes.CATEGORIES,
-//         icon: <CategoryIcon />,
-//       },
-//     ],
-//   },
-//   {
-//     name: "Ventas",
-//     to: PrivateRoutes.SALES,
-//     icon: <StorefrontIcon />,
-//   },
-//   {
-//     name: "Clientes",
-//     icon: <PersonIcon />,
-//     to: PrivateRoutes.CUSTOMERS,
-//   },
-//   {
-//     name: "Mensualidades",
-//     to: PrivateRoutes.MONTHLY_FEES,
-//     icon: <SummarizeIcon />,
-//   },
-//   {
-//     name: "Pagos",
-//     to: PrivateRoutes.PAYMENTS,
-//     icon: <MonetizationOnIcon />,
-//   },
-// ];
 
 const items = [
   { name: "Dashboard", icon: <DashboardIcon />, to: PrivateRoutes.DASHBOARD },
   { name: "Productos", icon: <InventoryIcon />, to: PrivateRoutes.PRODUCTS },
   { name: "Categorias", icon: <CategoryIcon />, to: PrivateRoutes.CATEGORIES },
   { name: "Ventas", icon: <StorefrontIcon />, to: PrivateRoutes.SALES },
+  {
+    name: "Presupuestos",
+    icon: <ReceiptLongIcon />,
+    to: PrivateRoutes.BUDGETS,
+  },
   { name: "Clientes", icon: <PersonIcon />, to: PrivateRoutes.CUSTOMERS },
   {
     name: "Mensualidades",

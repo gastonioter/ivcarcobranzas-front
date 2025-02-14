@@ -13,7 +13,7 @@ import Categories from "./Categories/Categories";
 import AppContainer from "./components/AppContainer/AppContainer";
 import Customers from "./Customers/Customers";
 import Products from "./Products/Products";
-import SalePaymentsManagment from "./Sales/SalePaymentsManagment/SalePaymentsManagment";
+
 import { AppLayout } from "./styled-components";
 
 const Home = lazy(() => import("./Home/Home"));

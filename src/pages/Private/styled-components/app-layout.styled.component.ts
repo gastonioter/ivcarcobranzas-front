@@ -12,6 +12,7 @@ export const AppLayout = styled.div`
     "sidebar main";
 
   ${({ theme }) => theme.breakpoints.down("lg")} {
+    
     grid-template-columns: 200px 1fr; /* achica el sidebar */
   }
 

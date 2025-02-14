@@ -74,6 +74,10 @@ export const editCustomerSchema = createCustomerSchema.extend({
   uuid: z.string().uuid(),
 });
 
+export const updateStatusSchema = z.object({
+  uuid: z.string().uuid(),
+  status: z.nativeEnum(CustomerStatus),
+});
 // CREATE
 export type CreateCustomerFormData = z.infer<typeof createCustomerSchema>;
 
@@ -81,3 +85,4 @@ export type CreateCustomerFormData = z.infer<typeof createCustomerSchema>;
 export type EditCustomerFormData = z.infer<typeof editCustomerSchema>;
 
 // UPDATE STATUS
+export type UpdateStatusFormData = z.infer<typeof updateStatusSchema>;

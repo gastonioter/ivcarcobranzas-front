@@ -26,7 +26,7 @@ export default function NewSale() {
         <SectionTitle>Nueva Venta</SectionTitle>
       </SectionHeader>
 
-      <Paper sx={{ p: 2, height: "100%" }}>
+      <Paper sx={{ p: 2 }}>
         <TransactionProvider>
           <SaleForm />
         </TransactionProvider>

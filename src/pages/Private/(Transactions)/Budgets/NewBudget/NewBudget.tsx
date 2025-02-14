@@ -23,7 +23,7 @@ export default function NewSale() {
         <SectionTitle>Nuevo Presupuesto</SectionTitle>
       </SectionHeader>
 
-      <Paper sx={{ p: 2, height: "100%" }}>
+      <Paper sx={{ p: 2 }}>
         <TransactionProvider>
           <BudgetForm />
         </TransactionProvider>

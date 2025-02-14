@@ -4,7 +4,7 @@ import {
   dialogOpenSubject$,
 } from "@/components";
 import { useSnackbar } from "@/context/SnackbarContext";
-import { Customer, Product, Sale, SaleStatus } from "@/models";
+import { Product, SaleStatus } from "@/models";
 import DetailsTable from "@/pages/Private/Sales/components/SaleForm/components/DetailsTable/DetailsTable";
 import ProductsForSaleTable from "@/pages/Private/Sales/components/SaleForm/components/ProductsForSaleTable.tsx/ProductsForSaleTable";
 import SaleSummary from "@/pages/Private/Sales/components/SaleForm/components/SaleSummary/SaleSummary";
@@ -25,17 +25,17 @@ import {
 import { useLocation, useNavigate } from "react-router";
 
 import { Detail } from "@/models/Transaction";
-import { useTransactionContext } from "../../context/TransactionContext";
+import { SaleCustomer } from "../../context/reducer";
+import { useDispatch, useTransaction } from "../../hooks";
 import { NewTransactionsStyled } from "../../styled-components/new.styled.component";
+import { useEffect } from "react";
 
 export interface IBaseTransactionFormProps {
-  sale?: Sale;
   children?: React.ReactNode;
   onSumbit: () => void;
 }
 
 export default function BaseTransactionForm({
-  sale,
   children,
   onSumbit,
 }: IBaseTransactionFormProps) {
@@ -44,22 +44,30 @@ export default function BaseTransactionForm({
   const location = useLocation();
   const snackbar = useSnackbar();
 
-  const { transaction, dispatch } = useTransactionContext();
-  const { details, iva, subtotal } = transaction;
+  const { details, iva, subtotal, customer, editMode, saleStatus } =
+    useTransaction();
+  const dispatch = useDispatch();
 
   const page = location.pathname.split("/")[2];
   const entity = page.includes("ventas") ? "venta" : "presupuesto";
+
   const {
     data: products,
     isLoading: isLoadingProducts,
     error: errorProducts,
   } = useGetProductsQuery();
 
+  useEffect(() => {
+    console.log("Customer en Autocomplete:", customer);
+  }, [customer]);
+
   const {
-    data: customers,
+    data,
     isLoading: isLoadingCostumers,
     error: errorCostumers,
   } = useGetCustomersQuery();
+
+  const customers = data as SaleCustomer[];
 
   const isDuplicatedProduct = (uuid: string) => {
     return details.some((item) => item.uuid === uuid);
@@ -101,67 +109,25 @@ export default function BaseTransactionForm({
     }
   };
 
-  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   const { type, data } = onSumbit();
-  //   const result = CreateTransactionSchema.safeParse({
-  //     sellerId: userId,
-  //     iva: tax,
-  //     customerId: customer,
-  //     details,
-  //   });
-
-  //   if (!result.success) {
-  //     snackbar.openSnackbar(result.error.issues[0].message, "error");
-  //     return;
-  //   }
-
-  //   if (type == "sale") {
-  //     try {
-  //       await createSale(result.data).unwrap();
-  //       snackbar.openSnackbar(`Venta creada con exito!`);
-  //       navigate(-1);
-  //     } catch (e) {
-  //       console.error(e);
-  //       snackbar.openSnackbar(e.data.error, "error");
-  //     }
-  //   }
-  //   if (type == "budget") {
-  //     console.log(data.expiresAt?.toDate());
-  //     try {
-  //       await createBudget({
-  //         ...result.data,
-  //         ...(data.expiresAt ? { expiresAt: data.expiresAt.toDate() } : {}),
-  //       }).unwrap();
-  //       snackbar.openSnackbar(`Presupuesto creado con exito!`);
-  //       navigate(-1);
-  //     } catch (e) {
-  //       console.error(e);
-  //       snackbar.openSnackbar(e.data.error, "error");
-  //     }
-  //   }
-  // };
-
   return (
     <>
       <NewTransactionsStyled>
+        {/* TRANSACTION FORM INPUTS */}
         <FormControl>
           <Autocomplete
-            onChange={(event, value) => {
+            onChange={(event, customer) => {
               dispatch({
                 type: "update-customer",
-                payload: value.uuid,
+                payload: customer,
               });
             }}
             disableClearable
-            defaultValue={sale?.customer as Customer}
-            disabledItemsFocusable
-            isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
-            readOnly={!!sale}
-            getOptionLabel={(option: Customer) =>
+            value={customer}
+            readOnly={!!editMode}
+            getOptionLabel={(option: SaleCustomer) =>
               `${option.firstName} ${option.lastName}`
             }
-            disabled={isLoadingCostumers}
+            disabled={isLoadingCostumers || editMode}
             options={customers ?? []}
             renderInput={(params) => <TextField {...params} label="Cliente" />}
           />
@@ -169,9 +135,8 @@ export default function BaseTransactionForm({
 
         <TextField
           label={"IVA"}
-          type="number"
-          defaultValue={sale?.iva ?? 0}
-          disabled={!!sale}
+          value={iva}
+          disabled={!!editMode}
           onChange={(e) => {
             const tax: number = !Number.isNaN(parseFloat(e.target.value))
               ? parseInt(e.target.value)
@@ -190,13 +155,13 @@ export default function BaseTransactionForm({
           onClick={() => {
             dialogOpenSubject$.setSubject = true;
           }}
-          disabled={isLoadingProducts || !!sale}
+          disabled={isLoadingProducts || !!editMode}
         >
           Agregar Productos
         </Button>
 
         <DetailsTable
-          readOnly={!!sale}
+          readOnly={!!editMode}
           details={details}
           onDeleteItem={onDeleteDetail}
           handleUpdateDetail={onUpdateDetail}
@@ -207,11 +172,14 @@ export default function BaseTransactionForm({
           subtotal={subtotal}
           tax={iva}
           sx={{ flex: 1 }}
-          isCancelled={sale?.status === SaleStatus.CANCELLED}
+          isCancelled={saleStatus === SaleStatus.CANCELLED}
         />
+
+        {/* EXTRA FORM INPUTS */}
 
         {children}
 
+        {/* FOOTER BUTTONS */}
         <Stack
           sx={{ gridColumnStart: 1, gridColumnEnd: 3 }}
           direction="row"
@@ -224,6 +192,7 @@ export default function BaseTransactionForm({
             loading={false}
             variant="contained"
             color="success"
+            disabled={!!editMode}
             onClick={onSumbit}
           >
             Crear {entity}

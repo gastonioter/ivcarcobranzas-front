@@ -20,17 +20,32 @@ export interface Detail {
 }
 
 export const CreateTransactionSchema = z.object({
-  customerId: z.string(),
-  iva: z.number(),
-  sellerId: z.string(),
-  details: z.array(
-    z.object({
-      uuid: string().uuid(),
-      product: z.string(),
-      quantity: z.number(),
-      unitPrice: z.number(),
-    })
-  ),
+  customerId: z.string().nonempty("El cliente es requerido"),
+  iva: z.number().nonnegative("El iva no puede ser negativo").finite(),
+  sellerId: z.string().nonempty(),
+  details: z
+    .array(
+      z.object({
+        uuid: string().uuid(),
+        product: z.string(),
+        quantity: z
+          .string()
+          .transform((val) => Number(val))
+          .or(z.number())
+          .refine((val) => val > 0, {
+            message: "La cantidad debe ser un número positivo",
+          }),
+
+        unitPrice: z
+          .string()
+          .transform((val) => Number(val))
+          .or(z.number())
+          .refine((val) => val > 0, {
+            message: "El precio unitario debe ser un número positivo",
+          }),
+      })
+    )
+    .min(1, "Debe agregar al menos un producto"),
 });
 
 export type TransactionFormData = z.infer<typeof CreateTransactionSchema>;

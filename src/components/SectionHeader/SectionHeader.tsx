@@ -34,6 +34,7 @@ export default function SectionHeader({
         px: (theme) => theme.spacing(2),
         marginBottom: 2,
         boxShadow: 2,
+        
       }}
     >
       <Stack direction="row" spacing={2} justifyContent="space-between">

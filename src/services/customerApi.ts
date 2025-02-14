@@ -3,13 +3,24 @@ import {
   CreateCustomerFormData,
   Customer,
   EditCustomerFormData,
+  UpdateStatusFormData,
 } from "@/models/customer";
 import { clearCredentials } from "@/redux/slices";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import {
+  BaseQueryFn,
+  createApi,
+  FetchArgs,
+  fetchBaseQuery,
+  FetchBaseQueryError,
+} from "@reduxjs/toolkit/query/react";
 
-const baseQuery = async (args: any, api: any, extraOptions: any) => {
+const baseQuery: BaseQueryFn<
+  string | FetchArgs,
+  unknown,
+  FetchBaseQueryError
+> = async (args, api, extraOptions) => {
   const result = await fetchBaseQuery({
-    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/customers`,
+    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/sales`,
     prepareHeaders: addToken,
   })(args, api, extraOptions);
 
@@ -48,13 +59,20 @@ export const customerApi = createApi({
       invalidatesTags: ["Customers"],
     }),
 
-    updateStatus: builder.mutation<Customer, ChangeStatusFormData>({
+    updateStatus: builder.mutation<Customer, UpdateStatusFormData>({
       query: (body) => ({
         url: `/status`,
         method: "POST",
         body,
       }),
       invalidatesTags: ["Customers"],
+    }),
+
+    getAccountSummary: builder.mutation<Customer, string>({
+      query: (uuid) => ({
+        method: "POST",
+        url: `/${uuid}`,
+      }),
     }),
   }),
 });

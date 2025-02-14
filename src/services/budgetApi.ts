@@ -50,6 +50,11 @@ export const budgetApi = createApi({
       invalidatesTags: ["Budget"],
     }),
 
+    getBudget: builder.query<Budget, string>({
+      query: (uuid) => `/${uuid}`,
+      providesTags: ["Budget"],
+    }),
+
     updateBudgetStatus: builder.mutation<Budget, UpdateBudgetFormData>({
       query: ({ uuid, status }) => ({
         url: `/${uuid}`,
@@ -57,10 +62,7 @@ export const budgetApi = createApi({
         body: { status },
       }),
       invalidatesTags: ["Budget"],
-      onQueryStarted: async (
-        { uuid, status },
-        { dispatch, queryFulfilled }
-      ) => {
+      onQueryStarted: async ({ status }, { dispatch, queryFulfilled }) => {
         await queryFulfilled;
         if (status === BudgetStatus.APPROVED) {
           dispatch(saleApi.util.invalidateTags(["Sales"]));
@@ -75,4 +77,5 @@ export const {
   useGetBudgetsQuery,
   useCreateBudgetMutation,
   useUpdateBudgetStatusMutation,
+  useGetBudgetQuery,
 } = budgetApi;
