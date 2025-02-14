@@ -20,7 +20,7 @@ const baseQuery: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
   const result = await fetchBaseQuery({
-    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/sales`,
+    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/customers`,
     prepareHeaders: addToken,
   })(args, api, extraOptions);
 
