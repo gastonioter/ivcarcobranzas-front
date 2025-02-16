@@ -2,8 +2,8 @@ import { useSnackbar } from "@/context/SnackbarContext";
 import { useUserData } from "@/hooks/useUserData";
 import { Budget, CreateBudgetSchema } from "@/models/Budget";
 import BaseTransactionForm from "@/pages/Private/(Transactions)/components/BaseTransactionForm/BaseTransactionForm";
-import { useTransactionContext } from "@/pages/Private/(Transactions)/context/TransactionContext";
 
+import { useSummary } from "@/pages/Private/(Transactions)/hooks/summary";
 import { useCreateBudgetMutation } from "@/services/budgetApi";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -11,29 +11,26 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs, { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { useDispatch } from "../../../../hooks/transaction";
+import { useDispatch, useTransaction } from "../../../../hooks/transaction";
 export default function BudgetForm({ budget }: { budget?: Budget }) {
   const [expiresAt, setExpiresAt] = useState<Dayjs | null>(null);
-  const user = useUserData();
-  const navigate = useNavigate();
-  const { transaction } = useTransactionContext();
+
   const snackbar = useSnackbar();
   const [create] = useCreateBudgetMutation();
+
+  const user = useUserData();
+  const navigate = useNavigate();
+
+  const { readonly, customer, details } = useTransaction();
+  const { iva } = useSummary();
+
   const dispatch = useDispatch();
-  const [readonly, setReadonly] = useState(false);
 
   useEffect(() => {
     if (budget) {
-      setReadonly(true);
       dispatch({
-        type: "setState",
-        payload: {
-          editMode: true,
-          details: budget.details,
-          iva: budget.iva,
-
-          customer: budget.customer,
-        },
+        type: "setTransaction",
+        payload: budget,
       });
       setExpiresAt(budget.expiresAt ? dayjs(budget.expiresAt) : null);
     }
@@ -42,7 +39,6 @@ export default function BudgetForm({ budget }: { budget?: Budget }) {
 
   const handleSubmit = async () => {
     try {
-      const { customer, details, iva } = transaction;
       const result = CreateBudgetSchema.safeParse({
         customerId: customer.uuid,
         iva,

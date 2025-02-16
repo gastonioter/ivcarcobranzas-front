@@ -6,6 +6,7 @@ import { Alert, Paper } from "@mui/material";
 import { useNavigate, useParams } from "react-router";
 import BudgetForm from "../NewBudget/components/BudgetFrom/BudgetFrom";
 import { TransactionProvider } from "../../context/TransactionContext";
+import SummaryProvider from "../../context/SummaryContext";
 
 export default function BudgetDetails() {
   const { uuid } = useParams();
@@ -41,10 +42,20 @@ export default function BudgetDetails() {
         <SectionTitle>Detalle de Presupuesto Nro: {budget?.serie}</SectionTitle>
       </SectionHeader>
 
-      <Paper sx={{ p: 2 }}>
-        <TransactionProvider>
-          <BudgetForm budget={budget} />
-        </TransactionProvider>
+      <Paper
+        sx={{
+          p: 2,
+          height: {
+            xs: "auto",
+            md: "100%",
+          },
+        }}
+      >
+        <SummaryProvider>
+          <TransactionProvider>
+            <BudgetForm budget={budget} />
+          </TransactionProvider>
+        </SummaryProvider>
       </Paper>
     </>
   );

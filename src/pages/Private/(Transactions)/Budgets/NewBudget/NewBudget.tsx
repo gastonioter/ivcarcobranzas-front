@@ -5,9 +5,8 @@ import { Paper } from "@mui/material";
 import { useNavigate } from "react-router";
 import BudgetForm from "./components/BudgetFrom/BudgetFrom";
 import { TransactionProvider } from "../../context/TransactionContext";
-export default function NewSale() {
-
-  
+import SummaryProvider from "../../context/SummaryContext";
+export default function NewBudget() {
   const navigate = useNavigate();
   return (
     <>
@@ -34,9 +33,11 @@ export default function NewSale() {
           },
         }}
       >
-        <TransactionProvider>
-          <BudgetForm />
-        </TransactionProvider>
+        <SummaryProvider>
+          <TransactionProvider>
+            <BudgetForm />
+          </TransactionProvider>
+        </SummaryProvider>
       </Paper>
     </>
   );

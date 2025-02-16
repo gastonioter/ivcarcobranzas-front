@@ -42,6 +42,7 @@ export default function SaleForm({ sale }: { sale?: Sale }) {
 
   const { iva } = useSummary();
 
+
   useEffect(() => {
     /* Actualizo Transaction Store y Summary Store con la Sale que llega por 
     parametro al componente */
