@@ -1,3 +1,7 @@
+import { dialogOpenSubject$ } from "@/components";
+import ConfirmationDialog, {
+  IConfirmationDialogProps,
+} from "@/components/ConfirmationDialog/ConfirmationDialog";
 import TableMenuActions from "@/components/TableMenuActions/TableMenuActions";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { Customer, PrivateRoutes } from "@/models";
@@ -11,6 +15,7 @@ import { formatFullName } from "@/utilities/formatFullName";
 import { formattedCurrency } from "@/utilities/formatPrice";
 import { Chip } from "@mui/material";
 import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 
 export default function BudgetsTable() {
@@ -19,11 +24,11 @@ export default function BudgetsTable() {
   //const [toggleStatus] = useUpdateSaleStatusMutation();
   const snackbar = useSnackbar();
   const navigate = useNavigate();
-  // const [confirmatoinState, setConfirmatoinState] =
-  //   useState<IConfirmationDialogProps>({
-  //     message: <></>,
-  //     onConfirm: () => {},
-  //   });
+  const [confirmatoinState, setConfirmatoinState] =
+    useState<IConfirmationDialogProps>({
+      message: <></>,
+      onConfirm: () => {},
+    });
 
   const changeStatusCreator =
     (status: BudgetStatus) => async (uuid: string) => {
@@ -51,61 +56,54 @@ export default function BudgetsTable() {
         {
           name: `Aprobar`,
           onClick() {
-            // setConfirmatoinState({
-            //   message: (
-            //     <div>
-            //       Al aprobar este presupuesto pasara automaticamente al listado
-            //       de ventas con estado <strong>"PENDIENTE DE PAGO"</strong>,
-            //       ¿Deseas continuar?
-            //     </div>
-            //   ),
-            //   onConfirm: async () => {
-            //     try {
-            //       await toggleStatus({
-            //         uuid: budget.uuid,
-            //         status: BudgetStatus.APPROVED,
-            //       }).unwrap();
-            //     } catch (e) {
-            //       snackbar.openSnackbar(e.data.error, "error");
-            //       console.log(e);
-            //     }
-            //   },
-            // });
-            //dialogOpenSubject$.setSubject = true;
-
-            changeStatusCreator(BudgetStatus.APPROVED)(budget.uuid);
+            setConfirmatoinState({
+              message: (
+                <div>
+                  Si apruebas este presupuesto se creara automaticamente una
+                  venta en estado<strong>"PENDIENTE DE PAGO"</strong>, ¿Deseas
+                  continuar?
+                </div>
+              ),
+              onConfirm: async () => {
+                try {
+                  await changeStatusCreator(BudgetStatus.APPROVED)(budget.uuid);
+                } catch (e) {
+                  snackbar.openSnackbar(e.data.error, "error");
+                  console.log(e);
+                }
+              },
+            });
+            dialogOpenSubject$.setSubject = true;
           },
-          //isDisabled: budget.status === BudgetStatus.REJECTED,
+          isDisabled:
+            budget.status === BudgetStatus.REJECTED ||
+            budget.status === BudgetStatus.APPROVED,
         },
         {
           name: `Rechazar`,
           onClick() {
-            // setConfirmatoinState({
-            //   isDanger: true,
-            //   message: (
-            //     <div>
-            //       Estas a punto de rechazar un presupuesto lo cual es una
-            //       operacion <strong>IRREVERSIBLE</strong>, ¿Estas seguro de
-            //       continuar?
-            //     </div>
-            //   ),
-            //   onConfirm: async () => {
-            //     try {
-            //       await toggleStatus({
-            //         uuid: budget.uuid,
-            //         status: BudgetStatus.REJECTED,
-            //       }).unwrap();
-            //     } catch (e) {
-            //       snackbar.openSnackbar(e.data.error, "error");
-            //       console.log(e);
-            //     }
-            //   },
-            // });
-            //dialogOpenSubject$.setSubject = true;
-
-            changeStatusCreator(BudgetStatus.REJECTED)(budget.uuid);
+            setConfirmatoinState({
+              isDanger: true,
+              message: (
+                <div>
+                  Estas a punto de rechazar un presupuesto lo cual es una
+                  operacion <strong>IRREVERSIBLE</strong>, ¿Estas seguro de
+                  continuar?
+                </div>
+              ),
+              onConfirm: async () => {
+                try {
+                  await changeStatusCreator(BudgetStatus.REJECTED)(budget.uuid);
+                } catch (e) {
+                  snackbar.openSnackbar(e.data.error, "error");
+                }
+              },
+            });
+            dialogOpenSubject$.setSubject = true;
           },
-          //isDisabled: budget.status === BudgetStatus.REJECTED,
+          isDisabled:
+            budget.status === BudgetStatus.REJECTED ||
+            budget.status === BudgetStatus.APPROVED,
         },
         {
           name: "Imprimir",
@@ -198,7 +196,7 @@ export default function BudgetsTable() {
         disableColumnMenu
       />
 
-      {/* <ConfirmationDialog {...confirmatoinState} /> */}
+      <ConfirmationDialog {...confirmatoinState} />
     </>
   );
 }
