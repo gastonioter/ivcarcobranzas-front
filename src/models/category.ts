@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export interface Category {
-  uuid: string;
   name: string;
-  description?: string;
+  description: string;
+  uuid: string;
 }
 
 export const categorySchema = z.object({

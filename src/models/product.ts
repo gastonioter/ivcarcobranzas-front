@@ -6,7 +6,7 @@ export interface Product {
   name: string;
   price: number;
   code: string;
-  categoryId: string;
+  category: Category;
 }
 export type ProducWithCategories = Product & {
   category: Category;

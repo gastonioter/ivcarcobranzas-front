@@ -36,6 +36,7 @@ export default function ProductForm({ product, setProduct }: ProductFormProps) {
   const { data: categories, isLoading: isLoadingCategories } =
     useGetCategoriesQuery();
 
+  console.log(product);
   const snackbar = useSnackbar();
   const {
     register,
@@ -59,6 +60,7 @@ export default function ProductForm({ product, setProduct }: ProductFormProps) {
           editMode ? "editado" : "creado"
         } con éxito`
       );
+      setProduct(null);
     } catch (e) {
       snackbar.openSnackbar(`${e.data.error}`, "error");
     }
@@ -92,7 +94,7 @@ export default function ProductForm({ product, setProduct }: ProductFormProps) {
             disabled={isLoadingCategories}
             labelId="category"
             id="demo-simple-select-helper"
-            defaultValue={product?.categoryId}
+            defaultValue={product?.category.uuid}
             label="Categoria"
             {...register("categoryId")}
           >
