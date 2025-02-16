@@ -25,7 +25,7 @@ export default function SalePaymentsTable() {
     nro: index + 1,
   }));
 
-  const columns: GridColDef[] = [
+  const columns: GridColDef<SalePayment>[] = [
     { field: "nro", headerName: "#", width: 50 },
     {
       field: "createdAt",
@@ -106,6 +106,7 @@ export default function SalePaymentsTable() {
       columns={columns}
       disableRowSelectionOnClick
       loading={isLoading}
+      isRowSelectable={({ row }) => !row.isCupon}
       sx={{ flexBasis: 100, flex: 2, maxWidth: "100%" }}
       getRowId={(row) => row.uuid}
     />

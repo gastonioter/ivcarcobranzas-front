@@ -1,5 +1,6 @@
 import { addToken } from "@/interceptors";
 import {
+  AccountSummary,
   CreateCustomerFormData,
   Customer,
   EditCustomerFormData,
@@ -34,7 +35,7 @@ const baseQuery: BaseQueryFn<
 export const customerApi = createApi({
   reducerPath: "customerApi",
   baseQuery,
-  tagTypes: ["Customers"],
+  tagTypes: ["Customers", "AccountSummary"],
   endpoints: (builder) => ({
     getCustomers: builder.query<Customer[], void>({
       query: () => "/",
@@ -68,11 +69,12 @@ export const customerApi = createApi({
       invalidatesTags: ["Customers"],
     }),
 
-    getAccountSummary: builder.mutation<Customer, string>({
+    getAccountSummary: builder.query<AccountSummary, string>({
       query: (uuid) => ({
         method: "POST",
-        url: `/${uuid}`,
+        url: `/accountsummary/${uuid}`,
       }),
+      providesTags: ["AccountSummary"],
     }),
   }),
 });
@@ -82,4 +84,5 @@ export const {
   useGetCustomersQuery,
   useEditCustomerMutation,
   useUpdateStatusMutation,
+  useGetAccountSummaryQuery,
 } = customerApi;

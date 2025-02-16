@@ -44,7 +44,7 @@ export default function BudgetsTable() {
           name: "Ver Detalle",
           onClick: () => {
             navigate(
-              `/${PrivateRoutes.PRIVATE}/${PrivateRoutes.SALES}/${budget.uuid}`
+              `/${PrivateRoutes.PRIVATE}/${PrivateRoutes.BUDGETS}/${budget.uuid}`
             );
           },
         },
@@ -129,7 +129,7 @@ export default function BudgetsTable() {
       headerName: "Cliente",
       flex: 1,
       valueGetter: (customer: Customer) =>
-        formatFullName(customer.firstName, customer.lastName)
+        formatFullName(customer.firstName, customer.lastName),
     },
     {
       field: "seller",

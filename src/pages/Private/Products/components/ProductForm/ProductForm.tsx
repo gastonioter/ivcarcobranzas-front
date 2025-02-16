@@ -60,7 +60,6 @@ export default function ProductForm({ product, setProduct }: ProductFormProps) {
         } con éxito`
       );
     } catch (e) {
-      console.log(e);
       snackbar.openSnackbar(`${e.data.error}`, "error");
     }
   };

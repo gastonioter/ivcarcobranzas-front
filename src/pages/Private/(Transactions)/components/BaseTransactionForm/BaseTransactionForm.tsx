@@ -4,7 +4,7 @@ import {
   dialogOpenSubject$,
 } from "@/components";
 import { useSnackbar } from "@/context/SnackbarContext";
-import { Product, SaleStatus } from "@/models";
+import { Product } from "@/models";
 import { useGetCustomersQuery } from "@/services/customerApi";
 import { useGetProductsQuery } from "@/services/productApi";
 import { AddCircleRounded } from "@mui/icons-material";
@@ -22,13 +22,13 @@ import {
 import { useLocation, useNavigate } from "react-router";
 
 import { Detail } from "@/models/Transaction";
-import { SaleCustomer } from "../../context/reducer";
-import { useDispatch, useTransaction } from "../../hooks";
+import { useSummary, useSummaryDispatch } from "../../hooks/summary";
+import { useDispatch, useTransaction } from "../../hooks/transaction";
+import { SaleCustomer } from "../../reducers/transactionReducer";
 import { NewTransactionsStyled } from "../../styled-components/new.styled.component";
-import { useEffect } from "react";
-import SaleSummary from "./components/SaleSummary/SaleSummary";
 import DetailsTable from "./components/DetailsTable/DetailsTable";
 import ProductsForSaleTable from "./components/ProductsForSaleTable/ProductsForSaleTable";
+import SaleSummary from "./components/SaleSummary/SaleSummary";
 
 export interface IBaseTransactionFormProps {
   children?: React.ReactNode;
@@ -44,9 +44,11 @@ export default function BaseTransactionForm({
   const location = useLocation();
   const snackbar = useSnackbar();
 
-  const { details, iva, subtotal, customer, editMode, saleStatus } =
-    useTransaction();
+  const { details, customer, readonly } = useTransaction();
   const dispatch = useDispatch();
+
+  const summaryDispatch = useSummaryDispatch();
+  const { iva } = useSummary();
 
   const page = location.pathname.split("/")[2];
   const entity = page.includes("ventas") ? "venta" : "presupuesto";
@@ -56,10 +58,6 @@ export default function BaseTransactionForm({
     isLoading: isLoadingProducts,
     error: errorProducts,
   } = useGetProductsQuery();
-
-  useEffect(() => {
-    console.log("Customer en Autocomplete:", customer);
-  }, [customer]);
 
   const {
     data,
@@ -127,11 +125,10 @@ export default function BaseTransactionForm({
             }}
             disableClearable
             value={customer}
-            readOnly={!!editMode}
             getOptionLabel={(option: SaleCustomer) =>
               `${option.firstName} ${option.lastName}`
             }
-            disabled={isLoadingCostumers || editMode}
+            disabled={isLoadingCostumers || readonly}
             options={customers ?? []}
             renderInput={(params) => <TextField {...params} label="Cliente" />}
           />
@@ -140,12 +137,12 @@ export default function BaseTransactionForm({
         <TextField
           label={"IVA"}
           value={iva}
-          disabled={!!editMode}
+          disabled={readonly}
           onChange={(e) => {
             const tax: number = !Number.isNaN(parseFloat(e.target.value))
               ? parseInt(e.target.value)
               : 0;
-            dispatch({
+            summaryDispatch({
               type: "update-iva",
               payload: tax,
             });
@@ -159,25 +156,19 @@ export default function BaseTransactionForm({
           onClick={() => {
             dialogOpenSubject$.setSubject = true;
           }}
-          disabled={isLoadingProducts || !!editMode}
+          disabled={isLoadingProducts || readonly}
         >
           Agregar Productos
         </Button>
 
         <DetailsTable
-          readOnly={!!editMode}
+          readOnly={readonly}
           details={details}
           onDeleteItem={onDeleteDetail}
           handleUpdateDetail={onUpdateDetail}
         />
 
-        <SaleSummary
-          forBudget={entity === "presupuesto"}
-          subtotal={subtotal}
-          tax={iva}
-          sx={{ flex: 1 }}
-          isCancelled={saleStatus === SaleStatus.CANCELLED}
-        />
+        <SaleSummary forBudget={entity === "presupuesto"} sx={{ flex: 1 }} />
 
         {/* EXTRA FORM INPUTS */}
 
@@ -196,7 +187,7 @@ export default function BaseTransactionForm({
             loading={false}
             variant="contained"
             color="success"
-            disabled={!!editMode}
+            disabled={readonly}
             onClick={onSumbit}
           >
             Crear {entity}

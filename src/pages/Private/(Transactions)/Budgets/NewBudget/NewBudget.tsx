@@ -6,6 +6,8 @@ import { useNavigate } from "react-router";
 import BudgetForm from "./components/BudgetFrom/BudgetFrom";
 import { TransactionProvider } from "../../context/TransactionContext";
 export default function NewSale() {
+
+  
   const navigate = useNavigate();
   return (
     <>
@@ -23,7 +25,15 @@ export default function NewSale() {
         <SectionTitle>Nuevo Presupuesto</SectionTitle>
       </SectionHeader>
 
-      <Paper sx={{ p: 2 }}>
+      <Paper
+        sx={{
+          p: 2,
+          height: {
+            xs: "auto",
+            md: "100%",
+          },
+        }}
+      >
         <TransactionProvider>
           <BudgetForm />
         </TransactionProvider>

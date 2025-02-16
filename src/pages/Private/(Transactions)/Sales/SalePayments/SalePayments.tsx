@@ -5,8 +5,8 @@ import { useGetSaleQuery } from "@/services/saleApi";
 import { formatFullName } from "@/utilities/formatFullName";
 import { AddCircleRounded } from "@mui/icons-material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import PrintIcon from "@mui/icons-material/Print";
 import {
+  Alert,
   Box,
   Button,
   CircularProgress,
@@ -14,15 +14,15 @@ import {
   Typography,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router";
-import SalePaymentsTable from "./components/SalePaymentsTable/SalePaymentsTable";
-import SalePaymentForm from "./components/SalePaymentForm/SalePaymentForm";
 import SalePaymentSummary from "./components/PaymentSummary/PaymentSummary";
+import SalePaymentForm from "./components/SalePaymentForm/SalePaymentForm";
+import SalePaymentsTable from "./components/SalePaymentsTable/SalePaymentsTable";
 
 export default function SalePayments() {
   const navigate = useNavigate();
   const { uuid } = useParams();
 
-  const { data: sale, isLoading } = useGetSaleQuery(uuid as string);
+  const { data: sale, isLoading, error } = useGetSaleQuery(uuid as string);
 
   const back = () => {
     navigate(-1);
@@ -30,7 +30,8 @@ export default function SalePayments() {
 
   if (isLoading) return <CircularProgress size={50} color="primary" />;
 
-  if (!sale) return null;
+  if (error || !sale)
+    return <Alert severity="error">No se encontró la venta</Alert>;
 
   return (
     <>
@@ -68,9 +69,6 @@ export default function SalePayments() {
           disabled={false} // si esta pagando no se puede agregar pagos
         >
           Crear Nuevo Pago
-        </Button>
-        <Button startIcon={<PrintIcon />} variant="outlined" color="info">
-          Imprimir Resumen de pagos
         </Button>
       </Stack>
 

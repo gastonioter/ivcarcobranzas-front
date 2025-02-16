@@ -6,6 +6,7 @@ export interface SalePayment {
   paymentMethod: PaymentMethods;
   status: SalePaymentStatus;
   createdAt: Date;
+  isCupon: boolean;
 }
 
 export enum PaymentMethods {

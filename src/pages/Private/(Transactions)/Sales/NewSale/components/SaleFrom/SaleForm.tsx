@@ -1,55 +1,85 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useSnackbar } from "@/context/SnackbarContext";
 import { useUserData } from "@/hooks/useUserData";
-import { Sale } from "@/models";
-import { CreateTransactionSchema } from "@/models/Transaction";
+import { TextField } from "@mui/material";
+
+import { CreateSaleSchema, Sale } from "@/models";
 import BaseTransactionForm from "@/pages/Private/(Transactions)/components/BaseTransactionForm/BaseTransactionForm";
+import {
+  useSummary,
+  useSummaryDispatch,
+} from "@/pages/Private/(Transactions)/hooks/summary";
 import {
   useDispatch,
   useTransaction,
-} from "@/pages/Private/(Transactions)/hooks";
+} from "@/pages/Private/(Transactions)/hooks/transaction";
+import { useGetAccountSummaryQuery } from "@/services/customerApi";
 import { useCreateSaleMutation } from "@/services/saleApi";
-import { TextField } from "@mui/material";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { useEffect, useState } from "react";
+import { formattedCurrency } from "@/utilities/formatPrice";
+import Typography from "@mui/material/Typography";
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
-
 export default function SaleForm({ sale }: { sale?: Sale }) {
-  const [discount, setDiscount] = useState<number>(0);
-
   const user = useUserData();
   const navigate = useNavigate();
   const snackbar = useSnackbar();
   const [create] = useCreateSaleMutation();
+
   const transaction = useTransaction();
   const dispatch = useDispatch();
 
+  const { discount } = useSummary();
+  const summaryDispatch = useSummaryDispatch();
+
+  const { customer, details, readonly } = transaction;
+
+  const customerId = customer.uuid;
+
+  const { data: accountSummary, isLoading: isLoadingSummary } =
+    useGetAccountSummaryQuery(customerId, {
+      skip: !customerId,
+    });
+
+  const { iva } = useSummary();
+
   useEffect(() => {
+    /* Actualizo Transaction Store y Summary Store con la Sale que llega por 
+    parametro al componente */
+
     if (sale) {
       dispatch({
-        type: "setState",
-        payload: {
-          editMode: true,
-          details: sale.details,
-          iva: sale.iva,
-          //saleStatus: sale.status,
-          customer: sale.customer,
-        },
+        type: "setTransaction",
+        payload: sale,
+      });
+      summaryDispatch({
+        type: "update-discount",
+        payload: sale.discount ?? 0,
+      });
+      summaryDispatch({
+        type: "update-iva",
+        payload: sale.iva,
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sale]);
+
+  useEffect(() => {
+    if (discount > Math.abs(accountSummary?.saldo || 0)) {
+      snackbar.openSnackbar(
+        "El monto supera el saldo a favor del cliente",
+        "error"
+      );
+    }
+  }, [discount, accountSummary]);
 
   const handleSubmit = async () => {
     try {
-      const { customer, details, iva } = transaction;
-      const result = CreateTransactionSchema.safeParse({
+      const result = CreateSaleSchema.safeParse({
         customerId: customer.uuid,
         iva,
         sellerId: user?.userId as string,
         details,
+        discount,
       });
-      console.log("Result:", result);
       if (!result.success) {
         snackbar.openSnackbar(`${result.error.errors[0].message}`, "error");
         return;
@@ -66,16 +96,37 @@ export default function SaleForm({ sale }: { sale?: Sale }) {
 
   return (
     <BaseTransactionForm onSumbit={handleSubmit}>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
+      {customer && accountSummary ? (
         <TextField
-          label="Descuento?"
-          size="small"
+          label="Aplicar saldo a favor"
           type="number"
+          disabled={readonly || accountSummary.saldo >= 0}
           value={discount}
-          onChange={(e) => setDiscount(+e.target.value)}
-          helperText="Ingresa el descuento en porcentaje"
+          onChange={(e) => {
+            const discount = Number(e.target.value);
+            summaryDispatch({
+              type: "update-discount",
+              payload: !isNaN(discount) && discount >= 0 ? discount : 0,
+            });
+          }}
+          error={discount > Math.abs(accountSummary.saldo)}
+          helperText={`${
+            accountSummary.saldo < 0
+              ? `El cliente tiene un saldo a favor de: ${formattedCurrency(
+                  Math.abs(accountSummary.saldo)
+                )}. Si se aplica sera usado como HABER en esta venta`
+              : `El cliente tiene un saldo pendiente de ${formattedCurrency(
+                  accountSummary.saldo
+                )}`
+          }`}
         />
-      </LocalizationProvider>
+      ) : isLoadingSummary ? (
+        <Typography variant="body2" color="textSecondary">
+          Cargando información de la cuenta...
+        </Typography>
+      ) : (
+        <></>
+      )}
     </BaseTransactionForm>
   );
 }

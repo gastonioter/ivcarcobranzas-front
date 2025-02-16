@@ -7,6 +7,7 @@ import { Alert, Paper } from "@mui/material";
 import { useNavigate, useParams } from "react-router";
 import { TransactionProvider } from "../../context/TransactionContext";
 import SaleForm from "../NewSale/components/SaleFrom/SaleForm";
+import SummaryProvider from "../../context/SummaryContext";
 
 export default function SaleDetails() {
   const { uuid } = useParams();
@@ -42,10 +43,20 @@ export default function SaleDetails() {
         <SectionTitle>Detalle de Venta Nro: {sale?.serie}</SectionTitle>
       </SectionHeader>
 
-      <Paper sx={{ p: 2}}>
-        <TransactionProvider>
-          <SaleForm sale={sale} />
-        </TransactionProvider>
+      <Paper
+        sx={{
+          p: 2,
+          height: {
+            xs: "auto",
+            md: "100%",
+          },
+        }}
+      >
+        <SummaryProvider>
+          <TransactionProvider>
+            <SaleForm sale={sale} />
+          </TransactionProvider>
+        </SummaryProvider>
       </Paper>
     </>
   );

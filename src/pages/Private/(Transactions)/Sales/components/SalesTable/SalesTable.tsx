@@ -18,7 +18,6 @@ export default function SalesTable() {
   const [updateSalePayment] = useUpdateSaleMutation();
   const rows = data || [];
 
-  console.log(rows);
   const actions = ({ row }: { row: Sale }) => (
     <TableMenuActions
       actions={[

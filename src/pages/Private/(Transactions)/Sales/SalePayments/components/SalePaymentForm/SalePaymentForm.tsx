@@ -41,7 +41,6 @@ export default function SalePaymentForm() {
       snackbar.openSnackbar("Pago agregado correctamente");
       dialogCloseSubject$.setSubject = true;
     } catch (e) {
-      console.log("error de pago");
       snackbar.openSnackbar(e.data.error, "error");
     }
   };
@@ -49,7 +48,7 @@ export default function SalePaymentForm() {
     <Box
       component={"form"}
       onSubmit={handleSubmit}
-      sx={{ display: "flex", flexDirection: "column", gap: 8 }}
+      sx={{ display: "flex", flexDirection: "column", gap: 5 }}
     >
       <TextField label="Monto de Pago" name="amount" />
       <FormControl>
@@ -57,7 +56,6 @@ export default function SalePaymentForm() {
         <Select
           labelId="metodo"
           name="paymentMethod"
-          defaultValue={PaymentMethods.CASH}
           label="Seleccione el metodo de pago"
         >
           {Object.values(PaymentMethods).map((method) => (
@@ -67,6 +65,7 @@ export default function SalePaymentForm() {
           ))}
         </Select>
       </FormControl>
+
       <FooterCustomDialog isLoading={isLoading} editMode={false} />
     </Box>
   );

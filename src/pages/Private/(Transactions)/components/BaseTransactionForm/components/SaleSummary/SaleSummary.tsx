@@ -1,28 +1,30 @@
+import { useSummary } from "@/pages/Private/(Transactions)/hooks/summary";
+import { useTransaction } from "@/pages/Private/(Transactions)/hooks/transaction";
+import { getSubtotalAmount } from "@/pages/Private/(Transactions)/utils";
 import { formattedCurrency } from "@/utilities/formatPrice";
-import { Circle } from "@mui/icons-material";
-import { Card, CardContent, Stack, Tooltip, Typography } from "@mui/material";
+import { Card, CardContent, Stack, Typography } from "@mui/material";
 
 interface SaleSummaryProps {
-  subtotal: number;
-  tax: number;
   sx: object;
-  isCancelled: boolean;
+
   forBudget: boolean;
 }
 
 export default function SaleSummary({
-  subtotal,
-  tax,
   sx,
-  isCancelled,
   forBudget = false,
 }: SaleSummaryProps) {
   const entity = forBudget ? "Presupuesto" : "Venta";
-  const total = subtotal + (subtotal * tax) / 100;
 
-  const getTaxAmount = (subtotal: number, tax: number) => {
-    return (subtotal * tax) / 100;
-  };
+  const { iva } = useSummary();
+  const { details } = useTransaction();
+
+  const subtotal = getSubtotalAmount(details);
+
+  const taxAmount = (subtotal * iva) / 100;
+
+  const total = subtotal + taxAmount;
+
   return (
     <Card
       sx={{
@@ -46,19 +48,15 @@ export default function SaleSummary({
               Subtotal: {formattedCurrency(subtotal)}
             </Typography>
             <Typography variant="body1">
-              IVA ({`${tax}%`}):{" "}
-              {formattedCurrency(getTaxAmount(subtotal, tax))}
+              IVA ({`${iva}%`}): {formattedCurrency(taxAmount)}
             </Typography>
+            {/* <Typography variant="body1">
+              Descuento ({`${discount}%`}): {formattedCurrency(discountAmount)}
+            </Typography> */}
             <Typography variant="h6" color="primary" sx={{ mt: 2 }}>
               Total: {formattedCurrency(total)}
             </Typography>
           </div>
-
-          {isCancelled && !forBudget && (
-            <Tooltip title="Venta Cancelada" arrow>
-              <Circle color="error" />
-            </Tooltip>
-          )}
         </CardContent>
       </Stack>
     </Card>

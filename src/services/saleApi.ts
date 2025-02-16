@@ -1,7 +1,6 @@
 import { addToken } from "@/interceptors";
-import { Sale, UpdateSaleFormData } from "@/models/Sale";
+import { CreateSaleFormData, Sale, UpdateSaleFormData } from "@/models/Sale";
 import { SalePayment } from "@/models/SalePayment";
-import { TransactionFormData } from "@/models/Transaction";
 import { clearCredentials } from "@/redux/slices";
 import {
   BaseQueryFn,
@@ -10,6 +9,7 @@ import {
   fetchBaseQuery,
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
+import { customerApi } from "./customerApi";
 
 const baseQuery: BaseQueryFn<
   string | FetchArgs,
@@ -44,13 +44,18 @@ export const saleApi = createApi({
       providesTags: ["Sales"],
     }),
 
-    createSale: builder.mutation<Sale, TransactionFormData>({
+    createSale: builder.mutation<Sale, CreateSaleFormData>({
       query: (data) => ({
         url: "/",
         method: "POST",
         body: data,
       }),
       invalidatesTags: ["Sales"],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        await queryFulfilled;
+
+        dispatch(customerApi.util.invalidateTags(["AccountSummary"]));
+      },
     }),
 
     updateSale: builder.mutation<Sale, UpdateSaleFormData>({
@@ -60,6 +65,12 @@ export const saleApi = createApi({
         body,
       }),
       invalidatesTags: ["Sales"],
+
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        await queryFulfilled;
+
+        dispatch(customerApi.util.invalidateTags(["AccountSummary"]));
+      },
     }),
 
     /* SALE PAYMENTS APIs */

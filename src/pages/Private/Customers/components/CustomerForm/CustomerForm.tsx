@@ -67,7 +67,6 @@ function CustomerForm({
       | SelectChangeEvent<any>
   ) => {
     const { name, value } = e.target;
-    console.log(name, value);
     setBaseCustomer((previous) => ({
       ...previous,
       [name]: value,
@@ -85,7 +84,6 @@ function CustomerForm({
   const snackbar = useSnackbar();
 
   useEffect(() => {
-    console.log(customer)
     /* Update form inputs based on the modalidad customer  */
     if (customer) {
       setBaseCustomer({
@@ -98,7 +96,6 @@ function CustomerForm({
       setModalidad(customer.modalidadData.modalidad);
 
       if (customer.modalidadData.modalidad == CustomerModalidad.CLOUD) {
-        console.log(customer.modalidadData.cloudCategory);
         setCloudModalidadData({
           cloudCategoryId: customer.modalidadData.cloudCategory.uuid,
         });
@@ -111,7 +108,6 @@ function CustomerForm({
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    console.log(cloudModalidadData.cloudCategoryId);
     const result = createCustomerSchema.safeParse({
       ...baseCustomer,
       modalidadData: {

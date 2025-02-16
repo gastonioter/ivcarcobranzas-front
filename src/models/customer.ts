@@ -24,6 +24,20 @@ export interface Customer {
   modalidadData: ModalidadData;
 }
 
+export interface AccountSummary {
+  details: SummaryDetail[];
+  debe: number;
+  haber: number;
+  saldo: number;
+}
+
+export interface SummaryDetail {
+  saleId: string;
+  debe: number;
+  haber: number;
+  saldo: number;
+}
+
 export enum CustomerModalidad {
   REGULAR = "Regular",
   CLOUD = "Cloud",

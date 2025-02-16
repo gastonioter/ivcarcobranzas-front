@@ -1,5 +1,10 @@
 import { Dispatch, PropsWithChildren, useReducer } from "react";
-import { Action, initialState, reducer, TransactionState } from "./reducer";
+import {
+  Action,
+  initialState,
+  reducer,
+  TransactionState,
+} from "../reducers/transactionReducer";
 import { createContext } from "@/context/create-context.util";
 type TransactionContext = {
   dispatch: Dispatch<Action>;
