@@ -5,6 +5,7 @@ import { authApi } from "@/services";
 import { budgetApi } from "@/services/budgetApi";
 import { categoriesApi } from "@/services/categoriesApi";
 import { cloudCategoryApi } from "@/services/cloudCategoriesApi";
+import { cuotasApi } from "@/services/cuotasApi";
 import { customerApi } from "@/services/customerApi";
 import { productApi } from "@/services/productApi";
 import { saleApi } from "@/services/saleApi";
@@ -21,6 +22,7 @@ export const store = configureStore({
     [saleApi.reducerPath]: saleApi.reducer,
     [cloudCategoryApi.reducerPath]: cloudCategoryApi.reducer,
     [budgetApi.reducerPath]: budgetApi.reducer,
+    [cuotasApi.reducerPath]: cuotasApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -30,7 +32,8 @@ export const store = configureStore({
       customerApi.middleware,
       saleApi.middleware,
       budgetApi.middleware,
-      cloudCategoryApi.middleware
+      cloudCategoryApi.middleware,
+      cuotasApi.middleware
     ),
 });
 

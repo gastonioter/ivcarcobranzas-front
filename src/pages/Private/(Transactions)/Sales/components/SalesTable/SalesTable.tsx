@@ -8,15 +8,21 @@ import { formatFullName } from "@/utilities/formatFullName";
 import { formattedCurrency } from "@/utilities/formatPrice";
 import { Chip } from "@mui/material";
 import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
+import { useRef } from "react";
 import { useNavigate } from "react-router";
 
 export default function SalesTable() {
   const { data, isLoading } = useGetSalesQuery();
   const snackbar = useSnackbar();
   const navigate = useNavigate();
-
+  const newTabRef = useRef<Window | null>(null);
   const [updateSalePayment] = useUpdateSaleMutation();
   const rows = data || [];
+
+  const openNewTab = (path) => {
+    const url = "http://localhost:3001" + path;
+    newTabRef.current = window.open(url, "_blank");
+  };
 
   const actions = ({ row }: { row: Sale }) => (
     <TableMenuActions
@@ -56,7 +62,9 @@ export default function SalesTable() {
         },
         {
           name: "Imprimir",
-          onClick: () => {},
+          onClick: () => {
+            openNewTab(`/api/prints/sale/${row.uuid}`);
+          },
         },
       ]}
     />

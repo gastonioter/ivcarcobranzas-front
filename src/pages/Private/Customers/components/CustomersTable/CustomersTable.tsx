@@ -1,3 +1,4 @@
+import { CustomGridToolbar } from "@/components";
 import { dialogOpenSubject$ } from "@/components/CustomDialog";
 import TableMenuActions from "@/components/TableMenuActions/TableMenuActions";
 import { useSnackbar } from "@/context/SnackbarContext";
@@ -13,13 +14,9 @@ import {
 } from "@/services/customerApi";
 import { formattedDate } from "@/utilities";
 import { formatFullName } from "@/utilities/formatFullName";
-import { Alert } from "@mui/material";
-import {
-  DataGrid,
-  GridColDef,
-  GridRowsProp,
-  GridToolbar,
-} from "@mui/x-data-grid";
+import { Alert, Box, Checkbox, FormControlLabel } from "@mui/material";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { useState } from "react";
 import CustomerStatusIndicator from "../CustomerStatusIndicator/CustomerStatusIndicator";
 
 function formatCustomerModalidad(data: ModalidadData) {
@@ -32,8 +29,14 @@ interface CustomerTableProps {
   setCustomer: (customer: Customer | null) => void;
 }
 function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
-  const { data, isLoading, error } = useGetCustomersQuery();
+  const { data: customers, isLoading, error } = useGetCustomersQuery();
   const [changeCustomerStatus] = useUpdateStatusMutation();
+
+  const [onlyCloudCustomers, setChecked] = useState(false);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.target.checked);
+  };
 
   const snackbar = useSnackbar();
   if (error) {
@@ -42,37 +45,47 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
     );
   }
 
-  const actions = (params) => (
+  let rows;
+
+  if (onlyCloudCustomers) {
+    rows = customers?.filter(
+      (customer) => customer.modalidadData.modalidad === CustomerModalidad.CLOUD
+    );
+  } else {
+    rows = customers;
+  }
+
+  const actions = ({ row }: { row: Customer }) => (
     <TableMenuActions
       actions={[
         {
           name: "Editar",
           onClick: () => {
             // open the dialog with the data;
-            setCustomer(params.row);
+            setCustomer(row);
             dialogOpenSubject$.setSubject = true;
           },
         },
         {
-          name: "Resumen Cta", // TODO: Implementar con filtros en la tabla Mensualidades
-          onClick: () => {},
+          name: "Rsm.  Cta.", // TODO: Implementar con filtros en la tabla Mensualidades
+          onClick: () => {
+            window.open(`http://localhost:3001/api/prints/rsmcta/${row.uuid}`);
+          },
         },
         {
           name: `${
-            params.row.status === CustomerStatus.ACTIVE
-              ? "Dar de baja"
-              : "Activar"
+            row.status === CustomerStatus.ACTIVE ? "Dar de baja" : "Activar"
           }`,
           onClick: async () => {
             try {
-              if (params.row.status === CustomerStatus.ACTIVE) {
+              if (row.status === CustomerStatus.ACTIVE) {
                 await changeCustomerStatus({
-                  uuid: params.row.uuid,
+                  uuid: row.uuid,
                   status: CustomerStatus.INACTIVE,
                 });
               } else {
                 await changeCustomerStatus({
-                  uuid: params.row.uuid,
+                  uuid: row.uuid,
                   status: CustomerStatus.ACTIVE,
                 });
               }
@@ -87,8 +100,6 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
       ]}
     />
   );
-
-  const rows: GridRowsProp = data || [];
 
   const columns: GridColDef<Customer>[] = [
     {
@@ -155,35 +166,49 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
   ];
 
   return (
-    <DataGrid
-      slotProps={{
-        toolbar: {
-          showQuickFilter: true,
-        },
-        loadingOverlay: {
-          variant: "skeleton",
-          noRowsVariant: "skeleton",
-        },
-      }}
-      slots={{
-        toolbar: GridToolbar,
-      }}
-      disableDensitySelector
-      disableColumnMenu
-      pageSizeOptions={[5, 10, 25]}
-      getRowId={(row) => row.uuid}
-      rows={rows}
-      disableRowSelectionOnClick
-      // onRowClick={(row) => console.log(row)}
-      columns={columns as GridColDef[]}
-      // processRowUpdate={() => {}} // TODO: Implementar
-      loading={isLoading}
-      // sx={{
-      //   "& .MuiDataGrid-row:hover": {
-      //     cursor: "pointer",
-      //   },
-      // }}
-    />
+    <div>
+      <Box sx={{ b: 2 }}>
+        <FormControlLabel
+          label="Solo clientes cloud"
+          control={
+            <Checkbox
+              checked={onlyCloudCustomers}
+              onChange={handleChange}
+              inputProps={{ "aria-label": "controlled" }}
+            />
+          }
+        ></FormControlLabel>
+      </Box>
+      <DataGrid
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true,
+          },
+          loadingOverlay: {
+            variant: "skeleton",
+            noRowsVariant: "skeleton",
+          },
+        }}
+        slots={{
+          toolbar: CustomGridToolbar,
+        }}
+        disableDensitySelector
+        disableColumnMenu
+        pageSizeOptions={[5, 10, 25]}
+        getRowId={(row) => row.uuid}
+        rows={rows}
+        disableRowSelectionOnClick
+        // onRowClick={(row) => console.log(row)}
+        columns={columns as GridColDef[]}
+        // processRowUpdate={() => {}} // TODO: Implementar
+        loading={isLoading}
+        // sx={{
+        //   "& .MuiDataGrid-row:hover": {
+        //     cursor: "pointer",
+        //   },
+        // }}
+      />
+    </div>
   );
 }
 

@@ -15,7 +15,7 @@ import { formatFullName } from "@/utilities/formatFullName";
 import { formattedCurrency } from "@/utilities/formatPrice";
 import { Chip } from "@mui/material";
 import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router";
 
 export default function BudgetsTable() {
@@ -41,6 +41,16 @@ export default function BudgetsTable() {
     };
 
   const rows = data || [];
+
+  const newTabRef = useRef<Window | null>(null);
+
+  // Abrir la nueva pestaña y guardar la referencia
+  const openNewTab = (path) => {
+    const url = "http://localhost:3001" + path;
+    newTabRef.current = window.open(url, "_blank");
+  };
+
+  // Cambiar el título de la nueva pestaña
 
   const actions = ({ row: budget }: { row: Budget }) => (
     <TableMenuActions
@@ -107,8 +117,10 @@ export default function BudgetsTable() {
         },
         {
           name: "Imprimir",
-          onClick: () => {},
-          //isDisabled: budget.status === BudgetStatus.REJECTED,
+          onClick: () => {
+            openNewTab(`/api/prints/budget/${budget.uuid}`);
+          },
+          isDisabled: budget.status === BudgetStatus.REJECTED,
         },
       ]}
     />

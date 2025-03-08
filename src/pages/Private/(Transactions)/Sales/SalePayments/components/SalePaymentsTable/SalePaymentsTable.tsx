@@ -1,21 +1,14 @@
-import { useSnackbar } from "@/context/SnackbarContext";
 import { SalePayment, SalePaymentStatus } from "@/models/SalePayment";
-import {
-  useGetSalePaymentsQuery,
-  useUpdateSaleMutation,
-} from "@/services/saleApi";
+import { useGetSalePaymentsQuery } from "@/services/saleApi";
 import { formattedDate } from "@/utilities";
 import { formattedCurrency } from "@/utilities/formatPrice";
-import BlockIcon from "@mui/icons-material/Block";
-import TaskAltIcon from "@mui/icons-material/TaskAlt";
-import { Chip, IconButton, Tooltip } from "@mui/material";
+import { Chip, IconButton } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useParams } from "react-router";
-
+import ToggleStatusButton from "./components/ToggleStatusButton";
+import PrintIcon from "@mui/icons-material/Print";
 export default function SalePaymentsTable() {
-  const snackbar = useSnackbar();
   const { uuid: saleID } = useParams();
-  const [updateStatus] = useUpdateSaleMutation();
   const { data: payments, isLoading } = useGetSalePaymentsQuery(
     saleID as string
   );
@@ -58,45 +51,25 @@ export default function SalePaymentsTable() {
       field: "action",
       headerName: "Acciones",
       width: 100,
-      renderCell: ({ row }) => {
-        return row.status === SalePaymentStatus.CANCELLED ? (
-          <Tooltip title="Activar Pago" arrow>
-            <IconButton
-              onClick={async () => {
-                await updateStatus({
-                  uuid: saleID as string,
-                  payment: {
-                    uuid: row.uuid,
-                    type: "UPDATE",
-                    status: SalePaymentStatus.ACTIVE,
-                  },
-                });
-                snackbar.openSnackbar("Pago activado!");
-              }}
-            >
-              <TaskAltIcon />
-            </IconButton>
-          </Tooltip>
-        ) : (
-          <Tooltip title="Anular Pago" arrow>
-            <IconButton
-              onClick={async () => {
-                await updateStatus({
-                  uuid: saleID as string,
-                  payment: {
-                    uuid: row.uuid,
-                    type: "UPDATE",
-                    status: SalePaymentStatus.CANCELLED,
-                  },
-                });
-                snackbar.openSnackbar("Pago anulado!");
-              }}
-            >
-              <BlockIcon />
-            </IconButton>
-          </Tooltip>
-        );
-      },
+      renderCell: ({ row }) => (
+        <>
+          <ToggleStatusButton
+            row={row}
+            saleId={saleID || ""}
+            status={row.status}
+          />
+          <IconButton
+            disabled={row.status === SalePaymentStatus.CANCELLED}
+            onClick={() => {
+              window.open(
+                `http://localhost:3001/api/prints/recipt/${saleID}/${row.uuid}`
+              );
+            }}
+          >
+            <PrintIcon />
+          </IconButton>
+        </>
+      ),
     },
   ];
 

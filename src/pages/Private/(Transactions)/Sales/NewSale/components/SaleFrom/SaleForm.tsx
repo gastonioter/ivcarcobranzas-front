@@ -19,6 +19,7 @@ import { formattedCurrency } from "@/utilities/formatPrice";
 import Typography from "@mui/material/Typography";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
+import { getSubtotalAmount } from "@/pages/Private/(Transactions)/utils";
 export default function SaleForm({ sale }: { sale?: Sale }) {
   const user = useUserData();
   const navigate = useNavigate();
@@ -41,7 +42,8 @@ export default function SaleForm({ sale }: { sale?: Sale }) {
     });
 
   const { iva } = useSummary();
-
+  const total =
+    getSubtotalAmount(details) + (getSubtotalAmount(details) * iva) / 100;
 
   useEffect(() => {
     /* Actualizo Transaction Store y Summary Store con la Sale que llega por 
@@ -69,11 +71,21 @@ export default function SaleForm({ sale }: { sale?: Sale }) {
         "El monto supera el saldo a favor del cliente",
         "error"
       );
+    } else if (discount > total) {
+      snackbar.openSnackbar(
+        "El descuento supera el monto de la venta.",
+        "error"
+      );
     }
-  }, [discount, accountSummary]);
+  }, [discount, accountSummary, total]);
 
   const handleSubmit = async () => {
     try {
+      // El descuento no es valido
+      if (discount > Math.abs(accountSummary?.saldo ?? 0) || discount > total) {
+        snackbar.openSnackbar("El descuento no es valido", "error");
+        return;
+      }
       const result = CreateSaleSchema.safeParse({
         customerId: customer.uuid,
         iva,
@@ -110,7 +122,7 @@ export default function SaleForm({ sale }: { sale?: Sale }) {
               payload: !isNaN(discount) && discount >= 0 ? discount : 0,
             });
           }}
-          error={discount > Math.abs(accountSummary.saldo)}
+          error={discount > Math.abs(accountSummary.saldo) || discount > total}
           helperText={`${
             accountSummary.saldo < 0
               ? `El cliente tiene un saldo a favor de: ${formattedCurrency(

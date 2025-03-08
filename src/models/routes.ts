@@ -16,7 +16,8 @@ export const PrivateRoutes = {
   DETAIL_BUDGET: "presupuestos/:uuid/",
   PAYMENTS_SALE: "pagos/:uuid",
   CUSTOMERS: "clientes",
-  MONTHLY_FEES: "mensualidades",
+  
+  CUOTAS: "cuotas",
   PAYMENTS: "pagos",
 };
 
