@@ -1,15 +1,20 @@
 import { Circle } from "@mui/icons-material";
 import { newCuotaPayload } from "../CuotaForm/CuotaForm";
 
-import { InitalCuotaStatus } from "@/models/Cuota";
+import { CuotaStatus } from "@/models/Cuota";
 import { formatFullName } from "@/utilities/formatFullName";
+import { formattedCurrency } from "@/utilities/formatPrice";
 import { Box, Paper, Tooltip, Typography } from "@mui/material";
 
 export interface ICuotaPreviewProps {
   cuota: newCuotaPayload;
+  isPreview?: boolean;
 }
 
-export default function CuotaPreview({ cuota }: ICuotaPreviewProps) {
+export default function CuotaPreview({
+  cuota,
+  isPreview = true,
+}: ICuotaPreviewProps) {
   return (
     <Paper
       sx={{
@@ -21,7 +26,7 @@ export default function CuotaPreview({ cuota }: ICuotaPreviewProps) {
     >
       <Box>
         <Typography sx={{ mb: 3 }} variant="h5">
-          Cuota Preview
+          Cuota {isPreview ? "Nueva" : `${cuota.month}/${cuota.year}`}
         </Typography>
 
         <Typography variant="body1">
@@ -32,14 +37,16 @@ export default function CuotaPreview({ cuota }: ICuotaPreviewProps) {
               cuota?.customer?.lastName
             )}
         </Typography>
-        <Typography variant="body1">{`Monto: ${cuota.amonut}`}</Typography>
+        <Typography variant="body1">{`Monto: ${formattedCurrency(
+          cuota.amonut
+        )}`}</Typography>
         <Typography variant="body1">{`Mes: ${cuota.month}`}</Typography>
         <Typography variant="body1">{`Año: ${cuota.year}`}</Typography>
       </Box>
       <Box sx={{ textAlign: "right" }}>
         <Tooltip
           title={`${
-            cuota.status == InitalCuotaStatus.PENDING
+            cuota.status == CuotaStatus.PENDING
               ? "Pendiente de Pago"
               : "Sin servicio"
           }`}
@@ -47,7 +54,11 @@ export default function CuotaPreview({ cuota }: ICuotaPreviewProps) {
           <Circle
             fontSize="large"
             color={
-              cuota.status === InitalCuotaStatus.PENDING ? "warning" : "error"
+              cuota.status === CuotaStatus.PENDING
+                ? "info"
+                : cuota.status === CuotaStatus.LATE
+                ? "warning"
+                : "error"
             }
           />
         </Tooltip>

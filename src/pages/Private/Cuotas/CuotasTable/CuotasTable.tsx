@@ -1,8 +1,8 @@
 import { useGetCuotasQuery } from "@/services/cuotasApi";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-
+import { Chip } from "@mui/material";
 import { useState } from "react";
-import { CuotaStatus } from "@/models/Cuota";
+import { Cuota, CuotaStatus } from "@/models/Cuota";
 import CuotasFilters from "../CuotasFilters/CuotasFilters";
 export interface ICuotasTableProps {
   customerId: string;
@@ -52,6 +52,24 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
       field: "status",
       headerName: "Estado",
       flex: 1,
+      renderCell({ row }: { row: Cuota }) {
+        return (
+          <Chip
+            color={
+              row.status === CuotaStatus.PAID
+                ? "success"
+                : row.status === CuotaStatus.PENDING
+                ? "info"
+                : row.status === CuotaStatus.LATE
+                ? "warning"
+                : "error"
+            }
+            sx={{ textTransform: "capitalize" }}
+            label={row.status}
+            size="small"
+          />
+        );
+      },
     },
   ];
   return cuotas && cuotas.length > 0 ? (

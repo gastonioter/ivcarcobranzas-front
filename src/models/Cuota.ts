@@ -25,7 +25,7 @@ export const createCuotaSchema = z.object({
   customerId: z.string().uuid(),
   amount: z.number(),
   year: z.number(),
-  status: z.nativeEnum(InitalCuotaStatus),
+  status: z.nativeEnum(CuotaStatus),
   month: z.number(),
 });
 

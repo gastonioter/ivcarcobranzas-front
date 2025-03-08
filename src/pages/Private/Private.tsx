@@ -14,12 +14,13 @@ import AppContainer from "./components/AppContainer/AppContainer";
 import Customers from "./Customers/Customers";
 import Products from "./Products/Products";
 
-import { AppLayout } from "./styled-components";
 import SalePayments from "./(Transactions)/Sales/SalePayments/SalePayments";
 import Cuotas from "./Cuotas/Cuotas";
 import NewCuota from "./Cuotas/NewCuota/NewCuota";
+import Payments from "./Payments/Payments";
+import { AppLayout } from "./styled-components";
+import NewPayment from "./Payments/NewPayment/NewPayment";
 
-const Home = lazy(() => import("./Home/Home"));
 const Dashboard = lazy(() => import("./Dashboard/Dashboard"));
 
 export default function Private() {
@@ -83,9 +84,12 @@ export default function Private() {
             path={`cuotas/${PrivateRoutes.NEW_CUOTA}`}
             element={<NewCuota />}
           ></Route>
-          
 
-          <Route path={PrivateRoutes.PAYMENTS} element={<Home />}></Route>
+          <Route path={PrivateRoutes.PAYMENTS} element={<Payments />}></Route>
+          <Route
+            path={`pagos/${PrivateRoutes.NEW_PAYMENT}`}
+            element={<NewPayment />}
+          ></Route>
         </RoutesWithNotFound>
       </AppContainer>
     </AppLayout>

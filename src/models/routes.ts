@@ -22,7 +22,9 @@ export const PrivateRoutes = {
 
   CUOTAS: "cuotas",
   NEW_CUOTA: "nueva",
+
   PAYMENTS: "pagos",
+  NEW_PAYMENT: "nuevo",
 };
 
 export enum Roles {

@@ -1,9 +1,12 @@
+import { useSnackbar } from "@/context/SnackbarContext";
 import { Customer, CustomerModalidad, PrivateRoutes } from "@/models";
 import {
   CreateCuotaPayload,
   createCuotaSchema,
+  CuotaStatus,
   InitalCuotaStatus,
 } from "@/models/Cuota";
+import { useCreateCuotaMutation } from "@/services/cuotasApi";
 import {
   useGetCustomerQuery,
   useGetCustomersQuery,
@@ -20,11 +23,9 @@ import {
   TextField,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import CuotaPreview from "../CuotaPreview/CuotaPreview";
 import { CuotaFormLayout } from "./styled-components/layout.styled.component";
-import { useCreateCuotaMutation } from "@/services/cuotasApi";
-import { useSnackbar } from "@/context/SnackbarContext";
-import { useNavigate } from "react-router";
 
 const yearsOpts = [
   { value: new Date().getFullYear() - 1, label: new Date().getFullYear() - 1 },
@@ -50,7 +51,7 @@ export type newCuotaPayload = {
   year: number;
   month: number;
   amonut: number;
-  status: InitalCuotaStatus;
+  status: CuotaStatus;
   customer: Customer | undefined;
 };
 
@@ -71,7 +72,6 @@ export default function CuotaForm() {
     error: errorCustomers,
   } = useGetCustomersQuery();
 
-  
   const [create] = useCreateCuotaMutation();
 
   const navigate = useNavigate();
@@ -96,7 +96,7 @@ export default function CuotaForm() {
         snackbar.openSnackbar("Cuota creada correctamente");
         navigate(`/private/${PrivateRoutes.CUOTAS}/${newCuota.customerId}`);
       } catch (e) {
-        snackbar.openSnackbar("Error al crear la cuota", "error");
+        snackbar.openSnackbar(e.data.error, "error");
         console.log(e);
       }
     } else {
