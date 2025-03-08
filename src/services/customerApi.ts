@@ -42,6 +42,10 @@ export const customerApi = createApi({
       providesTags: ["Customers"],
     }),
 
+    getCustomer: builder.query<Customer, string>({
+      query: (uuid) => `/${uuid}`,
+    }),
+
     createCustomer: builder.mutation<Customer, CreateCustomerFormData>({
       query: (body) => ({
         url: "/",
@@ -82,6 +86,7 @@ export const customerApi = createApi({
 export const {
   useCreateCustomerMutation,
   useGetCustomersQuery,
+  useGetCustomerQuery,
   useEditCustomerMutation,
   useUpdateStatusMutation,
   useGetAccountSummaryQuery,

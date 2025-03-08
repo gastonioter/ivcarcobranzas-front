@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export interface Cuota {
   uuid: string;
   status: CuotaStatus;
@@ -12,4 +14,19 @@ export enum CuotaStatus {
   PENDING = "PENDIENTE",
   PAID = "PAGADA",
   LATE = "ATRASADA",
+  NO_SERVICE = "SIN SERVICIO",
 }
+export enum InitalCuotaStatus {
+  NO_SERVICE = "SIN SERVICIO",
+  PENDING = "PENDIENTE",
+}
+
+export const createCuotaSchema = z.object({
+  customerId: z.string().uuid(),
+  amount: z.number(),
+  year: z.number(),
+  status: z.nativeEnum(InitalCuotaStatus),
+  month: z.number(),
+});
+
+export type CreateCuotaPayload = z.infer<typeof createCuotaSchema>;

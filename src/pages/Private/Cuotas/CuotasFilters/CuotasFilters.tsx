@@ -14,7 +14,7 @@ const yearsOpts = [
   { value: "sinaplicar", label: "Todos" },
   { value: new Date().getFullYear() - 1, label: new Date().getFullYear() - 1 },
   { value: new Date().getFullYear(), label: new Date().getFullYear() },
-  { value: new Date().getFullYear()+1, label: new Date().getFullYear() + 1 },
+  { value: new Date().getFullYear() + 1, label: new Date().getFullYear() + 1 },
 ];
 
 const monthOpts = [

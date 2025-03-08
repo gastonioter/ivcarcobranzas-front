@@ -1,6 +1,9 @@
 import SectionHeader from "@/components/SectionHeader/SectionHeader";
 import SectionTitle from "@/components/SectionTitle/SectionTitle";
 import { Customer, CustomerModalidad, PrivateRoutes } from "@/models";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import AddIcon from "@mui/icons-material/Add";
+
 import { useGetCustomersQuery } from "@/services/customerApi";
 import { formatFullName } from "@/utilities/formatFullName";
 import { Autocomplete, FormControl, Paper, TextField } from "@mui/material";
@@ -17,21 +20,29 @@ export default function Cuotas() {
 
   const customers = data?.filter(
     (customer) => customer.modalidadData.modalidad === CustomerModalidad.CLOUD
-  );
+  ) as Customer[];
 
   useEffect(() => {
-    if (customerId) {
-      const customer = customers?.find((c) => c.uuid === customerId);
+    if (customerId && customers) {
+      const customer = customers.find((c) => c.uuid === customerId);
       setCustomer(customer);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [customerId, setCustomer]);
+  }, [customerId, customers]);
 
   return (
     <>
       <SectionHeader
         customClickHandler={() => {
-          navigate(`${PrivateRoutes.NEW_CUOTA}`);
+          if (customerId) {
+            navigate(-1);
+          } else {
+            navigate(PrivateRoutes.NEW_CUOTA);
+          }
+        }}
+        buttonProps={{
+          icon: customerId ? <ArrowBackIcon /> : <AddIcon />,
+          text: customerId ? "Atras" : "Nuevo",
+          variant: customerId ? "outlined" : "contained",
         }}
       >
         <SectionTitle>
@@ -56,11 +67,17 @@ export default function Cuotas() {
               setCustomer(customer);
             }}
             disableClearable
-            value={customer}
+            value={
+              customer ||
+              ({
+                firstName: "",
+                lastName: "",
+              } as Customer)
+            }
             getOptionLabel={(option: Customer) =>
               `${option.firstName} ${option.lastName}`
             }
-            disabled={isLoadingCostumers}
+            disabled={isLoadingCostumers || !!customerId}
             options={customers ?? []}
             renderInput={(params) => <TextField {...params} label="Cliente" />}
           />

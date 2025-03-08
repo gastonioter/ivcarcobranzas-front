@@ -15,7 +15,7 @@ export type filters = {
 };
 const initialFilters: filters = {
   year: new Date().getFullYear(),
-  month: new Date().getMonth() + 1,
+  month: "sinaplicar",
   status: CuotaStatus.PENDING,
 };
 

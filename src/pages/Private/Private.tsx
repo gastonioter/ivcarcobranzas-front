@@ -83,6 +83,7 @@ export default function Private() {
             path={`cuotas/${PrivateRoutes.NEW_CUOTA}`}
             element={<NewCuota />}
           ></Route>
+          
 
           <Route path={PrivateRoutes.PAYMENTS} element={<Home />}></Route>
         </RoutesWithNotFound>
