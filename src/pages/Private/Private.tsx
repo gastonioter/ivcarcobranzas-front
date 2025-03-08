@@ -17,6 +17,7 @@ import Products from "./Products/Products";
 import { AppLayout } from "./styled-components";
 import SalePayments from "./(Transactions)/Sales/SalePayments/SalePayments";
 import Cuotas from "./Cuotas/Cuotas";
+import NewCuota from "./Cuotas/NewCuota/NewCuota";
 
 const Home = lazy(() => import("./Home/Home"));
 const Dashboard = lazy(() => import("./Dashboard/Dashboard"));
@@ -73,7 +74,16 @@ export default function Private() {
           {/* CUSTOEMRS */}
 
           <Route path={PrivateRoutes.CUSTOMERS} element={<Customers />}></Route>
-          <Route path={PrivateRoutes.CUOTAS} element={<Cuotas />}></Route>
+          <Route path={`${PrivateRoutes.CUOTAS}`} element={<Cuotas />}></Route>
+          <Route
+            path={`${PrivateRoutes.CUOTAS}/:customerId`}
+            element={<Cuotas />}
+          ></Route>
+          <Route
+            path={`cuotas/${PrivateRoutes.NEW_CUOTA}`}
+            element={<NewCuota />}
+          ></Route>
+
           <Route path={PrivateRoutes.PAYMENTS} element={<Home />}></Route>
         </RoutesWithNotFound>
       </AppContainer>

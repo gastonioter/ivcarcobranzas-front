@@ -18,6 +18,8 @@ import { Alert, Box, Checkbox, FormControlLabel } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useState } from "react";
 import CustomerStatusIndicator from "../CustomerStatusIndicator/CustomerStatusIndicator";
+import { useNavigate } from "react-router";
+import { PrivateRoutes } from "@/models";
 
 function formatCustomerModalidad(data: ModalidadData) {
   return data.modalidad == CustomerModalidad.CLOUD
@@ -31,6 +33,8 @@ interface CustomerTableProps {
 function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
   const { data: customers, isLoading, error } = useGetCustomersQuery();
   const [changeCustomerStatus] = useUpdateStatusMutation();
+
+  const navigate = useNavigate();
 
   const [onlyCloudCustomers, setChecked] = useState(false);
 
@@ -95,6 +99,12 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
               console.log(e);
               snackbar.openSnackbar(`${e.data.error}`, "error");
             }
+          },
+        },
+        {
+          name: "Ver Cuotas",
+          onClick: () => {
+            navigate(`/private/${PrivateRoutes.CUOTAS}/${row.uuid}`);
           },
         },
       ]}
@@ -166,6 +176,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
   ];
 
   return (
+    
     <div>
       <Box sx={{ b: 2 }}>
         <FormControlLabel

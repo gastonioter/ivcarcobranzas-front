@@ -31,7 +31,7 @@ export const cuotasApi = createApi({
   baseQuery,
   endpoints: (builder) => ({
     getCuotas: builder.query<Cuota[], string>({
-      query: (uuid) => `${uuid}/cuotas`,
+      query: (uuid) => `/${uuid}`,
     }),
   }),
 });
