@@ -1,5 +1,5 @@
 import { addToken } from "@/interceptors";
-import { CreateCuotaPayload, Cuota } from "@/models/Cuota";
+import { CreateCuotaPayload, Cuota, UpdateCuotaPayload } from "@/models/Cuota";
 import { clearCredentials } from "@/redux/slices/auth";
 import {
   BaseQueryFn,
@@ -8,6 +8,7 @@ import {
   fetchBaseQuery,
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
+import { customerApi } from "./customerApi";
 
 const baseQuery: BaseQueryFn<
   string | FetchArgs,
@@ -44,7 +45,25 @@ export const cuotasApi = createApi({
       }),
       invalidatesTags: ["Cuotas"],
     }),
+
+    updateCuotas: builder.mutation<Cuota[], UpdateCuotaPayload>({
+      query: (body) => ({
+        url: "/",
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: ["Cuotas"],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        await queryFulfilled;
+
+        dispatch(customerApi.util.invalidateTags(["Customer"]));
+      },
+    }),
   }),
 });
 
-export const { useGetCuotasQuery, useCreateCuotaMutation } = cuotasApi;
+export const {
+  useGetCuotasQuery,
+  useCreateCuotaMutation,
+  useUpdateCuotasMutation,
+} = cuotasApi;

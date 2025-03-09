@@ -4,9 +4,19 @@ import { Paper } from "@mui/material";
 import CuotaForm from "./CuotaForm/CuotaForm";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router";
+import { useSearchParams } from "react-router-dom";
+import { useGetCustomerQuery } from "@/services/customerApi";
 
 export default function NewCuota() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const customerId = searchParams.get("customerId");
+
+  const { data } = useGetCustomerQuery(customerId || "", {
+    skip: !customerId,
+  });
+
   return (
     <>
       <SectionHeader
@@ -30,7 +40,7 @@ export default function NewCuota() {
           },
         }}
       >
-        <CuotaForm />
+        <CuotaForm customer={data} />
       </Paper>
     </>
   );

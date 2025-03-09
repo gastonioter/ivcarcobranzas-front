@@ -35,7 +35,7 @@ const baseQuery: BaseQueryFn<
 export const customerApi = createApi({
   reducerPath: "customerApi",
   baseQuery,
-  tagTypes: ["Customers", "AccountSummary"],
+  tagTypes: ["Customers", "AccountSummary", "Customer"],
   endpoints: (builder) => ({
     getCustomers: builder.query<Customer[], void>({
       query: () => "/",
@@ -44,6 +44,7 @@ export const customerApi = createApi({
 
     getCustomer: builder.query<Customer, string>({
       query: (uuid) => `/${uuid}`,
+      providesTags: ["Customer"],
     }),
 
     createCustomer: builder.mutation<Customer, CreateCustomerFormData>({

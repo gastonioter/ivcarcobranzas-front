@@ -75,11 +75,9 @@ export default function Private() {
           {/* CUSTOEMRS */}
 
           <Route path={PrivateRoutes.CUSTOMERS} element={<Customers />}></Route>
+
           <Route path={`${PrivateRoutes.CUOTAS}`} element={<Cuotas />}></Route>
-          <Route
-            path={`${PrivateRoutes.CUOTAS}/:customerId`}
-            element={<Cuotas />}
-          ></Route>
+
           <Route
             path={`cuotas/${PrivateRoutes.NEW_CUOTA}`}
             element={<NewCuota />}

@@ -22,10 +22,11 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import CuotaPreview from "../CuotaPreview/CuotaPreview";
 import { CuotaFormLayout } from "./styled-components/layout.styled.component";
+import { useSearchParams } from "react-router-dom";
 
 const yearsOpts = [
   { value: new Date().getFullYear() - 1, label: new Date().getFullYear() - 1 },
@@ -59,12 +60,14 @@ const initialCuota: newCuotaPayload = {
   year: new Date().getFullYear(),
   month: new Date().getMonth() + 1,
   amonut: 0,
-  status: InitalCuotaStatus.PENDING,
+  status: CuotaStatus.PENDING,
   customer: undefined,
 };
 
-export default function CuotaForm() {
+export default function CuotaForm({ customer }: { customer?: Customer }) {
   const [cuota, setCuota] = useState<newCuotaPayload>(initialCuota);
+  const [searchParams] = useSearchParams();
+
   const snackbar = useSnackbar();
   const {
     data,
@@ -75,11 +78,12 @@ export default function CuotaForm() {
   const [create] = useCreateCuotaMutation();
 
   const navigate = useNavigate();
+
   const customers = data?.filter(
     (c) => c.modalidadData.modalidad === CustomerModalidad.CLOUD
   ) as Customer[];
 
-  const handleNewCuota = async (e: SubmitEvent) => {
+  const handleNewCuota = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newCuota: CreateCuotaPayload = {
       amount: cuota.amonut,
@@ -94,7 +98,9 @@ export default function CuotaForm() {
       try {
         await create(newCuota).unwrap();
         snackbar.openSnackbar("Cuota creada correctamente");
-        navigate(`/private/${PrivateRoutes.CUOTAS}/${newCuota.customerId}`);
+        navigate(
+          `/private/${PrivateRoutes.CUOTAS}?customerId=${cuota.customer?.uuid}`
+        );
       } catch (e) {
         snackbar.openSnackbar(e.data.error, "error");
         console.log(e);
@@ -104,9 +110,10 @@ export default function CuotaForm() {
       console.log(result.error);
     }
   };
+
   const { data: selectedCustomer, isLoading: isLoadingSelectedCustomer } =
     useGetCustomerQuery(cuota.customer?.uuid ?? "", {
-      skip: !cuota.customer?.uuid,
+      skip: !cuota.customer?.uuid || !!customer,
     });
 
   useEffect(() => {
@@ -122,21 +129,45 @@ export default function CuotaForm() {
     }
   }, [selectedCustomer]);
 
+  useEffect(() => {
+    if (customer) {
+      setCuota((prev) => ({
+        ...prev,
+        customer: customer,
+        amonut:
+          customer.modalidadData.modalidad === CustomerModalidad.CLOUD
+            ? customer.modalidadData.cloudCategory.price
+            : 0,
+      }));
+    }
+  }, [customer]);
+
   if (errorCustomers) {
     return (
       <Alert severity="error">Ocurrió un error al cargar los clientes</Alert>
     );
   }
 
+  const showForm =
+    (!isLoadingCustomers && !isLoadingSelectedCustomer) || customer;
+
   return (
-    <CuotaFormLayout>
+    <CuotaFormLayout onSubmit={handleNewCuota}>
       <FormControl sx={{ gridColumn: "1 / span 2" }}>
         <Autocomplete
           onChange={(event, customer) => {
             setCuota((prev) => ({ ...prev, customer }));
+            searchParams.delete("customerId");
           }}
           disableClearable
-          value={cuota.customer}
+          value={
+            cuota.customer ||
+            customer ||
+            ({
+              firstName: "",
+              lastName: "",
+            } as Customer)
+          }
           getOptionLabel={(option: Customer) =>
             `${option.firstName} ${option.lastName}`
           }
@@ -146,16 +177,16 @@ export default function CuotaForm() {
         />
       </FormControl>
 
-      {!isLoadingSelectedCustomer && selectedCustomer && (
+      {showForm && (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
           <TextField
             label="Monto"
             type="number"
             disabled
             value={
-              selectedCustomer?.modalidadData.modalidad ===
+              cuota.customer?.modalidadData.modalidad ===
               CustomerModalidad.CLOUD
-                ? selectedCustomer.modalidadData.cloudCategory.price
+                ? cuota.customer?.modalidadData.cloudCategory.price
                 : 0
             }
           ></TextField>
@@ -202,7 +233,7 @@ export default function CuotaForm() {
               onChange={(e) => {
                 setCuota((prev) => ({
                   ...prev,
-                  status: e.target.value as InitalCuotaStatus,
+                  status: e.target.value as CuotaStatus,
                 }));
               }}
             >
@@ -214,16 +245,9 @@ export default function CuotaForm() {
         </Box>
       )}
 
-      {!isLoadingSelectedCustomer && selectedCustomer && (
-        <CuotaPreview cuota={cuota} />
-      )}
-      {selectedCustomer && (
-        <Button
-          onClick={handleNewCuota}
-          type="submit"
-          variant="contained"
-          color="success"
-        >
+      {showForm && <CuotaPreview cuota={cuota} />}
+      {showForm && (
+        <Button type="submit" variant="contained" color="success">
           Confirmar
         </Button>
       )}

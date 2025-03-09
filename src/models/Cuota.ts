@@ -29,4 +29,12 @@ export const createCuotaSchema = z.object({
   month: z.number(),
 });
 
+export const UpdateCuotasSchema = z.object({
+  cuotasId: z.array(z.string().uuid()),
+  customerId: z.string().uuid(),
+  status: z.nativeEnum(CuotaStatus),
+});
+
+export type UpdateCuotaPayload = z.infer<typeof UpdateCuotasSchema>;
+
 export type CreateCuotaPayload = z.infer<typeof createCuotaSchema>;

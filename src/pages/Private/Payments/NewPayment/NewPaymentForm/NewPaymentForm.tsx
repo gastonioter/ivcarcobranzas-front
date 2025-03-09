@@ -1,15 +1,19 @@
+import { useSnackbar } from "@/context/SnackbarContext";
 import { Customer, CustomerModalidad } from "@/models";
 import { CuotaStatus } from "@/models/Cuota";
 import CuotaPreview from "@/pages/Private/Cuotas/NewCuota/CuotaPreview/CuotaPreview";
+import { useUpdateCuotasMutation } from "@/services/cuotasApi";
 import {
   useGetCustomerQuery,
   useGetCustomersQuery,
 } from "@/services/customerApi";
 import { formatFullName } from "@/utilities/formatFullName";
-import { Autocomplete, Box, TextField } from "@mui/material";
-import { useState } from "react";
+import { Autocomplete, Box, Button, TextField } from "@mui/material";
+import { FormEvent, useState } from "react";
 
 export default function NewPaymentForm() {
+  const [update] = useUpdateCuotasMutation();
+  const snackbar = useSnackbar();
   const { data, isLoading: isLoadingCustomers } = useGetCustomersQuery();
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
     null
@@ -35,9 +39,28 @@ export default function NewPaymentForm() {
     }
   };
 
+  const handleNewPayment = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const result = await update({
+        cuotasId: selectedCuotas,
+        customerId: selectedCustomer?.uuid as string,
+        status: CuotaStatus.PAID,
+      }).unwrap();
+
+      console.log(result);
+      snackbar.openSnackbar("Pago creado con exito!");
+    } catch (e) {
+      console.log(e);
+      snackbar.openSnackbar(e.data.error, "error");
+    }
+  };
+
   return (
     <Box
       component={"form"}
+      onSubmit={handleNewPayment}
       sx={{ display: "flex", flexDirection: "column", gap: 3 }}
     >
       <Autocomplete
@@ -102,6 +125,12 @@ export default function NewPaymentForm() {
               </Box>
             ))}
       </Box>
+
+      {selectedCuotas.length > 0 && (
+        <Button type="submit" variant="contained" color="success">
+          Confirmar
+        </Button>
+      )}
     </Box>
   );
 }

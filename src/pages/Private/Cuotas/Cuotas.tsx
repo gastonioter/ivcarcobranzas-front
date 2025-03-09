@@ -1,19 +1,32 @@
 import SectionHeader from "@/components/SectionHeader/SectionHeader";
 import SectionTitle from "@/components/SectionTitle/SectionTitle";
 import { Customer, CustomerModalidad, PrivateRoutes } from "@/models";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import AddIcon from "@mui/icons-material/Add";
 
 import { useGetCustomersQuery } from "@/services/customerApi";
 import { formatFullName } from "@/utilities/formatFullName";
 import { Autocomplete, FormControl, Paper, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate } from "react-router";
+import { useSearchParams } from "react-router-dom";
+
 import CuotasTable from "./CuotasTable/CuotasTable";
 
 export default function Cuotas() {
   const navigate = useNavigate();
-  const { customerId } = useParams();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const updateSearchParams = (key: string, value: string) => {
+    const nuevosParams = new URLSearchParams(searchParams);
+    if (value) {
+      nuevosParams.set(key, value); // Agregar o actualizar parámetro
+    } else {
+      nuevosParams.delete(key); // Eliminar si está vacío
+    }
+    setSearchParams(nuevosParams);
+  };
+
+  const customerId = searchParams.get("customerId");
 
   const [customer, setCustomer] = useState<Customer | undefined>(undefined);
   const { data, isLoading: isLoadingCostumers } = useGetCustomersQuery();
@@ -34,15 +47,12 @@ export default function Cuotas() {
       <SectionHeader
         customClickHandler={() => {
           if (customerId) {
-            navigate(-1);
+            navigate(
+              `/private/cuotas/${PrivateRoutes.NEW_CUOTA}?customerId=${customerId}`
+            );
           } else {
             navigate(PrivateRoutes.NEW_CUOTA);
           }
-        }}
-        buttonProps={{
-          icon: customerId ? <ArrowBackIcon /> : <AddIcon />,
-          text: customerId ? "Atras" : "Nuevo",
-          variant: customerId ? "outlined" : "contained",
         }}
       >
         <SectionTitle>
@@ -65,6 +75,7 @@ export default function Cuotas() {
           <Autocomplete
             onChange={(event, customer) => {
               setCustomer(customer);
+              updateSearchParams("customerId", customer?.uuid || "");
             }}
             disableClearable
             value={
@@ -77,7 +88,7 @@ export default function Cuotas() {
             getOptionLabel={(option: Customer) =>
               `${option.firstName} ${option.lastName}`
             }
-            disabled={isLoadingCostumers || !!customerId}
+            disabled={isLoadingCostumers}
             options={customers ?? []}
             renderInput={(params) => <TextField {...params} label="Cliente" />}
           />

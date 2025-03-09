@@ -104,7 +104,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
         {
           name: "Ver Cuotas",
           onClick: () => {
-            navigate(`/private/${PrivateRoutes.CUOTAS}/${row.uuid}`);
+            navigate(`/private/${PrivateRoutes.CUOTAS}?customerId=${row.uuid}`);
           },
         },
       ]}
@@ -176,7 +176,6 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
   ];
 
   return (
-    
     <div>
       <Box sx={{ b: 2 }}>
         <FormControlLabel
