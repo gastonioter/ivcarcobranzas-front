@@ -71,9 +71,17 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
           },
         },
         {
-          name: "Rsm.  Cta.", // TODO: Implementar con filtros en la tabla Mensualidades
+          name: "Rsm. Cta.",
           onClick: () => {
             window.open(`http://localhost:3001/api/prints/rsmcta/${row.uuid}`);
+          },
+        },
+        {
+          name: "Rsm. Monit.",
+          onClick: () => {
+            window.open(
+              `http://localhost:3001/api/prints/rsmmonit/${row.uuid}`
+            );
           },
         },
 

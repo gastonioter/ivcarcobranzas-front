@@ -45,10 +45,16 @@ export default function PaymentsTable({ customer }: { customer: Customer }) {
       field: "actions",
       headerName: "Acciones",
       width: 100,
-      renderCell: () => (
+      renderCell: ({row}) => (
         <>
           <Tooltip title="Imprimir Recibo">
-            <IconButton onClick={() => {}}>
+            <IconButton
+              onClick={() => {
+                window.open(
+                  `http://localhost:3001/api/prints/monit-recipt/${customer.uuid}/${row.uuid}`
+                );
+              }}
+            >
               <PrintIcon />
             </IconButton>
           </Tooltip>
