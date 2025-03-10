@@ -1,5 +1,5 @@
 import { useSnackbar } from "@/context/SnackbarContext";
-import { Customer, CustomerModalidad } from "@/models";
+import { Customer, CustomerModalidad, PrivateRoutes } from "@/models";
 import { CuotaStatus } from "@/models/Cuota";
 import CuotaPreview from "@/pages/Private/Cuotas/NewCuota/CuotaPreview/CuotaPreview";
 import { useUpdateCuotasMutation } from "@/services/cuotasApi";
@@ -8,13 +8,18 @@ import {
   useGetCustomersQuery,
 } from "@/services/customerApi";
 import { formatFullName } from "@/utilities/formatFullName";
-import { Autocomplete, Box, Button, TextField } from "@mui/material";
-import { FormEvent, useState } from "react";
+import { Alert, Autocomplete, Box, Button, TextField } from "@mui/material";
+import { FormEvent, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 
-export default function NewPaymentForm() {
+export default function NewPaymentForm({ customer }: { customer?: Customer }) {
   const [update] = useUpdateCuotasMutation();
+
+  const navigate = useNavigate();
   const snackbar = useSnackbar();
+
   const { data, isLoading: isLoadingCustomers } = useGetCustomersQuery();
+
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
     null
   );
@@ -28,8 +33,20 @@ export default function NewPaymentForm() {
 
   const { data: customerData, isLoading: isLoadingCustomer } =
     useGetCustomerQuery(selectedCustomer?.uuid || "", {
-      skip: !selectedCustomer?.uuid,
+      skip: !selectedCustomer?.uuid || !!customer,
     });
+
+  useEffect(() => {
+    if (customer) {
+      setSelectedCustomer(customer);
+    }
+  }, [customer]);
+
+  useEffect(() => {
+    if (customerData) {
+      setSelectedCustomer(customerData);
+    }
+  }, [customerData]);
 
   const toggleSelection = (uuid: string) => {
     if (selectedCuotas.includes(uuid)) {
@@ -43,19 +60,34 @@ export default function NewPaymentForm() {
     e.preventDefault();
 
     try {
-      const result = await update({
+      await update({
         cuotasId: selectedCuotas,
         customerId: selectedCustomer?.uuid as string,
         status: CuotaStatus.PAID,
       }).unwrap();
 
-      console.log(result);
+      navigate(
+        `/private/${PrivateRoutes.PAYMENTS}?customerId=${selectedCustomer?.uuid}`
+      );
       snackbar.openSnackbar("Pago creado con exito!");
     } catch (e) {
       console.log(e);
       snackbar.openSnackbar(e.data.error, "error");
     }
   };
+
+  if (isLoadingCustomer || isLoadingCustomers) {
+    return <p>Loading</p>;
+  }
+
+  const cuotasToPay =
+    selectedCustomer?.modalidadData.modalidad === CustomerModalidad.CLOUD
+      ? selectedCustomer.modalidadData.cuotas.filter(
+          (cuota) =>
+            cuota.status == CuotaStatus.PENDING ||
+            cuota.status == CuotaStatus.LATE
+        )
+      : [];
 
   return (
     <Box
@@ -90,40 +122,38 @@ export default function NewPaymentForm() {
           gap: 3,
         }}
       >
-        {!isLoadingCustomer &&
-          selectedCustomer &&
-          customerData?.modalidadData.modalidad === CustomerModalidad.CLOUD &&
-          customerData.modalidadData.cuotas
-            .filter(
-              (cuota) =>
-                cuota.status == CuotaStatus.PENDING ||
-                cuota.status == CuotaStatus.LATE
-            )
-            .map((cuota) => (
-              <Box
-                onClick={() => toggleSelection(cuota.uuid)}
-                sx={{
-                  border: "3px solid",
-                  borderColor: selectedCuotas.includes(cuota.uuid)
-                    ? "primary.main"
-                    : "transparent",
-                  borderRadius: 1,
-                  cursor: "pointer",
+        {cuotasToPay.length > 0 &&
+          cuotasToPay.map((cuota) => (
+            <Box
+              onClick={() => toggleSelection(cuota.uuid)}
+              sx={{
+                border: "3px solid",
+                borderColor: selectedCuotas.includes(cuota.uuid)
+                  ? "primary.main"
+                  : "transparent",
+                borderRadius: 1,
+                cursor: "pointer",
+              }}
+            >
+              <CuotaPreview
+                key={cuota.uuid}
+                isPreview={false}
+                cuota={{
+                  amonut: cuota.amount,
+                  month: cuota.month,
+                  year: cuota.year,
+                  status: cuota.status,
+                  customer: customerData || customer,
                 }}
-              >
-                <CuotaPreview
-                  key={cuota.uuid}
-                  isPreview={false}
-                  cuota={{
-                    amonut: cuota.amount,
-                    month: cuota.month,
-                    year: cuota.year,
-                    status: cuota.status,
-                    customer: selectedCustomer,
-                  }}
-                />
-              </Box>
-            ))}
+              />
+            </Box>
+          ))}
+
+        {selectedCustomer && cuotasToPay.length == 0 && (
+          <Alert severity="success">
+            El cliente no tiene cuotas pendientes de pago
+          </Alert>
+        )}
       </Box>
 
       {selectedCuotas.length > 0 && (

@@ -1,4 +1,9 @@
 export const formatFullName = (firstName: string, lastName: string) => {
-  return `${firstName.at(0)?.toUpperCase()}${firstName.slice(1)} 
-  ${lastName.at(0)?.toUpperCase()}${lastName.slice(1)}`;
+  const capitalize = (str: string) =>
+    str ? str[0].toUpperCase() + str.slice(1).toLowerCase() : "";
+
+  const formattedFirstName = capitalize(firstName.trim());
+  const formattedLastName = capitalize(lastName.trim());
+
+  return `${formattedFirstName} ${formattedLastName}`.trim();
 };

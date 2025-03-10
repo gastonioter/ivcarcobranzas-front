@@ -15,6 +15,7 @@ export default function CuotaPreview({
   cuota,
   isPreview = true,
 }: ICuotaPreviewProps) {
+  console.log("cuota");
   return (
     <Paper
       sx={{

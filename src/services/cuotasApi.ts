@@ -44,6 +44,11 @@ export const cuotasApi = createApi({
         body,
       }),
       invalidatesTags: ["Cuotas"],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        await queryFulfilled;
+
+        dispatch(customerApi.util.invalidateTags(["Customer"]));
+      },
     }),
 
     updateCuotas: builder.mutation<Cuota[], UpdateCuotaPayload>({

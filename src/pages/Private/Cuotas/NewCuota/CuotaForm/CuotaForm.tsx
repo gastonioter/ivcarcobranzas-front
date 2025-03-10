@@ -27,6 +27,8 @@ import { useNavigate } from "react-router";
 import CuotaPreview from "../CuotaPreview/CuotaPreview";
 import { CuotaFormLayout } from "./styled-components/layout.styled.component";
 import { useSearchParams } from "react-router-dom";
+import { format } from "path";
+import { formatFullName } from "@/utilities/formatFullName";
 
 const yearsOpts = [
   { value: new Date().getFullYear() - 1, label: new Date().getFullYear() - 1 },
@@ -169,11 +171,13 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
             } as Customer)
           }
           getOptionLabel={(option: Customer) =>
-            `${option.firstName} ${option.lastName}`
+            formatFullName(option.firstName, option.lastName)
           }
           disabled={isLoadingCustomers}
           options={customers ?? []}
-          renderInput={(params) => <TextField {...params} label="Cliente" />}
+          renderInput={(params) => (
+            <TextField {...params} label="Selecciona el Cliente" />
+          )}
         />
       </FormControl>
 

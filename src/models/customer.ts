@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { Cuota } from "./Cuota";
+import { Payment } from "./Payment";
 
 export type ModalidadData =
   | {
@@ -10,6 +11,7 @@ export type ModalidadData =
         uuid: string;
       };
       cuotas: Cuota[] | [];
+      pagos: Payment[] | [];
     }
   | {
       modalidad: CustomerModalidad.REGULAR;

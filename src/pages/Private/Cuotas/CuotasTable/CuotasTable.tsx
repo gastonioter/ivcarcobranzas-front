@@ -1,8 +1,8 @@
-import { useGetCuotasQuery } from "@/services/cuotasApi";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { Chip } from "@mui/material";
-import { useState } from "react";
 import { Cuota, CuotaStatus } from "@/models/Cuota";
+import { useGetCuotasQuery } from "@/services/cuotasApi";
+import { Chip } from "@mui/material";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { useState } from "react";
 import CuotasFilters from "../CuotasFilters/CuotasFilters";
 export interface ICuotasTableProps {
   customerId: string;
@@ -22,7 +22,7 @@ const initialFilters: filters = {
 export default function CuotasTable({ customerId }: ICuotasTableProps) {
   const { data: cuotas } = useGetCuotasQuery(customerId);
   const [filters, setFilters] = useState<filters>(initialFilters);
-
+  console.log(cuotas);
   const cuotasFiltered = cuotas?.filter(
     (cuota) =>
       (filters.month !== "sinaplicar" ? cuota.month === filters.month : true) &&
@@ -72,18 +72,18 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
       },
     },
   ];
-  return cuotas && cuotas.length > 0 ? (
+  return (
     <>
-      <div>
-        <CuotasFilters filters={filters} setFilters={setFilters} />
-      </div>
+      {cuotas && cuotas.length > 0 && (
+        <div>
+          <CuotasFilters filters={filters} setFilters={setFilters} />
+        </div>
+      )}
       <DataGrid
         columns={columns}
         rows={cuotasFiltered}
         getRowId={(row) => row.uuid}
       ></DataGrid>
     </>
-  ) : (
-    <p>No hay cuotas para mostrar</p>
   );
 }

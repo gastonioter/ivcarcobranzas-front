@@ -86,11 +86,13 @@ export default function Cuotas() {
               } as Customer)
             }
             getOptionLabel={(option: Customer) =>
-              `${option.firstName} ${option.lastName}`
+              formatFullName(option.firstName, option.lastName)
             }
             disabled={isLoadingCostumers}
             options={customers ?? []}
-            renderInput={(params) => <TextField {...params} label="Cliente" />}
+            renderInput={(params) => (
+              <TextField {...params} label="Selecciona el Cliente" />
+            )}
           />
         </FormControl>
 

@@ -76,6 +76,21 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
             window.open(`http://localhost:3001/api/prints/rsmcta/${row.uuid}`);
           },
         },
+
+        {
+          name: "Cuotas",
+          onClick: () => {
+            navigate(`/private/${PrivateRoutes.CUOTAS}?customerId=${row.uuid}`);
+          },
+        },
+        {
+          name: "Pagos",
+          onClick: () => {
+            navigate(
+              `/private/${PrivateRoutes.PAYMENTS}?customerId=${row.uuid}`
+            );
+          },
+        },
         {
           name: `${
             row.status === CustomerStatus.ACTIVE ? "Dar de baja" : "Activar"
@@ -86,12 +101,12 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
                 await changeCustomerStatus({
                   uuid: row.uuid,
                   status: CustomerStatus.INACTIVE,
-                });
+                }).unwrap();
               } else {
                 await changeCustomerStatus({
                   uuid: row.uuid,
                   status: CustomerStatus.ACTIVE,
-                });
+                }).unwrap();
               }
 
               snackbar.openSnackbar("Estado actualizado con éxito");
@@ -99,12 +114,6 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
               console.log(e);
               snackbar.openSnackbar(`${e.data.error}`, "error");
             }
-          },
-        },
-        {
-          name: "Ver Cuotas",
-          onClick: () => {
-            navigate(`/private/${PrivateRoutes.CUOTAS}?customerId=${row.uuid}`);
           },
         },
       ]}
