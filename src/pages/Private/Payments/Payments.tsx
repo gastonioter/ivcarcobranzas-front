@@ -6,7 +6,7 @@ import {
   useGetCustomersQuery,
 } from "@/services/customerApi";
 import { formatFullName } from "@/utilities/formatFullName";
-import { Autocomplete, Paper, TextField } from "@mui/material";
+import { Autocomplete, TextField } from "@mui/material";
 import { useNavigate } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import PaymentsTable from "./PaymentsTable/PaymentsTable";
@@ -56,31 +56,22 @@ export default function Payments() {
         <SectionTitle>Pago de Cuotas</SectionTitle>
       </SectionHeader>
 
-      <Paper
-        sx={{
-          p: 2,
-          height: {
-            xs: "auto",
-            md: "100%",
-          },
+      <Autocomplete
+        sx={{ mt: 3 }}
+        options={customers}
+        value={selected}
+        onChange={(e, value) => {
+          updateSearchParams("customerId", value?.uuid ?? "");
         }}
-      >
-        <Autocomplete
-          options={customers}
-          value={selected}
-          onChange={(e, value) => {
-            updateSearchParams("customerId", value?.uuid ?? "");
-          }}
-          getOptionLabel={(option) =>
-            formatFullName(option.firstName, option.lastName)
-          }
-          renderInput={(params) => (
-            <TextField {...params} label="Selecciona el Cliente" />
-          )}
-        />
+        getOptionLabel={(option) =>
+          formatFullName(option.firstName, option.lastName)
+        }
+        renderInput={(params) => (
+          <TextField {...params} label="Selecciona el Cliente" />
+        )}
+      />
 
-        {customerData && <PaymentsTable customer={customerData} />}
-      </Paper>
+      {customerData && <PaymentsTable customer={customerData} />}
     </>
   );
 }

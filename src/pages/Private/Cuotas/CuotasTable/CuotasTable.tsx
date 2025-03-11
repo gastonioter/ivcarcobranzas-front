@@ -1,9 +1,14 @@
 import { Cuota, CuotaStatus } from "@/models/Cuota";
-import { useGetCuotasQuery } from "@/services/cuotasApi";
+import {
+  useGetCuotasQuery,
+  useUpdateCuotaMutation,
+} from "@/services/cuotasApi";
 import { Chip } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useState } from "react";
 import CuotasFilters from "../CuotasFilters/CuotasFilters";
+import ToggleStatusButton from "./ToggleStatusButton/ToggleStatusButton";
+import { useSnackbar } from "@/context/SnackbarContext";
 export interface ICuotasTableProps {
   customerId: string;
 }
@@ -22,7 +27,21 @@ const initialFilters: filters = {
 export default function CuotasTable({ customerId }: ICuotasTableProps) {
   const { data: cuotas } = useGetCuotasQuery(customerId);
   const [filters, setFilters] = useState<filters>(initialFilters);
-  console.log(cuotas);
+  const [update] = useUpdateCuotaMutation();
+  const snackbar = useSnackbar();
+  const updateCuotaSerie = async (cuota: Cuota) => {
+    try {
+      await update({
+        cuotaId: cuota.uuid,
+        customerId,
+        serie: cuota.serie,
+        status: cuota.status,
+      });
+      snackbar.openSnackbar("Cuota actualizada");
+    } catch {
+      snackbar.openSnackbar("Error al actualizar la cuota", "error");
+    }
+  };
   const cuotasFiltered = cuotas?.filter(
     (cuota) =>
       (filters.month !== "sinaplicar" ? cuota.month === filters.month : true) &&
@@ -34,6 +53,7 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
       field: "serie",
       headerName: "Serie",
       flex: 1,
+      editable: true,
     },
     {
       field: "fecha",
@@ -71,6 +91,20 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
         );
       },
     },
+    {
+      field: "actions",
+      headerName: "Acciones",
+      flex: 1,
+      renderCell: ({ row }) => {
+        return (
+          <ToggleStatusButton
+            customerId={customerId}
+            row={row}
+            status={row.status}
+          />
+        );
+      },
+    },
   ];
   return (
     <>
@@ -80,8 +114,13 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
         </div>
       )}
       <DataGrid
+        editMode="cell"
         columns={columns}
         rows={cuotasFiltered}
+        hideFooterSelectedRowCount
+        processRowUpdate={(row) => {
+          updateCuotaSerie(row);
+        }}
         getRowId={(row) => row.uuid}
       ></DataGrid>
     </>

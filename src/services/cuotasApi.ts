@@ -1,5 +1,10 @@
 import { addToken } from "@/interceptors";
-import { CreateCuotaPayload, Cuota, UpdateCuotaPayload } from "@/models/Cuota";
+import {
+  CreateCuotaPayload,
+  Cuota,
+  UpdateCuotaPayload,
+  UpdateCuotasPayload,
+} from "@/models/Cuota";
 import { clearCredentials } from "@/redux/slices/auth";
 import {
   BaseQueryFn,
@@ -51,7 +56,7 @@ export const cuotasApi = createApi({
       },
     }),
 
-    updateCuotas: builder.mutation<Cuota[], UpdateCuotaPayload>({
+    updateCuotas: builder.mutation<Cuota[], UpdateCuotasPayload>({
       query: (body) => ({
         url: "/",
         method: "PATCH",
@@ -64,6 +69,28 @@ export const cuotasApi = createApi({
         dispatch(customerApi.util.invalidateTags(["Customer"]));
       },
     }),
+
+    generateAllCuotas: builder.mutation({
+      query: () => ({
+        url: "/generateAll",
+        method: "POST",
+      }),
+      invalidatesTags: ["Cuotas"],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        await queryFulfilled;
+
+        dispatch(customerApi.util.invalidateTags(["Customer"]));
+      },
+    }),
+
+    updateCuota: builder.mutation<Cuota, UpdateCuotaPayload>({
+      query: ({ cuotaId, ...body }) => ({
+        url: `/${cuotaId}`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: ["Cuotas"],
+    }),
   }),
 });
 
@@ -71,4 +98,6 @@ export const {
   useGetCuotasQuery,
   useCreateCuotaMutation,
   useUpdateCuotasMutation,
+  useGenerateAllCuotasMutation,
+  useUpdateCuotaMutation,
 } = cuotasApi;

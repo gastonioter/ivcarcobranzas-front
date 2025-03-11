@@ -1,11 +1,11 @@
 import SectionHeader from "@/components/SectionHeader/SectionHeader";
 import SectionTitle from "@/components/SectionTitle/SectionTitle";
-import { Paper } from "@mui/material";
-import CuotaForm from "./CuotaForm/CuotaForm";
+import { useGetCustomerQuery } from "@/services/customerApi";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { Paper } from "@mui/material";
 import { useNavigate } from "react-router";
 import { useSearchParams } from "react-router-dom";
-import { useGetCustomerQuery } from "@/services/customerApi";
+import CuotaForm from "./CuotaForm/CuotaForm";
 
 export default function NewCuota() {
   const navigate = useNavigate();

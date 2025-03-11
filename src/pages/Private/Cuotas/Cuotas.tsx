@@ -4,12 +4,20 @@ import { Customer, CustomerModalidad, PrivateRoutes } from "@/models";
 
 import { useGetCustomersQuery } from "@/services/customerApi";
 import { formatFullName } from "@/utilities/formatFullName";
-import { Autocomplete, FormControl, Paper, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  FormControl,
+  TextField,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useSearchParams } from "react-router-dom";
 
 import CuotasTable from "./CuotasTable/CuotasTable";
+import { useGenerateAllCuotasMutation } from "@/services/cuotasApi";
+import { useSnackbar } from "@/context/SnackbarContext";
 
 export default function Cuotas() {
   const navigate = useNavigate();
@@ -26,6 +34,24 @@ export default function Cuotas() {
     setSearchParams(nuevosParams);
   };
 
+  const snackbar = useSnackbar();
+
+  const [generate, result] = useGenerateAllCuotasMutation();
+  const generateAllCuotas = async () => {
+    try {
+      await generate({}).unwrap();
+      snackbar.openSnackbar(
+        "Se ha generado para cada cliente la cuota para el mes corriente",
+        "success"
+      );
+    } catch (e) {
+      snackbar.openSnackbar(
+        "Ha ocurrido un error al intentar generar las cuotas",
+        "error"
+      );
+      console.error(e);
+    }
+  };
   const customerId = searchParams.get("customerId");
 
   const [customer, setCustomer] = useState<Customer | undefined>(undefined);
@@ -62,22 +88,14 @@ export default function Cuotas() {
         </SectionTitle>
       </SectionHeader>
 
-      <Paper
-        sx={{
-          p: 2,
-          height: {
-            xs: "auto",
-            md: "100%",
-          },
-        }}
-      >
-        <FormControl fullWidth>
+      <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+        <FormControl fullWidth sx={{ mt: 3 }}>
           <Autocomplete
             onChange={(event, customer) => {
+              if (!customer) return;
               setCustomer(customer);
               updateSearchParams("customerId", customer?.uuid || "");
             }}
-            disableClearable
             value={
               customer ||
               ({
@@ -95,9 +113,20 @@ export default function Cuotas() {
             )}
           />
         </FormControl>
-
         {customer && <CuotasTable customerId={customer.uuid} />}
-      </Paper>
+
+        {!customer && (
+          <Button
+            color="warning"
+            variant="contained"
+            loading={result.isLoading}
+            sx={{ mt: "auto" }}
+            onClick={generateAllCuotas}
+          >
+            Crear cutoas para todos los clientes
+          </Button>
+        )}
+      </Box>
     </>
   );
 }

@@ -50,7 +50,7 @@ export default function CuotasFilters({
         border: "1px solid #ddd",
       }}
     >
-      <Typography variant="h6">Filtros</Typography>
+      <Typography variant="h6">Filtrar cuotas</Typography>
       <FormControl>
         <InputLabel>Año</InputLabel>
         <Select

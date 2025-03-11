@@ -11,11 +11,13 @@ import {
   useGetCustomerQuery,
   useGetCustomersQuery,
 } from "@/services/customerApi";
+import { formatFullName } from "@/utilities/formatFullName";
 import {
   Alert,
   Autocomplete,
   Box,
   Button,
+  Divider,
   FormControl,
   InputLabel,
   MenuItem,
@@ -24,11 +26,9 @@ import {
 } from "@mui/material";
 import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { useSearchParams } from "react-router-dom";
 import CuotaPreview from "../CuotaPreview/CuotaPreview";
 import { CuotaFormLayout } from "./styled-components/layout.styled.component";
-import { useSearchParams } from "react-router-dom";
-import { format } from "path";
-import { formatFullName } from "@/utilities/formatFullName";
 
 const yearsOpts = [
   { value: new Date().getFullYear() - 1, label: new Date().getFullYear() - 1 },
@@ -68,6 +68,7 @@ const initialCuota: newCuotaPayload = {
 
 export default function CuotaForm({ customer }: { customer?: Customer }) {
   const [cuota, setCuota] = useState<newCuotaPayload>(initialCuota);
+  const [facturaId, setfacturaId] = useState<string>("");
   const [searchParams] = useSearchParams();
 
   const snackbar = useSnackbar();
@@ -93,6 +94,7 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
       status: cuota.status,
       year: cuota.year,
       customerId: cuota.customer?.uuid as string,
+      facturaId,
     };
 
     const result = createCuotaSchema.safeParse(newCuota);
@@ -246,6 +248,14 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
               ))}
             </Select>
           </FormControl>
+
+          <Divider />
+          <TextField
+            label="ID Factura"
+            type="text"
+            value={facturaId}
+            onChange={(e) => setfacturaId(e.target.value)}
+          />
         </Box>
       )}
 
