@@ -21,14 +21,14 @@ export default function ProductsTable({
     );
   }
 
-  const actions = (params) => (
+  const actions = ({ row }: { row: Product }) => (
     <TableMenuActions
       actions={[
         {
           name: "Editar",
           onClick: () => {
             dialogOpenSubject$.setSubject = true;
-            setProduct(params.row);
+            setProduct(row);
           },
         },
         {

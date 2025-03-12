@@ -37,7 +37,7 @@ export default function BaseTransactionTable({
       flex: 1,
       filterable: false,
       sortable: false,
-      valueGetter: (seller) => `${seller.email}`,
+      valueGetter: (seller: { email: string }) => `${seller.email}`,
     },
     {
       field: "totalAmount",
