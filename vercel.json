@@ -1,0 +1,9 @@
+{
+  "routes": [
+    { "src": "/private/dashboard", "dest": "/" },
+
+    { "src": "/private/customers", "dest": "/" },
+
+    { "src": "/private/cuotas", "dest": "/" }
+  ]
+}
