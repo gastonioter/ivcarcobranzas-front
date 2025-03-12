@@ -4,9 +4,6 @@ import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
-  build: {
-    outDir: "dist", // Configura la carpeta de salida
-  },
   plugins: [react()],
   resolve: {
     alias: {
