@@ -14,6 +14,7 @@ import {
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query";
 import { saleApi } from "./saleApi";
+import { BASE_URL } from "@/constants/baseURL";
 
 const baseQuery: BaseQueryFn<
   string | FetchArgs,
@@ -21,7 +22,7 @@ const baseQuery: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
   const result = await fetchBaseQuery({
-    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/budgets`,
+    baseUrl: `${BASE_URL}/budgets`,
     prepareHeaders: addToken,
   })(args, api, extraOptions);
 

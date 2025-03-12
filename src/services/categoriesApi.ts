@@ -1,3 +1,4 @@
+import { BASE_URL } from "@/constants/baseURL";
 import { addToken } from "@/interceptors";
 import { Category, CategoryFormData } from "@/models/category";
 import { clearCredentials } from "@/redux/slices";
@@ -5,7 +6,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const baseQuery = async (args: any, api: any, extraOptions: any) => {
   const result = await fetchBaseQuery({
-    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/categories`,
+    baseUrl: `${BASE_URL}/categories`,
     prepareHeaders: addToken,
   })(args, api, extraOptions);
 
