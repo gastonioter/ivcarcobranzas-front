@@ -12,7 +12,6 @@ import {
 import { FormEvent } from "react";
 import logo from "../../../../assets/logo-azul.png";
 
-import { BASE_URL } from "@/constants/baseURL";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { useNavigate } from "react-router";
 
@@ -20,12 +19,12 @@ export function LoginForm() {
   const navigate = useNavigate();
   const [login, { isLoading }] = useLoginMutation();
   const snackbar = useSnackbar();
-  console.log(import.meta.env.VITE_BASE_API_URL);
-  console.log(BASE_URL);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
     const { password, email } = Object.fromEntries(formData.entries());
+    console.log(password, email);
     try {
       await login({
         password: password as string,
@@ -35,7 +34,7 @@ export function LoginForm() {
       navigate(`/${PrivateRoutes.PRIVATE}`);
     } catch (e) {
       console.log(e);
-      snackbar.openSnackbar(e.data.error, "error");
+      snackbar.openSnackbar("Error al iniciar sesion", "error");
     }
   };
 
