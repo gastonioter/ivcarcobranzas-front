@@ -1,4 +1,3 @@
-import { BASE_URL } from "@/constants/baseURL";
 import { addToken } from "@/interceptors";
 import {
   CreateProductFormValues,

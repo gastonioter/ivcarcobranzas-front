@@ -4,7 +4,7 @@ import "./index.css";
 import App from "./App.tsx";
 import { CssBaseline } from "@mui/material";
 
-if (location.protocol !== "https:") {
+if (import.meta.env.VITE_ENV != "dev" && location.protocol !== "https:") {
   location.replace(
     `https://${location.hostname}${location.pathname}${location.search}`
   );
