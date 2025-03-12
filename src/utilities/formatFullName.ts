@@ -5,5 +5,5 @@ export const formatFullName = (firstName: string, lastName: string) => {
   const formattedFirstName = capitalize(firstName.trim());
   const formattedLastName = capitalize(lastName.trim());
 
-  return `${formattedFirstName} ${formattedLastName}`.trim();
+  return `${formattedLastName} ${formattedFirstName}`.trim();
 };

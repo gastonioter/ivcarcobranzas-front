@@ -36,6 +36,7 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
         customerId,
         serie: cuota.serie,
         status: cuota.status,
+        monto: cuota.amount,
       });
       snackbar.openSnackbar("Cuota actualizada");
     } catch {
@@ -67,6 +68,7 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
       field: "amount",
       headerName: "Monto",
       flex: 1,
+      editable: true,
     },
     {
       field: "status",

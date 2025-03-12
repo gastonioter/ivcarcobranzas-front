@@ -40,6 +40,7 @@ export const UpdateCuotaSchema = z.object({
   cuotaId: z.string().uuid(),
   status: z.nativeEnum(CuotaStatus),
   serie: z.string(),
+  monto: z.string().transform((value) => parseFloat(value)),
   customerId: z.string().uuid(),
 });
 

@@ -25,6 +25,7 @@ export interface Customer {
   phone: string;
   status: CustomerStatus;
   createdAt: Date;
+  cuit: string;
   modalidadData: ModalidadData;
 }
 
@@ -76,6 +77,7 @@ const CloudCustomerSchema = z.object({
 });
 
 export const createCustomerSchema = z.object({
+  cuit: z.string(),
   firstName: z.string().nonempty("El nombre es requerido"),
   lastName: z.string().nonempty("El apellido es requerido"),
   email: z.string().email({

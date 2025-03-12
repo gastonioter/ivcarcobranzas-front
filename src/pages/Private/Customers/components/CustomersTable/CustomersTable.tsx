@@ -165,6 +165,12 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
       sortable: false,
     },
     {
+      field: "cuit",
+      headerName: "CUIT",
+      flex: 1,
+      sortable: false,
+    },
+    {
       field: "createdAt",
       headerName: "Creación",
       flex: 0.5,

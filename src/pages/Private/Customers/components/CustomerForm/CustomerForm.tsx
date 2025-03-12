@@ -2,12 +2,9 @@ import { dialogCloseSubject$ } from "@/components/CustomDialog";
 import FooterCustomDialog from "@/components/FooterCustomDialog/FooterCustomDialog";
 import { useSnackbar } from "@/context/SnackbarContext";
 import {
-  CloudCustomerType,
-  CreateCustomerFormData,
   createCustomerSchema,
   Customer,
   CustomerModalidad,
-  ModalidadData,
 } from "@/models/customer";
 import { useGetCloudCategoriesQuery } from "@/services/cloudCategoriesApi";
 import {
@@ -26,13 +23,13 @@ import {
   TextField,
 } from "@mui/material";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import { set } from "zod";
 
 interface BaseCustomer {
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
+  cuit: string;
 }
 function CustomerForm({
   customer,
@@ -51,6 +48,7 @@ function CustomerForm({
     lastName: "",
     email: "",
     phone: "",
+    cuit: "",
   });
 
   const [cloudModalidadData, setCloudModalidadData] = useState({
@@ -91,6 +89,7 @@ function CustomerForm({
         lastName: customer.lastName,
         email: customer.email,
         phone: customer.phone,
+        cuit: customer.cuit,
       });
 
       setModalidad(customer.modalidadData.modalidad);
@@ -175,6 +174,16 @@ function CustomerForm({
           type="email"
           name="email"
           value={baseCustomer?.email}
+          onChange={handleInputChange}
+        ></TextField>
+      </FormControl>
+      <FormControl>
+        <TextField
+          id="cuit"
+          label="CUIT"
+          type="text"
+          name="cuit"
+          value={baseCustomer?.cuit}
           onChange={handleInputChange}
         ></TextField>
       </FormControl>
