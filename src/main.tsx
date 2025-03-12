@@ -4,6 +4,12 @@ import "./index.css";
 import App from "./App.tsx";
 import { CssBaseline } from "@mui/material";
 
+if (location.protocol !== "https:") {
+  location.replace(
+    `https://${location.hostname}${location.pathname}${location.search}`
+  );
+}
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <CssBaseline />

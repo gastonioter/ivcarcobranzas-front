@@ -24,7 +24,7 @@ export function LoginForm() {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
     const { password, email } = Object.fromEntries(formData.entries());
-    console.log(password, email);
+
     try {
       await login({
         password: password as string,
@@ -34,7 +34,7 @@ export function LoginForm() {
       navigate(`/${PrivateRoutes.PRIVATE}`);
     } catch (e) {
       console.log(e);
-      snackbar.openSnackbar("Error al iniciar sesion", "error");
+      snackbar.openSnackbar(e.data.error, "error");
     }
   };
 
