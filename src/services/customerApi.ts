@@ -1,4 +1,3 @@
-import { BASE_URL } from "@/constants/baseURL";
 import { addToken } from "@/interceptors";
 import {
   AccountSummary,
@@ -22,7 +21,7 @@ const baseQuery: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
   const result = await fetchBaseQuery({
-    baseUrl: `${BASE_URL}/customers`,
+    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/customers`,
     prepareHeaders: addToken,
   })(args, api, extraOptions);
 

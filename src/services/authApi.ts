@@ -1,5 +1,4 @@
 // features/api/authApi.ts
-import { BASE_URL } from "@/constants/baseURL";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 interface LoginCredentials {
@@ -14,7 +13,7 @@ interface LoginResponse {
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}/auth`,
+    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/auth`,
   }),
 
   endpoints: (builder) => ({
