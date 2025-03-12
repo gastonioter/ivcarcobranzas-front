@@ -20,8 +20,8 @@ export default function SalesTable() {
   const rows = data || [];
 
   const openNewTab = (path: string) => {
-    const url = "http://localhost:3001" + path;
-    newTabRef.current = window.open(url, "_blank");
+    const baseURL = `${import.meta.env.VITE_BASE_API_URL}`;
+    newTabRef.current = window.open(baseURL + path, "_blank");
   };
 
   const actions = ({ row }: { row: Sale }) => (
@@ -63,7 +63,7 @@ export default function SalesTable() {
         {
           name: "Imprimir",
           onClick: () => {
-            openNewTab(`/api/prints/sale/${row.uuid}`);
+            openNewTab(`/prints/sale/${row.uuid}`);
           },
         },
       ]}

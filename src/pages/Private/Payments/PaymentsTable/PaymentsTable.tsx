@@ -51,7 +51,7 @@ export default function PaymentsTable({ customer }: { customer: Customer }) {
             <IconButton
               onClick={() => {
                 window.open(
-                  `http://localhost:3001/api/prints/monit-recipt/${customer.uuid}/${row.uuid}`
+                  `${import.meta.env.VITE_BASE_API_URL}/prints/monit-recipt/${customer.uuid}/${row.uuid}`
                 );
               }}
             >

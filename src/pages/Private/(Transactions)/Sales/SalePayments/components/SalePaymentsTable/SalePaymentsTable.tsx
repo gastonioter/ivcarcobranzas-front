@@ -62,7 +62,7 @@ export default function SalePaymentsTable() {
             disabled={row.status === SalePaymentStatus.CANCELLED}
             onClick={() => {
               window.open(
-                `http://localhost:3001/api/prints/recipt/${saleID}/${row.uuid}`
+                `${import.meta.env.VITE_BASE_API_URL}/prints/recipt/${saleID}/${row.uuid}`
               );
             }}
           >

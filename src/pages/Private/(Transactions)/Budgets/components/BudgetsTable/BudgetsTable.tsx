@@ -46,8 +46,8 @@ export default function BudgetsTable() {
 
   // Abrir la nueva pestaña y guardar la referencia
   const openNewTab = (path: string) => {
-    const url = "http://localhost:3001" + path;
-    newTabRef.current = window.open(url, "_blank");
+    const baseURL = `${import.meta.env.VITE_BASE_API_URL}`;
+    newTabRef.current = window.open(baseURL + path, "_blank");
   };
 
   // Cambiar el título de la nueva pestaña
@@ -118,7 +118,7 @@ export default function BudgetsTable() {
         {
           name: "Imprimir",
           onClick: () => {
-            openNewTab(`/api/prints/budget/${budget.uuid}`);
+            openNewTab(`/prints/budget/${budget.uuid}`);
           },
           isDisabled: budget.status === BudgetStatus.REJECTED,
         },

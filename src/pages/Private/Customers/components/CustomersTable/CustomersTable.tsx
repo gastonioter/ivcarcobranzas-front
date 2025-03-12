@@ -73,14 +73,14 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
         {
           name: "Rsm. Cta.",
           onClick: () => {
-            window.open(`http://localhost:3001/api/prints/rsmcta/${row.uuid}`);
+            window.open(`${import.meta.env.VITE_BASE_API_URL}/prints/rsmcta/${row.uuid}`);
           },
         },
         {
           name: "Rsm. Monit.",
           onClick: () => {
             window.open(
-              `http://localhost:3001/api/prints/rsmmonit/${row.uuid}`
+              `${import.meta.env.VITE_BASE_API_URL}/prints/rsmmonit/${row.uuid}`
             );
           },
         },
