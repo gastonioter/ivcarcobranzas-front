@@ -9,6 +9,7 @@ import {
   ModalidadData,
 } from "@/models/customer";
 import {
+  useDeleteCustomerMutation,
   useGetCustomersQuery,
   useUpdateStatusMutation,
 } from "@/services/customerApi";
@@ -33,7 +34,7 @@ interface CustomerTableProps {
 function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
   const { data: customers, isLoading, error } = useGetCustomersQuery();
   const [changeCustomerStatus] = useUpdateStatusMutation();
-
+  const [deleteCustomer] = useDeleteCustomerMutation();
   const navigate = useNavigate();
 
   const [onlyCloudCustomers, setChecked] = useState(false);
@@ -73,7 +74,9 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
         {
           name: "Rsm. Cta.",
           onClick: () => {
-            window.open(`${import.meta.env.VITE_BASE_API_URL}/prints/rsmcta/${row.uuid}`);
+            window.open(
+              `${import.meta.env.VITE_BASE_API_URL}/prints/rsmcta/${row.uuid}`
+            );
           },
         },
         {
@@ -118,6 +121,18 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
               }
 
               snackbar.openSnackbar("Estado actualizado con éxito");
+            } catch (e) {
+              console.log(e);
+              snackbar.openSnackbar(`${e.data.error}`, "error");
+            }
+          },
+        },
+        {
+          name: "Eliminar",
+          onClick: async () => {
+            try {
+              await deleteCustomer(row.uuid).unwrap();
+              snackbar.openSnackbar("Cliente eliminado!");
             } catch (e) {
               console.log(e);
               snackbar.openSnackbar(`${e.data.error}`, "error");

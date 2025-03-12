@@ -56,6 +56,14 @@ export const customerApi = createApi({
       invalidatesTags: ["Customers"],
     }),
 
+    deleteCustomer: builder.mutation<void, string>({
+      query: (uuid) => ({
+        url: `/${uuid}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Customers"],
+    }),
+
     editCustomer: builder.mutation<Customer, EditCustomerFormData>({
       query: ({ uuid, ...updatedCustomerData }) => ({
         url: `/${uuid}`,
@@ -91,4 +99,5 @@ export const {
   useEditCustomerMutation,
   useUpdateStatusMutation,
   useGetAccountSummaryQuery,
+  useDeleteCustomerMutation,
 } = customerApi;
