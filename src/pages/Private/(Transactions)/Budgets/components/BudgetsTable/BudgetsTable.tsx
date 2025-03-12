@@ -45,7 +45,7 @@ export default function BudgetsTable() {
   const newTabRef = useRef<Window | null>(null);
 
   // Abrir la nueva pestaña y guardar la referencia
-  const openNewTab = (path) => {
+  const openNewTab = (path: string) => {
     const url = "http://localhost:3001" + path;
     newTabRef.current = window.open(url, "_blank");
   };

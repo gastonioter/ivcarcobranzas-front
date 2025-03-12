@@ -19,7 +19,7 @@ export default function SalesTable() {
   const [updateSalePayment] = useUpdateSaleMutation();
   const rows = data || [];
 
-  const openNewTab = (path) => {
+  const openNewTab = (path: string) => {
     const url = "http://localhost:3001" + path;
     newTabRef.current = window.open(url, "_blank");
   };
@@ -92,7 +92,7 @@ export default function SalesTable() {
       flex: 1,
       filterable: false,
       sortable: false,
-      valueGetter: (seller) => `${seller.email}`,
+      valueGetter: (seller: { email: string }) => `${seller.email}`,
     },
     {
       field: "totalAmount",

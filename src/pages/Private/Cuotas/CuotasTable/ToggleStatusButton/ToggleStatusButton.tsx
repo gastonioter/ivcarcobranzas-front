@@ -28,6 +28,7 @@ export default function ToggleStatusButton({
               serie: row.serie,
               status: CuotaStatus.PENDING,
               customerId,
+              monto: row.amount,
             }).unwrap();
             snackbar.openSnackbar("Cuota activa!");
           } catch (e) {
@@ -48,6 +49,7 @@ export default function ToggleStatusButton({
               serie: row.serie,
               status: CuotaStatus.NO_SERVICE,
               customerId,
+              monto: row.amount,
             }).unwrap();
             snackbar.openSnackbar("Cuota anulada!");
           } catch (e) {

@@ -1,6 +1,7 @@
 import { RootState } from "@/redux";
 
-export const addToken = (headers: Headers, { getState }) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const addToken = (headers: Headers, { getState }: { getState: any }) => {
   // Puedes obtener el token desde el estado y agregarlo a headers si es necesario
   const token = (getState() as RootState).auth.token;
 

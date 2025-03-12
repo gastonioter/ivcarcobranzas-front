@@ -25,7 +25,7 @@ const items = [
   {
     name: "Mensualidades",
     icon: <SummarizeIcon />,
-    to: PrivateRoutes.MONTHLY_FEES,
+    to: PrivateRoutes.CUOTAS,
   },
   { name: "Pagos", icon: <MonetizationOnIcon />, to: PrivateRoutes.PAYMENTS },
 ];

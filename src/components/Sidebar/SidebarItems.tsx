@@ -5,14 +5,14 @@ import InventoryIcon from "@mui/icons-material/Inventory";
 import LocalGroceryStoreIcon from "@mui/icons-material/LocalGroceryStore";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import PersonIcon from "@mui/icons-material/Person";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import SummarizeIcon from "@mui/icons-material/Summarize";
 import { Box, Divider, List, Typography } from "@mui/material";
 import { useLocation } from "react-router";
+import logo from "../../assets/logo.png";
 import CollapsableItem from "./CollapsableItem";
 import SimpleItem from "./SimpleItem";
-import logo from "../../assets/logo.png";
-import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 const items = [
   {
     name: "Dashboard",

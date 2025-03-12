@@ -24,8 +24,8 @@ export function LoginForm() {
     const { password, email } = Object.fromEntries(formData.entries());
     try {
       await login({
-        password,
-        email,
+        password: password as string,
+        email: email as string,
       }).unwrap();
 
       navigate(`/${PrivateRoutes.PRIVATE}`);
