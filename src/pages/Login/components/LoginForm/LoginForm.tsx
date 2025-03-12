@@ -13,11 +13,12 @@ import { FormEvent } from "react";
 import logo from "../../../../assets/logo-azul.png";
 
 import { useNavigate } from "react-router";
+import { useSnackbar } from "@/context/SnackbarContext";
 
 export function LoginForm() {
   const navigate = useNavigate();
   const [login, { isError, isLoading }] = useLoginMutation();
-
+  const snackbar = useSnackbar();
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
@@ -30,7 +31,7 @@ export function LoginForm() {
 
       navigate(`/${PrivateRoutes.PRIVATE}`);
     } catch (e) {
-      console.log(e);
+      snackbar.openSnackbar(e.data.error, "error");
     }
   };
 
