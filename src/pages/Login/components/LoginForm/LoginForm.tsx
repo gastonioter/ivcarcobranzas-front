@@ -17,8 +17,9 @@ import { useSnackbar } from "@/context/SnackbarContext";
 
 export function LoginForm() {
   const navigate = useNavigate();
-  const [login, { isError, isLoading }] = useLoginMutation();
+  const [login, { isLoading }] = useLoginMutation();
   const snackbar = useSnackbar();
+  console.log(import.meta.env.BASE_URL);
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
@@ -62,11 +63,6 @@ export function LoginForm() {
             fullWidth
           />
 
-          {isError && (
-            <Typography color="error">
-              Credenciales incorrectas, por favor intente de nuevo.
-            </Typography>
-          )}
           <Button type="submit" variant="contained" color="primary" fullWidth>
             {isLoading ? "Ingresando..." : "Ingresar"}
           </Button>
