@@ -62,6 +62,7 @@ function CustomerForm({
   const handleInputChange = (
     e:
       | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       | SelectChangeEvent<any>
   ) => {
     const { name, value } = e.target;
@@ -71,7 +72,7 @@ function CustomerForm({
     }));
   };
 
-  const handleCloudDataChange = (e: any) => {
+  const handleCloudDataChange = (e: SelectChangeEvent) => {
     const { name, value } = e.target;
     setCloudModalidadData((previous) => ({
       ...previous,

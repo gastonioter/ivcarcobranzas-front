@@ -12,7 +12,7 @@ import { Box, Divider, List, Typography } from "@mui/material";
 import { useLocation } from "react-router";
 import logo from "../../assets/logo.png";
 import CollapsableItem from "./CollapsableItem";
-import SimpleItem from "./SimpleItem";
+import SimpleItem, { SimpleItemProps } from "./SimpleItem";
 const items = [
   {
     name: "Dashboard",
@@ -87,13 +87,15 @@ export default function SidebarNavigationItems() {
               key={navItem.name}
               selected={location.pathname.includes(navItem.to)}
             />
-          ) : (
+          ) : navItem.items ? (
             <CollapsableItem
               icon={navItem.icon}
               name={navItem.name}
-              items={navItem.items}
+              items={navItem.items as SimpleItemProps[]}
               key={navItem.name}
             />
+          ) : (
+            <></>
           )
         )}
       </List>
