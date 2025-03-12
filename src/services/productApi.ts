@@ -10,7 +10,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const baseQuery = async (args: any, api: any, extraOptions: any) => {
   const result = await fetchBaseQuery({
-    baseUrl: `${BASE_URL}/products`,
+    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/products`,
     prepareHeaders: addToken,
   })(args, api, extraOptions);
 
