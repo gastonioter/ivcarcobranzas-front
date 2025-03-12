@@ -1,0 +1,1 @@
+import{j as r,P as s}from"./index-BYIKbfWU.js";import{S as a,a as e}from"./Private-CTYeqjuM.js";import"./TextField-Cr_pJ-uQ.js";function n(){return r.jsxs(r.Fragment,{children:[r.jsx(a,{showButton:!1,children:r.jsx(e,{children:"Dashboard"})}),r.jsx(s,{})]})}export{n as default};

@@ -5,7 +5,7 @@ import path from "path";
 // https://vite.dev/config/
 export default defineConfig({
   build: {
-    outDir: "public", // Configura la carpeta de salida
+    outDir: "dist", // Configura la carpeta de salida
   },
   plugins: [react()],
   resolve: {
