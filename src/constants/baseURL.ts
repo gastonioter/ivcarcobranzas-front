@@ -1,2 +1,1 @@
-export const BASE_URL =
-  "https://ivcarcobranzas-back-production.up.railway.app/";
+export const BASE_URL = "http://212.85.2.215/app/api";
