@@ -233,7 +233,7 @@ function CustomerForm({
             {cloudCategories?.map((category) => {
               return (
                 <MenuItem key={category.uuid} value={category.uuid}>
-                  {`${category.name.toUpperCase()} - ${formattedCurrency(
+                  {`${category.name.toUpperCase()}  ${formattedCurrency(
                     category.price
                   )}`}
                 </MenuItem>
