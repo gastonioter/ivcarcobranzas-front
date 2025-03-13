@@ -10,13 +10,13 @@ import {
   Box,
   Button,
   CircularProgress,
-  Stack,
   Typography,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router";
 import SalePaymentSummary from "./components/PaymentSummary/PaymentSummary";
 import SalePaymentForm from "./components/SalePaymentForm/SalePaymentForm";
 import SalePaymentsTable from "./components/SalePaymentsTable/SalePaymentsTable";
+import { LayoutSalePayments } from "./styled-components/layout.styled.component";
 
 export default function SalePayments() {
   const navigate = useNavigate();
@@ -52,16 +52,10 @@ export default function SalePayments() {
         </SectionTitle>
       </SectionHeader>
 
-      <Stack
-        justifyContent={"space-between"}
-        direction="row"
-        gap={2}
-        flexWrap={"wrap"}
-        sx={{ mb: 2 }}
-      >
+      <LayoutSalePayments>
         <Button
           endIcon={<AddCircleRounded />}
-          sx={{ width: "fit-content" }}
+          sx={{ width: "fit-content", gridColumn: "1 / -1" }}
           variant={"contained"}
           onClick={() => {
             dialogOpenSubject$.setSubject = true;
@@ -70,20 +64,9 @@ export default function SalePayments() {
         >
           Crear Nuevo Pago
         </Button>
-      </Stack>
-
-      <Stack
-        gap={2}
-        direction={{
-          xs: "column",
-          md: "row",
-        }}
-        flexWrap={"wrap"}
-        sx={{ height: "100%" }}
-      >
         <SalePaymentsTable />
         <SalePaymentSummary {...sale.summary} />
-      </Stack>
+      </LayoutSalePayments>
 
       <CustomDialog>
         <Box sx={{ p: 5 }}>

@@ -57,6 +57,7 @@ export default function SalePaymentForm() {
           labelId="metodo"
           name="paymentMethod"
           label="Seleccione el metodo de pago"
+          defaultValue={PaymentMethods.CASH}
         >
           {Object.values(PaymentMethods).map((method) => (
             <MenuItem key={method} value={method}>

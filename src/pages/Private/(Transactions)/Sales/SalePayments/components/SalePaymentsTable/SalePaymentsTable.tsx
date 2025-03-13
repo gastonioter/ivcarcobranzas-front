@@ -1,12 +1,13 @@
+import { CustomGridToolbar } from "@/components";
 import { SalePayment, SalePaymentStatus } from "@/models/SalePayment";
 import { useGetSalePaymentsQuery } from "@/services/saleApi";
 import { formattedDate } from "@/utilities";
 import { formattedCurrency } from "@/utilities/formatPrice";
+import PrintIcon from "@mui/icons-material/Print";
 import { Chip, IconButton } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useParams } from "react-router";
 import ToggleStatusButton from "./components/ToggleStatusButton";
-import PrintIcon from "@mui/icons-material/Print";
 export default function SalePaymentsTable() {
   const { uuid: saleID } = useParams();
   const { data: payments, isLoading } = useGetSalePaymentsQuery(
@@ -62,7 +63,9 @@ export default function SalePaymentsTable() {
             disabled={row.status === SalePaymentStatus.CANCELLED}
             onClick={() => {
               window.open(
-                `${import.meta.env.VITE_BASE_API_URL}/prints/recipt/${saleID}/${row.uuid}`
+                `${import.meta.env.VITE_BASE_API_URL}/prints/recipt/${saleID}/${
+                  row.uuid
+                }`
               );
             }}
           >
@@ -77,6 +80,9 @@ export default function SalePaymentsTable() {
     <DataGrid
       rows={rows}
       columns={columns}
+      slots={{
+        toolbar: CustomGridToolbar,
+      }}
       disableRowSelectionOnClick
       loading={isLoading}
       isRowSelectable={({ row }) => !row.isCupon}

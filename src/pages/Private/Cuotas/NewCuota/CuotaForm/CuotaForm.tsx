@@ -159,6 +159,7 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
     <CuotaFormLayout onSubmit={handleNewCuota}>
       <FormControl sx={{ gridColumn: "1 / span 2" }}>
         <Autocomplete
+          
           onChange={(event, customer) => {
             setCuota((prev) => ({ ...prev, customer }));
             searchParams.delete("customerId");
