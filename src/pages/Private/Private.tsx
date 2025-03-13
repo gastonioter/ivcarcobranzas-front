@@ -2,26 +2,32 @@ import { PrivateRoutes } from "@/models/routes";
 import RoutesWithNotFound from "@/utilities/RoutesWithNotFound.utility";
 import { lazy } from "react";
 import { Navigate, Route } from "react-router";
-import BudgetDetails from "./(Transactions)/Budgets/BudgetDetails/BudgetDetails";
-import Budgets from "./(Transactions)/Budgets/Budgets";
-
-import NewBudget from "./(Transactions)/Budgets/NewBudget/NewBudget";
-import NewSale from "./(Transactions)/Sales/NewSale/NewSale";
-import SaleDetails from "./(Transactions)/Sales/SaleDetails/SaleDetails";
-import Sales from "./(Transactions)/Sales/Sales";
-import Categories from "./Categories/Categories";
 import AppContainer from "./components/AppContainer/AppContainer";
-import Customers from "./Customers/Customers";
-import Products from "./Products/Products";
-
-import SalePayments from "./(Transactions)/Sales/SalePayments/SalePayments";
-import Cuotas from "./Cuotas/Cuotas";
-import NewCuota from "./Cuotas/NewCuota/NewCuota";
-import Payments from "./Payments/Payments";
 import { AppLayout } from "./styled-components";
-import NewPayment from "./Payments/NewPayment/NewPayment";
 
 const Dashboard = lazy(() => import("./Dashboard/Dashboard"));
+const Customers = lazy(() => import("./Customers/Customers"));
+const Products = lazy(() => import("./Products/Products"));
+const Cuotas = lazy(() => import("./Cuotas/Cuotas"));
+const Payments = lazy(() => import("./Payments/Payments"));
+const Sales = lazy(() => import("./(Transactions)/Sales/Sales"));
+const NewSale = lazy(() => import("./(Transactions)/Sales/NewSale/NewSale"));
+const SaleDetails = lazy(
+  () => import("./(Transactions)/Sales/SaleDetails/SaleDetails")
+);
+const SalePayments = lazy(
+  () => import("./(Transactions)/Sales/SalePayments/SalePayments")
+);
+const Categories = lazy(() => import("./Categories/Categories"));
+const Budgets = lazy(() => import("./(Transactions)/Budgets/Budgets"));
+const NewBudget = lazy(
+  () => import("./(Transactions)/Budgets/NewBudget/NewBudget")
+);
+const BudgetDetails = lazy(
+  () => import("./(Transactions)/Budgets/BudgetDetails/BudgetDetails")
+);
+const NewCuota = lazy(() => import("./Cuotas/NewCuota/NewCuota"));
+const NewPayment = lazy(() => import("./Payments/NewPayment/NewPayment"));
 
 export default function Private() {
   return (
