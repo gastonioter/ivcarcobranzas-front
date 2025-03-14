@@ -102,6 +102,26 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
             );
           },
         },
+
+        {
+          name: "Rsm. Monit. (Wpp)",
+          onClick: async () => {
+            await fetch(
+              `${import.meta.env.VITE_BASE_API_URL}/prints/rsmmonit/${
+                row.uuid
+              }`,
+              {
+                body: JSON.stringify({
+                  sendMethod: "WPP",
+                }),
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+          },
+        },
         {
           name: `${
             row.status === CustomerStatus.ACTIVE ? "Dar de baja" : "Activar"
@@ -214,49 +234,51 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
   ];
 
   return (
-    <div>
-      <Box sx={{ b: 2 }}>
-        <FormControlLabel
-          label="Solo clientes cloud"
-          control={
-            <Checkbox
-              checked={onlyCloudCustomers}
-              onChange={handleChange}
-              inputProps={{ "aria-label": "controlled" }}
-            />
-          }
-        ></FormControlLabel>
-      </Box>
-      <DataGrid
-        slotProps={{
-          toolbar: {
-            showQuickFilter: true,
-          },
-          loadingOverlay: {
-            variant: "skeleton",
-            noRowsVariant: "skeleton",
-          },
-        }}
-        slots={{
-          toolbar: CustomGridToolbar,
-        }}
-        disableDensitySelector
-        disableColumnMenu
-        pageSizeOptions={[5, 10, 25]}
-        getRowId={(row) => row.uuid}
-        rows={rows}
-        disableRowSelectionOnClick
-        // onRowClick={(row) => console.log(row)}
-        columns={columns as GridColDef[]}
-        // processRowUpdate={() => {}} // TODO: Implementar
-        loading={isLoading}
-        // sx={{
-        //   "& .MuiDataGrid-row:hover": {
-        //     cursor: "pointer",
-        //   },
-        // }}
-      />
-    </div>
+    <>
+      <div>
+        <Box sx={{ b: 2 }}>
+          <FormControlLabel
+            label="Solo clientes cloud"
+            control={
+              <Checkbox
+                checked={onlyCloudCustomers}
+                onChange={handleChange}
+                inputProps={{ "aria-label": "controlled" }}
+              />
+            }
+          ></FormControlLabel>
+        </Box>
+        <DataGrid
+          slotProps={{
+            toolbar: {
+              showQuickFilter: true,
+            },
+            loadingOverlay: {
+              variant: "skeleton",
+              noRowsVariant: "skeleton",
+            },
+          }}
+          slots={{
+            toolbar: CustomGridToolbar,
+          }}
+          disableDensitySelector
+          disableColumnMenu
+          pageSizeOptions={[5, 10, 25]}
+          getRowId={(row) => row.uuid}
+          rows={rows}
+          disableRowSelectionOnClick
+          // onRowClick={(row) => console.log(row)}
+          columns={columns as GridColDef[]}
+          // processRowUpdate={() => {}} // TODO: Implementar
+          loading={isLoading}
+          // sx={{
+          //   "& .MuiDataGrid-row:hover": {
+          //     cursor: "pointer",
+          //   },
+          // }}
+        />
+      </div>
+    </>
   );
 }
 
