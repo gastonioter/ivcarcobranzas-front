@@ -110,6 +110,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
           onClick: async () => {
             try {
               setSending(true);
+              snackbar.openSnackbar(`Enviando...`, "info");
               await fetch(
                 `${import.meta.env.VITE_BASE_API_URL}/prints/rsmmonit/${
                   row.uuid
