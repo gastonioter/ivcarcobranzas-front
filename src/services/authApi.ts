@@ -13,7 +13,7 @@ interface LoginResponse {
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/auth`,
+    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/app/auth`,
   }),
 
   endpoints: (builder) => ({
