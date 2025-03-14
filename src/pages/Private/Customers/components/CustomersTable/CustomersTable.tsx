@@ -36,6 +36,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
   const [changeCustomerStatus] = useUpdateStatusMutation();
   const [deleteCustomer] = useDeleteCustomerMutation();
   const navigate = useNavigate();
+  const [sending, setSending] = useState(false);
 
   const [onlyCloudCustomers, setChecked] = useState(false);
 
@@ -104,22 +105,32 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
         },
 
         {
+          isDisabled: sending,
           name: "Rsm. Monit. (Wpp)",
           onClick: async () => {
-            await fetch(
-              `${import.meta.env.VITE_BASE_API_URL}/prints/rsmmonit/${
-                row.uuid
-              }`,
-              {
-                body: JSON.stringify({
-                  sendMethod: "WPP",
-                }),
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              }
-            );
+            try {
+              setSending(true);
+              await fetch(
+                `${import.meta.env.VITE_BASE_API_URL}/prints/rsmmonit/${
+                  row.uuid
+                }`,
+                {
+                  body: JSON.stringify({
+                    sendMethod: "WPP",
+                  }),
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
+              snackbar.openSnackbar("Whatsapp enviado con éxito");
+            } catch (e) {
+              console.log(e);
+              snackbar.openSnackbar(`${e.data.error}`, "error");
+            } finally {
+              setSending(false);
+            }
           },
         },
         {
