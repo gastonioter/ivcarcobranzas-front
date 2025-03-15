@@ -37,7 +37,7 @@ import CustomerStatusIndicator from "../CustomerStatusIndicator/CustomerStatusIn
 
 function formatCustomerModalidad(data: ModalidadData) {
   return data.modalidad == CustomerModalidad.CLOUD
-    ? `CLOUD - ${data.cloudCategory.name.toUpperCase()}`
+    ? `CLOUD  (${data.cloudCategory.name.toUpperCase()})`
     : data.modalidad;
 }
 
