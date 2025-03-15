@@ -8,6 +8,9 @@ import {
   CustomerStatus,
   ModalidadData,
 } from "@/models/customer";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+
+import { PrivateRoutes } from "@/models";
 import {
   useDeleteCustomerMutation,
   useGetCustomersQuery,
@@ -15,12 +18,22 @@ import {
 } from "@/services/customerApi";
 import { formattedDate } from "@/utilities";
 import { formatFullName } from "@/utilities/formatFullName";
-import { Alert, Box, Checkbox, FormControlLabel } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControlLabel,
+  Typography,
+} from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useState } from "react";
-import CustomerStatusIndicator from "../CustomerStatusIndicator/CustomerStatusIndicator";
 import { useNavigate } from "react-router";
-import { PrivateRoutes } from "@/models";
+import CustomerStatusIndicator from "../CustomerStatusIndicator/CustomerStatusIndicator";
 
 function formatCustomerModalidad(data: ModalidadData) {
   return data.modalidad == CustomerModalidad.CLOUD
@@ -34,11 +47,67 @@ interface CustomerTableProps {
 function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
   const { data: customers, isLoading, error } = useGetCustomersQuery();
   const [changeCustomerStatus] = useUpdateStatusMutation();
-  const [deleteCustomer] = useDeleteCustomerMutation();
+  const [deleteFn] = useDeleteCustomerMutation();
   const navigate = useNavigate();
   const [sending, setSending] = useState(false);
+  const [id, setId] = useState<null | string>(null);
 
   const [onlyCloudCustomers, setChecked] = useState(false);
+
+  const sendWpp = async () => {
+    try {
+      setSending(true);
+      await fetch(
+        `${import.meta.env.VITE_BASE_API_URL}/prints/rsmmonit/${id}`,
+        {
+          body: JSON.stringify({
+            sendMethod: "WPP",
+          }),
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      snackbar.openSnackbar("Whatsapp enviado con éxito");
+    } catch (e) {
+      console.log(e);
+      snackbar.openSnackbar(`${e.data.error}`, "error");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const toggleCustomerStatus = async (row: Customer) => {
+    try {
+      if (row.status === CustomerStatus.ACTIVE) {
+        await changeCustomerStatus({
+          uuid: row.uuid,
+          status: CustomerStatus.INACTIVE,
+        }).unwrap();
+      } else {
+        await changeCustomerStatus({
+          uuid: row.uuid,
+          status: CustomerStatus.ACTIVE,
+        }).unwrap();
+      }
+
+      snackbar.openSnackbar("Estado actualizado con éxito");
+    } catch (e) {
+      console.log(e);
+      snackbar.openSnackbar(`${e.data.error}`, "error");
+    }
+  };
+
+  const deleteCustomer = async (uuid: string) => {
+    try {
+      await deleteFn(uuid).unwrap();
+      snackbar.openSnackbar("Cliente eliminado!");
+    } catch (e) {
+      console.log(e);
+      snackbar.openSnackbar(`${e.data.error}`, "error");
+    }
+  };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked);
@@ -73,30 +142,13 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
           },
         },
         {
-          name: "Rsm. Cta.",
-          onClick: () => {
-            window.open(
-              `${import.meta.env.VITE_BASE_API_URL}/prints/rsmcta/${row.uuid}`
-            );
-          },
-        },
-        {
-          name: "Rsm. Monit.",
-          onClick: () => {
-            window.open(
-              `${import.meta.env.VITE_BASE_API_URL}/prints/rsmmonit/${row.uuid}`
-            );
-          },
-        },
-
-        {
-          name: "Cuotas",
+          name: "Ver Cuotas",
           onClick: () => {
             navigate(`/private/${PrivateRoutes.CUOTAS}?customerId=${row.uuid}`);
           },
         },
         {
-          name: "Pagos",
+          name: "Ver Pagos",
           onClick: () => {
             navigate(
               `/private/${PrivateRoutes.PAYMENTS}?customerId=${row.uuid}`
@@ -105,70 +157,41 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
         },
 
         {
-          isDisabled: sending,
-          name: "Rsm. Monit. (Wpp)",
-          onClick: async () => {
-            try {
-              setSending(true);
-              snackbar.openSnackbar(`Enviando...`, "info");
-              await fetch(
-                `${import.meta.env.VITE_BASE_API_URL}/prints/rsmmonit/${
-                  row.uuid
-                }`,
-                {
-                  body: JSON.stringify({
-                    sendMethod: "WPP",
-                  }),
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                }
-              );
-              snackbar.openSnackbar("Whatsapp enviado con éxito");
-            } catch (e) {
-              console.log(e);
-              snackbar.openSnackbar(`${e.data.error}`, "error");
-            } finally {
-              setSending(false);
-            }
+          name: "Rsm. Monit.",
+          onClick: () => {
+            window.open(
+              `${import.meta.env.VITE_BASE_API_URL}/prints/rsmmonit/${row.uuid}`
+            );
           },
         },
         {
+          name: "Rsm. Cta.",
+          onClick: () => {
+            window.open(
+              `${import.meta.env.VITE_BASE_API_URL}/prints/rsmcta/${row.uuid}`
+            );
+          },
+        },
+
+        {
+          name: "Enviar Wpp",
+          onClick: async () => {
+            setId(row.uuid);
+          },
+        },
+
+        {
           name: `${
-            row.status === CustomerStatus.ACTIVE ? "Dar de baja" : "Activar"
+            row.status === CustomerStatus.ACTIVE ? "Dar de baja" : "Dar de alta"
           }`,
           onClick: async () => {
-            try {
-              if (row.status === CustomerStatus.ACTIVE) {
-                await changeCustomerStatus({
-                  uuid: row.uuid,
-                  status: CustomerStatus.INACTIVE,
-                }).unwrap();
-              } else {
-                await changeCustomerStatus({
-                  uuid: row.uuid,
-                  status: CustomerStatus.ACTIVE,
-                }).unwrap();
-              }
-
-              snackbar.openSnackbar("Estado actualizado con éxito");
-            } catch (e) {
-              console.log(e);
-              snackbar.openSnackbar(`${e.data.error}`, "error");
-            }
+            toggleCustomerStatus(row);
           },
         },
         {
           name: "Eliminar",
           onClick: async () => {
-            try {
-              await deleteCustomer(row.uuid).unwrap();
-              snackbar.openSnackbar("Cliente eliminado!");
-            } catch (e) {
-              console.log(e);
-              snackbar.openSnackbar(`${e.data.error}`, "error");
-            }
+            deleteCustomer(row.uuid);
           },
         },
       ]}
@@ -290,6 +313,48 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
           // }}
         />
       </div>
+
+      <Dialog
+        open={!!id}
+        onClose={() => setId(null)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle>
+          <Box display="flex" alignItems="center" gap={3}>
+            {<WarningAmberIcon fontSize="large" />}
+            <Typography variant="h5" fontWeight="bold">
+              Atención!
+            </Typography>
+          </Box>
+          <DialogContent>
+            <Typography variant="body1">
+              Estas a punto de enviar el resumen de cuenta al WhatsApp del
+              cliente, estas seguro de continuar?
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => setId(null)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              loading={sending}
+              onClick={async () => {
+                await sendWpp();
+                setId(null);
+              }}
+            >
+              Confirmar
+            </Button>
+          </DialogActions>
+        </DialogTitle>
+      </Dialog>
     </>
   );
 }
