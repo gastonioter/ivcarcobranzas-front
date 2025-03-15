@@ -13,12 +13,13 @@ export type ProducWithCategories = Product & {
 };
 
 export const CreateProductSchema = z.object({
-  name: z.string().nonempty(),
+  name: z.string().min(2, "Ingresa un nombre valido"),
   price: z
     .string()
-    .nonempty()
-    .transform((v) => parseFloat(v)),
-  categoryId: z.string().nonempty(),
+    .nonempty("Ingresa un precio")
+    .transform((v) => Number(v))
+    .refine((v) => v > 0, { message: "Ingresa un precio mayor a 0" }),
+  categoryId: z.string().uuid().nonempty("Selecciona una categoria"),
 });
 
 export const EditProductSchema = CreateProductSchema.extend({

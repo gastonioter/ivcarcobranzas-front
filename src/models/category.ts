@@ -7,7 +7,7 @@ export interface Category {
 }
 
 export const categorySchema = z.object({
-  name: z.string().min(1, "Ingresa un nombre válido"),
+  name: z.string().min(1, "Ingresa una categoria válida"),
   description: z.string().optional(),
 });
 

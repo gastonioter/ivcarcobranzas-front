@@ -36,7 +36,9 @@ export default function PaymentsTable({ customer }: { customer: Customer }) {
     try {
       setSending(true);
       await fetch(
-        `${import.meta.env.VITE_BASE_API_URL}/prints/recibomonit/${id}`,
+        `${import.meta.env.VITE_BASE_API_URL}/prints/monit-recipt/${
+          customer.uuid
+        }/${id}`,
         {
           body: JSON.stringify({
             sendMethod: "WPP",

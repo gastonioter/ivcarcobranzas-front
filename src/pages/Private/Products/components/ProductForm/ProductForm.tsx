@@ -83,7 +83,6 @@ export default function ProductForm({ product, setProduct }: ProductFormProps) {
         <TextField
           label="Precio de venta"
           {...register("price")}
-          type="number"
           defaultValue={product?.price}
           error={!!errors.price}
           helperText={errors.price?.message}
@@ -103,7 +102,7 @@ export default function ProductForm({ product, setProduct }: ProductFormProps) {
               // TODO: Fetch categories from the API and render them here
               categories?.map((category) => (
                 <MenuItem key={category.uuid} value={category.uuid}>
-                  {category.name}
+                  {category.name.toUpperCase()}
                 </MenuItem>
               ))
             }
