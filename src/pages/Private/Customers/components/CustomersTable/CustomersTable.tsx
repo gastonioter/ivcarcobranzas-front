@@ -8,8 +8,8 @@ import {
   CustomerStatus,
   ModalidadData,
 } from "@/models/customer";
-import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 
+import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog";
 import { PrivateRoutes } from "@/models";
 import {
   useDeleteCustomerMutation,
@@ -18,18 +18,7 @@ import {
 } from "@/services/customerApi";
 import { formattedDate } from "@/utilities";
 import { formatFullName } from "@/utilities/formatFullName";
-import {
-  Alert,
-  Box,
-  Button,
-  Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControlLabel,
-  Typography,
-} from "@mui/material";
+import { Alert, Box, Checkbox, FormControlLabel } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useState } from "react";
 import { useNavigate } from "react-router";
@@ -114,11 +103,6 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
   };
 
   const snackbar = useSnackbar();
-  if (error) {
-    return (
-      <Alert severity="error">Ocurrió un error al cargar los clientes</Alert>
-    );
-  }
 
   let rows;
 
@@ -268,6 +252,12 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
     },
   ];
 
+  if (error) {
+    return (
+      <Alert severity="error">Ocurrió un error al cargar los clientes</Alert>
+    );
+  }
+
   return (
     <>
       <div>
@@ -314,47 +304,17 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
         />
       </div>
 
-      <Dialog
+      <ConfirmationDialog
+        close={() => setId(null)}
+        onConfirm={sendWpp}
         open={!!id}
-        onClose={() => setId(null)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
+        loading={sending}
       >
-        <DialogTitle>
-          <Box display="flex" alignItems="center" gap={3}>
-            {<WarningAmberIcon fontSize="large" />}
-            <Typography variant="h5" fontWeight="bold">
-              Atención!
-            </Typography>
-          </Box>
-          <DialogContent>
-            <Typography variant="body1">
-              Estas a punto de enviar el resumen de cuenta al WhatsApp del
-              cliente, estas seguro de continuar?
-            </Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => setId(null)}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              loading={sending}
-              onClick={async () => {
-                await sendWpp();
-                setId(null);
-              }}
-            >
-              Confirmar
-            </Button>
-          </DialogActions>
-        </DialogTitle>
-      </Dialog>
+        <>
+          Estas a punto de <strong>enviar el resumen de monitoreo</strong> al
+          numero de WhatsApp del cliente, ¿Estás seguro de continuar?
+        </>
+      </ConfirmationDialog>
     </>
   );
 }

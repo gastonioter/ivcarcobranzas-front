@@ -1,7 +1,4 @@
-import { dialogOpenSubject$ } from "@/components";
-import ConfirmationDialog, {
-  IConfirmationDialogProps,
-} from "@/components/ConfirmationDialog/ConfirmationDialog";
+import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog";
 import TableMenuActions from "@/components/TableMenuActions/TableMenuActions";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { Customer, PrivateRoutes } from "@/models";
@@ -20,16 +17,13 @@ import { useNavigate } from "react-router";
 
 export default function BudgetsTable() {
   const { data, isLoading } = useGetBudgetsQuery();
-  const [updateStatus] = useUpdateBudgetStatusMutation();
+  const [updateStatus, { isLoading: isUpdating }] =
+    useUpdateBudgetStatusMutation();
   //const [toggleStatus] = useUpdateSaleStatusMutation();
   const snackbar = useSnackbar();
   const navigate = useNavigate();
-  const [confirmatoinState, setConfirmatoinState] =
-    useState<IConfirmationDialogProps>({
-      message: <></>,
-      onConfirm: () => {},
-    });
-
+  const [rowId, setRowId] = useState<string | null>(null);
+  const [operation, setOperation] = useState<"reject" | "approve" | null>(null);
   const changeStatusCreator =
     (status: BudgetStatus) => async (uuid: string) => {
       try {
@@ -44,13 +38,32 @@ export default function BudgetsTable() {
 
   const newTabRef = useRef<Window | null>(null);
 
-  // Abrir la nueva pestaña y guardar la referencia
   const openNewTab = (path: string) => {
     const baseURL = `${import.meta.env.VITE_BASE_API_URL}`;
     newTabRef.current = window.open(baseURL + path, "_blank");
   };
 
-  // Cambiar el título de la nueva pestaña
+  const approveBudget = async (uuid: string | null) => {
+    if (!uuid) return;
+
+    try {
+      await changeStatusCreator(BudgetStatus.APPROVED)(uuid);
+    } catch (e) {
+      snackbar.openSnackbar(e.data.error, "error");
+      console.log(e);
+    }
+  };
+
+  const rejectBudget = async (uuid: string | null) => {
+    if (!uuid) return;
+
+    try {
+      await changeStatusCreator(BudgetStatus.REJECTED)(uuid);
+    } catch (e) {
+      snackbar.openSnackbar(e.data.error, "error");
+      console.log(e);
+    }
+  };
 
   const actions = ({ row: budget }: { row: Budget }) => (
     <TableMenuActions
@@ -66,24 +79,8 @@ export default function BudgetsTable() {
         {
           name: `Aprobar`,
           onClick() {
-            setConfirmatoinState({
-              message: (
-                <div>
-                  Si apruebas este presupuesto se creara automaticamente una
-                  venta en estado<strong>"PENDIENTE DE PAGO"</strong>, ¿Deseas
-                  continuar?
-                </div>
-              ),
-              onConfirm: async () => {
-                try {
-                  await changeStatusCreator(BudgetStatus.APPROVED)(budget.uuid);
-                } catch (e) {
-                  snackbar.openSnackbar(e.data.error, "error");
-                  console.log(e);
-                }
-              },
-            });
-            dialogOpenSubject$.setSubject = true;
+            setRowId(budget.uuid);
+            setOperation("approve");
           },
           isDisabled:
             budget.status === BudgetStatus.REJECTED ||
@@ -92,24 +89,8 @@ export default function BudgetsTable() {
         {
           name: `Rechazar`,
           onClick() {
-            setConfirmatoinState({
-              isDanger: true,
-              message: (
-                <div>
-                  Estas a punto de rechazar un presupuesto lo cual es una
-                  operacion <strong>IRREVERSIBLE</strong>, ¿Estas seguro de
-                  continuar?
-                </div>
-              ),
-              onConfirm: async () => {
-                try {
-                  await changeStatusCreator(BudgetStatus.REJECTED)(budget.uuid);
-                } catch (e) {
-                  snackbar.openSnackbar(e.data.error, "error");
-                }
-              },
-            });
-            dialogOpenSubject$.setSubject = true;
+            setRowId(budget.uuid);
+            setOperation("reject");
           },
           isDisabled:
             budget.status === BudgetStatus.REJECTED ||
@@ -208,7 +189,32 @@ export default function BudgetsTable() {
         disableColumnMenu
       />
 
-      <ConfirmationDialog {...confirmatoinState} />
+      <ConfirmationDialog
+        close={() => setRowId(null)}
+        loading={isUpdating}
+        onConfirm={async () => {
+          if (operation === "approve") {
+            await approveBudget(rowId);
+          } else if (operation === "reject") {
+            await rejectBudget(rowId);
+          }
+        }}
+        open={!!rowId}
+      >
+        {operation == "approve" ? (
+          <>
+            Al aprobar este presupuesto se creará automaticamente una nueva
+            venta en estado<strong>"PENDIENTE DE PAGO"</strong> y ya no podras
+            hacer nada con el presupuesto, ¿Deseas continuar?
+          </>
+        ) : (
+          <>
+            Rechazar un presupuesto es una operacion{" "}
+            <strong>IRREVERSIBLE</strong> y ya no podras hacer mas nada con el
+            mismo, ¿Deseas continuar?
+          </>
+        )}
+      </ConfirmationDialog>
     </>
   );
 }

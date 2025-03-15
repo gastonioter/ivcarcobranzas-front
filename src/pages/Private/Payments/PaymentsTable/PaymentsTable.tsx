@@ -2,26 +2,19 @@ import { Customer, CustomerModalidad } from "@/models";
 import { formattedDate } from "@/utilities";
 import { formattedCurrency } from "@/utilities/formatPrice";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import PrintIcon from "@mui/icons-material/Print";
-import { Payment } from "@/models/Payment";
 import { CustomDialog, dialogOpenSubject$ } from "@/components";
-import { useState } from "react";
-import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-import PaymentDetails from "./PaymentDetails/PaymentDetails";
+import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog";
 import { useSnackbar } from "@/context/SnackbarContext";
+import { Payment } from "@/models/Payment";
+import PrintIcon from "@mui/icons-material/Print";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import {
+  IconButton,
+  Tooltip
+} from "@mui/material";
+import { useState } from "react";
+import PaymentDetails from "./PaymentDetails/PaymentDetails";
 export default function PaymentsTable({ customer }: { customer: Customer }) {
   const [paymentSelected, setPaymentSelected] = useState<Payment | null>(null);
   const [id, setId] = useState<string | null>(null);
@@ -136,47 +129,18 @@ export default function PaymentsTable({ customer }: { customer: Customer }) {
         <PaymentDetails payment={paymentSelected} />
       </CustomDialog>
 
-      <Dialog
+      <ConfirmationDialog
         open={!!id}
-        onClose={() => setId(null)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
+        loading={sending}
+        onConfirm={sendWpp}
+        close={() => setId(null)}
+        isDanger
       >
-        <DialogTitle>
-          <Box display="flex" alignItems="center" gap={3}>
-            {<WarningAmberIcon fontSize="large" />}
-            <Typography variant="h5" fontWeight="bold">
-              Atención!
-            </Typography>
-          </Box>
-          <DialogContent>
-            <Typography variant="body1">
-              Estas a punto de enviar el resumen de cuenta al WhatsApp del
-              cliente, estas seguro de continuar?
-            </Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => setId(null)}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              loading={sending}
-              onClick={async () => {
-                await sendWpp();
-                setId(null);
-              }}
-            >
-              Confirmar
-            </Button>
-          </DialogActions>
-        </DialogTitle>
-      </Dialog>
+        <>
+          Estas a punto de <strong>enviar el recibo</strong> al numero de
+          WhatsApp del cliente, ¿Estás seguro de continuar?
+        </>
+      </ConfirmationDialog>
     </>
   );
 }
