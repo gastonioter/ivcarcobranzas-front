@@ -9,10 +9,7 @@ import { useSnackbar } from "@/context/SnackbarContext";
 import { Payment } from "@/models/Payment";
 import PrintIcon from "@mui/icons-material/Print";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-import {
-  IconButton,
-  Tooltip
-} from "@mui/material";
+import { IconButton, Tooltip } from "@mui/material";
 import { useState } from "react";
 import PaymentDetails from "./PaymentDetails/PaymentDetails";
 export default function PaymentsTable({ customer }: { customer: Customer }) {
@@ -134,7 +131,6 @@ export default function PaymentsTable({ customer }: { customer: Customer }) {
         loading={sending}
         onConfirm={sendWpp}
         close={() => setId(null)}
-        isDanger
       >
         <>
           Estas a punto de <strong>enviar el recibo</strong> al numero de
