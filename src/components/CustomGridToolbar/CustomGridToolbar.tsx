@@ -1,4 +1,3 @@
-import { Box } from "@mui/material";
 import {
   GridToolbarColumnsButton,
   GridToolbarContainer,
@@ -7,7 +6,10 @@ import {
 
 export function CustomGridToolbar() {
   return (
-    <GridToolbarContainer>
+    <GridToolbarContainer sx={{ display: {
+      xs: "block",
+      sm: "flex",
+    }, gap:2,px:2 }}>
       <GridToolbarColumnsButton
         slotProps={{
           tooltip: {
@@ -16,8 +18,10 @@ export function CustomGridToolbar() {
         }}
       />
 
-      <Box sx={{ flexGrow: 1 }} />
-      <GridToolbarQuickFilter placeholder="Buscar" />
+      <GridToolbarQuickFilter
+        placeholder="Buscar por nombre, celular, CUIT"
+        sx={{  flex:1,p:1 }}
+      />
     </GridToolbarContainer>
   );
 }
