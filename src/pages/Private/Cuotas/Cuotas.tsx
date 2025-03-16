@@ -18,12 +18,13 @@ import { useSearchParams } from "react-router-dom";
 import CuotasTable from "./CuotasTable/CuotasTable";
 import { useGenerateAllCuotasMutation } from "@/services/cuotasApi";
 import { useSnackbar } from "@/context/SnackbarContext";
+import { WhatsApp } from "@mui/icons-material";
+import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog";
+import { useSendRsmMontiWpp } from "@/hooks/useSendRsmMonitWpp";
 
 export default function Cuotas() {
   const navigate = useNavigate();
-
   const [searchParams, setSearchParams] = useSearchParams();
-
   const updateSearchParams = (key: string, value: string) => {
     const nuevosParams = new URLSearchParams(searchParams);
     if (value) {
@@ -33,10 +34,9 @@ export default function Cuotas() {
     }
     setSearchParams(nuevosParams);
   };
-
   const snackbar = useSnackbar();
 
-  const [generate, result] = useGenerateAllCuotasMutation();
+  const [generate, { isLoading }] = useGenerateAllCuotasMutation();
   const generateAllCuotas = async () => {
     try {
       await generate({}).unwrap();
@@ -52,9 +52,16 @@ export default function Cuotas() {
       console.error(e);
     }
   };
+
+  const [openDialog, setOpenDialog] = useState(false);
+
   const customerId = searchParams.get("customerId");
 
-  const [customer, setCustomer] = useState<Customer | undefined>(undefined);
+  const { sendWpp, sending } = useSendRsmMontiWpp(customerId || "");
+
+  const [customer, setCustomer] = useState<Customer | undefined | null>(
+    undefined
+  );
   const { data, isLoading: isLoadingCostumers } = useGetCustomersQuery();
 
   const customers = data?.filter(
@@ -82,9 +89,9 @@ export default function Cuotas() {
         }}
       >
         <SectionTitle>
-          Cuotas Menuales:{" "}
+          Cuotas Menuales:
           {customer &&
-            `${formatFullName(customer?.firstName, customer?.lastName)}`}
+            ` ${formatFullName(customer?.firstName, customer?.lastName)}`}
         </SectionTitle>
       </SectionHeader>
 
@@ -92,7 +99,6 @@ export default function Cuotas() {
         <FormControl fullWidth sx={{ mt: 3 }}>
           <Autocomplete
             onChange={(event, customer) => {
-              if (!customer) return;
               setCustomer(customer);
               updateSearchParams("customerId", customer?.uuid || "");
             }}
@@ -113,20 +119,45 @@ export default function Cuotas() {
             )}
           />
         </FormControl>
-        {customer && <CuotasTable customerId={customer.uuid} />}
+        {customer && customerId && <CuotasTable customerId={customer.uuid} />}
 
-        {!customer && (
+        {!customer && !customerId ? (
           <Button
             color="warning"
             variant="contained"
-            loading={result.isLoading}
-            sx={{ mt: "auto" }}
+            loading={isLoading}
+            sx={{ mt: "auto", fontSize: "1rem" }}
             onClick={generateAllCuotas}
           >
             Crear cutoas para todos los clientes
           </Button>
+        ) : (
+          <Button
+            endIcon={<WhatsApp />}
+            variant="contained"
+            color="warning"
+            sx={{ fontSize: "1rem" }}
+            onClick={() => {
+              setOpenDialog(true);
+            }}
+          >
+            Enviar resumen
+          </Button>
         )}
       </Box>
+
+      <ConfirmationDialog
+        loading={sending}
+        onConfirm={sendWpp}
+        open={openDialog}
+        close={() => setOpenDialog(false)}
+      >
+        <>
+          Estas a punto de <strong>enviar el resumen de monitoreo</strong> al
+          WhatsApp del cliente con todas las cuotas pendientes de pago, ¿Estás
+          seguro de continuar?
+        </>
+      </ConfirmationDialog>
     </>
   );
 }

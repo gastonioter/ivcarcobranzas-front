@@ -29,6 +29,7 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
   const [filters, setFilters] = useState<filters>(initialFilters);
   const [update] = useUpdateCuotaMutation();
   const snackbar = useSnackbar();
+  
   const updateCuotaSerie = async (cuota: Cuota) => {
     try {
       await update({
@@ -43,6 +44,7 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
       snackbar.openSnackbar("Error al actualizar la cuota", "error");
     }
   };
+  
   const cuotasFiltered = cuotas?.filter(
     (cuota) =>
       (filters.month !== "sinaplicar" ? cuota.month === filters.month : true) &&

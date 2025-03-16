@@ -31,6 +31,7 @@ export default function NewCuota() {
       >
         <SectionTitle>Nueva Cuota</SectionTitle>
       </SectionHeader>
+
       <Paper
         sx={{
           p: 2,

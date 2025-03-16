@@ -98,14 +98,11 @@ export default function ProductForm({ product, setProduct }: ProductFormProps) {
             {...register("categoryId")}
           >
             <MenuItem value=""></MenuItem>
-            {
-              // TODO: Fetch categories from the API and render them here
-              categories?.map((category) => (
-                <MenuItem key={category.uuid} value={category.uuid}>
-                  {category.name.toUpperCase()}
-                </MenuItem>
-              ))
-            }
+            {categories?.map((category) => (
+              <MenuItem key={category.uuid} value={category.uuid}>
+                {category.name.toUpperCase()}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
 

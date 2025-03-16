@@ -10,6 +10,7 @@ import {
 } from "@/models/customer";
 
 import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog";
+import { useSendRsmMontiWpp } from "@/hooks/useSendRsmMonitWpp";
 import { PrivateRoutes } from "@/models";
 import {
   useDeleteCustomerMutation,
@@ -38,34 +39,12 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
   const [changeCustomerStatus] = useUpdateStatusMutation();
   const [deleteFn] = useDeleteCustomerMutation();
   const navigate = useNavigate();
-  const [sending, setSending] = useState(false);
+
   const [id, setId] = useState<null | string>(null);
 
   const [onlyCloudCustomers, setChecked] = useState(false);
 
-  const sendWpp = async () => {
-    try {
-      setSending(true);
-      await fetch(
-        `${import.meta.env.VITE_BASE_API_URL}/prints/rsmmonit/${id}`,
-        {
-          body: JSON.stringify({
-            sendMethod: "WPP",
-          }),
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      snackbar.openSnackbar("Whatsapp enviado con éxito");
-    } catch (e) {
-      console.log(e);
-      snackbar.openSnackbar(`${e.data.error}`, "error");
-    } finally {
-      setSending(false);
-    }
-  };
+  const { sendWpp, sending } = useSendRsmMontiWpp(id || "");
 
   const toggleCustomerStatus = async (row: Customer) => {
     try {
