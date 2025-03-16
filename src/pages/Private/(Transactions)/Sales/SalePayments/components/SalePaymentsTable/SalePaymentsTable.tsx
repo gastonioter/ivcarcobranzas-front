@@ -1,4 +1,3 @@
-import { CustomGridToolbar } from "@/components";
 import { SalePayment, SalePaymentStatus } from "@/models/SalePayment";
 import { useGetSalePaymentsQuery } from "@/services/saleApi";
 import { formattedDate } from "@/utilities";
@@ -80,9 +79,6 @@ export default function SalePaymentsTable() {
     <DataGrid
       rows={rows}
       columns={columns}
-      slots={{
-        toolbar: CustomGridToolbar,
-      }}
       disableRowSelectionOnClick
       loading={isLoading}
       isRowSelectable={({ row }) => !row.isCupon}

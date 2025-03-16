@@ -5,13 +5,7 @@ import { useGetSaleQuery } from "@/services/saleApi";
 import { formatFullName } from "@/utilities/formatFullName";
 import { AddCircleRounded } from "@mui/icons-material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Typography,
-} from "@mui/material";
+import { Alert, Button, CircularProgress } from "@mui/material";
 import { useNavigate, useParams } from "react-router";
 import SalePaymentSummary from "./components/PaymentSummary/PaymentSummary";
 import SalePaymentForm from "./components/SalePaymentForm/SalePaymentForm";
@@ -68,13 +62,8 @@ export default function SalePayments() {
         <SalePaymentSummary {...sale.summary} />
       </LayoutSalePayments>
 
-      <CustomDialog>
-        <Box sx={{ p: 5 }}>
-          <Typography variant="h5" sx={{ mb: 5 }}>
-            Nuevo Pago
-          </Typography>
-          <SalePaymentForm />
-        </Box>
+      <CustomDialog title="Nuevo Pago">
+        <SalePaymentForm />
       </CustomDialog>
     </>
   );

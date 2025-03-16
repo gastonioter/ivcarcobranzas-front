@@ -9,6 +9,7 @@ import { useState } from "react";
 import CuotasFilters from "../CuotasFilters/CuotasFilters";
 import ToggleStatusButton from "./ToggleStatusButton/ToggleStatusButton";
 import { useSnackbar } from "@/context/SnackbarContext";
+import { formattedCurrency } from "@/utilities/formatPrice";
 export interface ICuotasTableProps {
   customerId: string;
 }
@@ -29,7 +30,7 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
   const [filters, setFilters] = useState<filters>(initialFilters);
   const [update] = useUpdateCuotaMutation();
   const snackbar = useSnackbar();
-  
+
   const updateCuotaSerie = async (cuota: Cuota) => {
     try {
       await update({
@@ -44,7 +45,7 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
       snackbar.openSnackbar("Error al actualizar la cuota", "error");
     }
   };
-  
+
   const cuotasFiltered = cuotas?.filter(
     (cuota) =>
       (filters.month !== "sinaplicar" ? cuota.month === filters.month : true) &&
@@ -69,6 +70,7 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
     {
       field: "amount",
       headerName: "Monto",
+      valueFormatter: (value) => formattedCurrency(value),
       flex: 1,
       editable: true,
     },
@@ -98,7 +100,7 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
     {
       field: "actions",
       headerName: "Acciones",
-      flex: 1,
+      width:100,
       renderCell: ({ row }) => {
         return (
           <ToggleStatusButton

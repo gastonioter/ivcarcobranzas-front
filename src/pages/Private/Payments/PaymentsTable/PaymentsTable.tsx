@@ -2,7 +2,7 @@ import { Customer, CustomerModalidad } from "@/models";
 import { formattedDate } from "@/utilities";
 import { formattedCurrency } from "@/utilities/formatPrice";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { CustomDialog, dialogOpenSubject$ } from "@/components";
 import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog";
 import { useSnackbar } from "@/context/SnackbarContext";
@@ -77,7 +77,7 @@ export default function PaymentsTable({ customer }: { customer: Customer }) {
     {
       field: "actions",
       headerName: "Acciones",
-      width: 100,
+      width: 150,
       renderCell: ({ row }: { row: Payment }) => (
         <>
           <Tooltip title="Imprimir Recibo">
@@ -103,6 +103,17 @@ export default function PaymentsTable({ customer }: { customer: Customer }) {
               <WhatsAppIcon />
             </IconButton>
           </Tooltip>
+
+          <Tooltip title="Ver Detalle">
+            <IconButton
+              onClick={() => {
+                setPaymentSelected(row);
+                dialogOpenSubject$.setSubject = true;
+              }}
+            >
+              <VisibilityIcon />
+            </IconButton>
+          </Tooltip>
         </>
       ),
     },
@@ -122,7 +133,10 @@ export default function PaymentsTable({ customer }: { customer: Customer }) {
         onRowDoubleClick={showPaymentDetails}
       />
 
-      <CustomDialog>
+      <CustomDialog
+        title="Detalle del Recibo"
+        sx={{ p: 5, display: "flex", flexDirection: "column", gap: 1 }}
+      >
         <PaymentDetails payment={paymentSelected} />
       </CustomDialog>
 
