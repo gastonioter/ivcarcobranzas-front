@@ -1,18 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-refresh/only-export-components */
 import { SubjectManager } from "@/models";
+import { Theme } from "@emotion/react";
+import { Box, SxProps, Typography } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import { useEffect, useState } from "react";
 import { Subscription } from "rxjs";
 
 interface Props {
+  title: string;
+  sx?: SxProps<Theme>;
   children: React.ReactNode;
 }
 
 export const dialogOpenSubject$ = new SubjectManager<boolean>();
 export const dialogCloseSubject$ = new SubjectManager<boolean>();
 
-export const CustomDialog = ({ children }: Props) => {
+export const CustomDialog = ({ title, sx, children }: Props) => {
   const [open, setOpen] = useState(false);
   let openSubject$ = new Subscription();
   let closeSubject$ = new Subscription();
@@ -49,7 +53,12 @@ export const CustomDialog = ({ children }: Props) => {
         aria-describedby="alert-dialog-description"
         fullWidth
       >
-        {children}
+        <Box sx={{ p: 5, ...sx }}>
+          <Typography variant="h5" sx={{ mb: 5 }}>
+            {title}
+          </Typography>
+          {children}
+        </Box>
       </Dialog>
     </div>
   );

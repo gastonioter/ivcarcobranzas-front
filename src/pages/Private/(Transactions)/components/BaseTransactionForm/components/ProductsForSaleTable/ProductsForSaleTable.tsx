@@ -1,12 +1,13 @@
+import { CustomGridToolbar } from "@/components";
 import { Category } from "@/models/category";
 import { Product } from "@/models/product";
 import { formattedCurrency } from "@/utilities/formatPrice";
-import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
 interface ProductsForSaleTableProps {
   products: Product[];
   isLoading: boolean;
-  onClickRow: (params: any) => void;
+  onClickRow: ({ row }: { row: Product }) => void;
 }
 export default function ProductsForSaleTable({
   products,
@@ -38,12 +39,13 @@ export default function ProductsForSaleTable({
         },
       }}
       slots={{
-        toolbar: GridToolbar,
+        toolbar: CustomGridToolbar({ placeholder: "Buscar productos" }),
       }}
       disableColumnFilter
       disableColumnSelector
       disableColumnSorting
       disableDensitySelector
+      disableColumnMenu
       initialState={{
         filter: {
           filterModel: {

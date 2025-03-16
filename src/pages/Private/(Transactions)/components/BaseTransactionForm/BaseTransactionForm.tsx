@@ -12,12 +12,10 @@ import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import {
   Alert,
   Autocomplete,
-  Box,
   Button,
   FormControl,
   Stack,
   TextField,
-  Typography,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router";
 
@@ -205,32 +203,29 @@ export default function BaseTransactionForm({
         </Stack>
       </NewTransactionsStyled>
 
-      <CustomDialog>
-        <Box
-          sx={{
-            p: 4,
-            display: "flex",
-            gap: 2,
-            flexDirection: "column",
-            height: 600,
+      <CustomDialog
+        title="Agregar Productos"
+        sx={{
+          height: "600px",
+          display: "flex",
+          flexDirection: "column",
+          gap: 1,
+        }}
+      >
+        <ProductsForSaleTable
+          products={products || []}
+          isLoading={isLoadingProducts}
+          onClickRow={onAddDetail}
+        />
+        <Button
+          sx={{ width: "fit-content" }}
+          variant={"outlined"}
+          onClick={() => {
+            dialogCloseSubject$.setSubject = true;
           }}
         >
-          <Typography variant={"h6"}>Selecciona productos</Typography>
-          <ProductsForSaleTable
-            products={products || []}
-            isLoading={isLoadingProducts}
-            onClickRow={onAddDetail}
-          />
-          <Button
-            sx={{ width: "fit-content" }}
-            variant={"outlined"}
-            onClick={() => {
-              dialogCloseSubject$.setSubject = true;
-            }}
-          >
-            Cancelar
-          </Button>
-        </Box>
+          Cancelar
+        </Button>
       </CustomDialog>
     </>
   );

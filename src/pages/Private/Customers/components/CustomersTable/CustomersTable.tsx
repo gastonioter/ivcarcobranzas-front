@@ -263,23 +263,16 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
             },
           }}
           slots={{
-            toolbar: CustomGridToolbar,
+            toolbar: CustomGridToolbar({
+              placeholder: "Buscar cliente por: NOMBRE, CUIT, TELEFONO, EMAIL",
+            }),
           }}
-          disableDensitySelector
           disableColumnMenu
-          pageSizeOptions={[5, 10, 25]}
           getRowId={(row) => row.uuid}
           rows={rows}
           disableRowSelectionOnClick
-          // onRowClick={(row) => console.log(row)}
           columns={columns as GridColDef[]}
-          // processRowUpdate={() => {}} // TODO: Implementar
           loading={isLoading}
-          // sx={{
-          //   "& .MuiDataGrid-row:hover": {
-          //     cursor: "pointer",
-          //   },
-          // }}
         />
       </div>
 
