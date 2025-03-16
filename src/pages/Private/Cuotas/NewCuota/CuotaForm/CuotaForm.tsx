@@ -159,7 +159,6 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
     <CuotaFormLayout onSubmit={handleNewCuota}>
       <FormControl sx={{ gridColumn: "1 / span 2" }}>
         <Autocomplete
-          
           onChange={(event, customer) => {
             setCuota((prev) => ({ ...prev, customer }));
             searchParams.delete("customerId");
@@ -189,7 +188,6 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
           <TextField
             label="Monto"
             type="number"
-            disabled
             value={
               cuota.customer?.modalidadData.modalidad ===
               CustomerModalidad.CLOUD
@@ -252,7 +250,7 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
 
           <Divider />
           <TextField
-            label="ID Factura"
+            label="Nro Factura (opcional)"
             type="text"
             value={facturaId}
             onChange={(e) => setfacturaId(e.target.value)}
