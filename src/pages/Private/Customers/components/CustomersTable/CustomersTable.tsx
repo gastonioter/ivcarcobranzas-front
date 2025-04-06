@@ -21,7 +21,7 @@ import { formattedDate } from "@/utilities";
 import { formatFullName } from "@/utilities/formatFullName";
 import { Alert, Box, Checkbox, FormControlLabel } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import CustomerStatusIndicator from "../CustomerStatusIndicator/CustomerStatusIndicator";
 
@@ -42,7 +42,10 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
 
   const [id, setId] = useState<null | string>(null);
 
-  const [onlyCloudCustomers, setChecked] = useState(false);
+  const [filters, setFilters] = useState({
+    active: false,
+    cloud: false,
+  });
 
   const { sendWpp, sending } = useSendRsmMontiWpp(id || "");
 
@@ -77,21 +80,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
     }
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setChecked(event.target.checked);
-  };
-
   const snackbar = useSnackbar();
-
-  let rows;
-
-  if (onlyCloudCustomers) {
-    rows = customers?.filter(
-      (customer) => customer.modalidadData.modalidad === CustomerModalidad.CLOUD
-    );
-  } else {
-    rows = customers;
-  }
 
   const actions = ({ row }: { row: Customer }) => (
     <TableMenuActions
@@ -231,6 +220,41 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
     },
   ];
 
+  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFilters((prev) => ({
+      ...prev,
+      [event.target.name]: event.target.checked,
+    }));
+  };
+
+  const filterCloudCustomer = (customer: Customer) =>
+    customer.modalidadData.modalidad === CustomerModalidad.CLOUD;
+
+  const filterActiveCustomer = (customer: Customer) =>
+    customer.status === CustomerStatus.ACTIVE;
+
+  const filterCustomers = useCallback(() => {
+    if (!customers) return;
+
+    let result = [...customers];
+
+    if (filters.active) {
+      result = result.filter(filterActiveCustomer);
+    }
+
+    if (filters.cloud) {
+      result = result.filter(filterCloudCustomer);
+    }
+
+    setFilteredCustomers(result);
+  }, [customers, filters]);
+
+  useEffect(() => {
+    filterCustomers();
+  }, [filterCustomers]);
+
   if (error) {
     return (
       <Alert severity="error">Ocurrió un error al cargar los clientes</Alert>
@@ -245,7 +269,20 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
             label="Solo clientes cloud"
             control={
               <Checkbox
-                checked={onlyCloudCustomers}
+                checked={filters.cloud}
+                name="cloud"
+                onChange={handleChange}
+                inputProps={{ "aria-label": "controlled" }}
+              />
+            }
+          ></FormControlLabel>
+
+          <FormControlLabel
+            label="Solo clientes activos"
+            control={
+              <Checkbox
+                checked={filters.active}
+                name="active"
                 onChange={handleChange}
                 inputProps={{ "aria-label": "controlled" }}
               />
@@ -269,7 +306,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
           }}
           disableColumnMenu
           getRowId={(row) => row.uuid}
-          rows={rows}
+          rows={filteredCustomers}
           disableRowSelectionOnClick
           columns={columns as GridColDef[]}
           loading={isLoading}
