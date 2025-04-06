@@ -1,6 +1,11 @@
 import SectionHeader from "@/components/SectionHeader/SectionHeader";
 import SectionTitle from "@/components/SectionTitle/SectionTitle";
-import { Customer, CustomerModalidad, PrivateRoutes } from "@/models";
+import {
+  Customer,
+  CustomerModalidad,
+  CustomerStatus,
+  PrivateRoutes,
+} from "@/models";
 
 import { useGetCustomersQuery } from "@/services/customerApi";
 import { formatFullName } from "@/utilities/formatFullName";
@@ -65,7 +70,9 @@ export default function Cuotas() {
   const { data, isLoading: isLoadingCostumers } = useGetCustomersQuery();
 
   const customers = data?.filter(
-    (customer) => customer.modalidadData.modalidad === CustomerModalidad.CLOUD
+    (customer) =>
+      customer.modalidadData.modalidad === CustomerModalidad.CLOUD &&
+      customer.status === CustomerStatus.ACTIVE
   ) as Customer[];
 
   useEffect(() => {
