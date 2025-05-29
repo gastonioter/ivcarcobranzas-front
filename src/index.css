@@ -1,0 +1,14 @@
+/* styles.css */
+@keyframes flashBackground {
+    0% {
+      background-color: #6bce62; /* amarillo claro */
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
+  
+  .flash-row {
+    animation: flashBackground 2s ease-out forwards;
+  }
+  

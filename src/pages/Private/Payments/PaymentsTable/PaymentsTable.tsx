@@ -16,7 +16,7 @@ import { useSearchParams } from "react-router-dom";
 export default function PaymentsTable({ recibos }: { recibos: Payment[] }) {
   const [searchParams] = useSearchParams();
   const customerId = searchParams.get("customerId");
-
+  const animateNewRow = searchParams.get("animateNew");
   const [paymentSelected, setPaymentSelected] = useState<Payment | null>(null);
   const [id, setId] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
@@ -128,6 +128,11 @@ export default function PaymentsTable({ recibos }: { recibos: Payment[] }) {
       <DataGrid
         rows={recibos}
         columns={columns}
+        getRowClassName={(params) => {
+          // Suponiendo que la primera fila es la que tiene el primer ID en el array
+          const isFirstRow = params.id === recibos[0]?.uuid;
+          return isFirstRow && animateNewRow ? "flash-row" : "";
+        }}
         getRowId={(row) => row.uuid}
         onRowDoubleClick={showPaymentDetails}
       />

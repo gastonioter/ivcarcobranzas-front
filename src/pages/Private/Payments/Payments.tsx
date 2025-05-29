@@ -36,9 +36,7 @@ export default function Payments() {
     uuid: "",
   };
 
-  const { data: recibos } = useGetRecibosCustomerQuery(customerId || "", {
-    skip: !customerId,
-  });
+  const { data: recibos } = useGetRecibosCustomerQuery(customerId ?? "");
 
   return (
     <>

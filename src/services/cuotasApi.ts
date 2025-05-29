@@ -49,10 +49,14 @@ export const cuotasApi = createApi({
         body,
       }),
       invalidatesTags: ["Cuotas"],
-      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async (body, { dispatch, queryFulfilled }) => {
         await queryFulfilled;
 
-        dispatch(customerApi.util.invalidateTags(["Customer"]));
+        dispatch(
+          customerApi.util.invalidateTags([
+            { type: "Recibos", id: body.customerId },
+          ])
+        );
       },
     }),
 
@@ -66,7 +70,7 @@ export const cuotasApi = createApi({
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         await queryFulfilled;
 
-        dispatch(customerApi.util.invalidateTags(["Customer"]));
+        dispatch(customerApi.util.invalidateTags(["Recibos"]));
       },
     }),
 
@@ -79,7 +83,7 @@ export const cuotasApi = createApi({
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         await queryFulfilled;
 
-        dispatch(customerApi.util.invalidateTags(["Customer"]));
+        dispatch(customerApi.util.invalidateTags(["Customers"]));
       },
     }),
 

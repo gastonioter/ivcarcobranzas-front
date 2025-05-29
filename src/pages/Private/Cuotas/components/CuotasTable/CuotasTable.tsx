@@ -142,7 +142,7 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
         customerId,
         status: CuotaStatus.PAID,
       }).unwrap();
-      navigate(`/private/pagos?customerId=${customerId}`);
+      navigate(`/private/pagos?customerId=${customerId}&animateNew=yes`);
     } catch (error) {
       console.log(error);
     }

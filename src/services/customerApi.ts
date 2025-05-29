@@ -36,7 +36,8 @@ const baseQuery: BaseQueryFn<
 export const customerApi = createApi({
   reducerPath: "customerApi",
   baseQuery,
-  tagTypes: ["Customers", "AccountSummary", "Customer"],
+  tagTypes: ["Customers", "AccountSummary", "Recibos"],
+
   endpoints: (builder) => ({
     getCustomers: builder.query<Customer[], void>({
       query: () => "/",
@@ -45,7 +46,6 @@ export const customerApi = createApi({
 
     getCustomer: builder.query<Customer, string>({
       query: (uuid) => `/${uuid}`,
-      providesTags: ["Customer"],
     }),
 
     createCustomer: builder.mutation<Customer, CreateCustomerFormData>({
@@ -91,13 +91,13 @@ export const customerApi = createApi({
       providesTags: ["AccountSummary"],
     }),
 
-    getRecibosCustomer:builder.query<Payment[], string>({
-      query:(uuid)=>({
-        method:'GET',
-        url:`/recibos/${uuid}`,
-        providesTags: ["Customer"],
-      })
-    })
+    getRecibosCustomer: builder.query<Payment[], string>({
+      query: (uuid) => ({
+        method: "GET",
+        url: `/recibos/${uuid}`,
+      }),
+      providesTags: (res, err, uuid) => [{ type: "Recibos", id: uuid }],
+    }),
   }),
 });
 
