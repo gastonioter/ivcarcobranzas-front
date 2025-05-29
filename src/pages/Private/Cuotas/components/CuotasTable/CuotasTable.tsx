@@ -24,9 +24,9 @@ export type filters = {
   status: CuotaStatus | "sinaplicar";
 };
 const initialFilters: filters = {
-  year: new Date().getFullYear(),
+  year: "sinaplicar",
   month: "sinaplicar",
-  status: CuotaStatus.PENDING,
+  status: "sinaplicar",
 };
 
 export default function CuotasTable({ customerId }: ICuotasTableProps) {
