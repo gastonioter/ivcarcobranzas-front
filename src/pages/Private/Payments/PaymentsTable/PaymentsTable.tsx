@@ -26,9 +26,9 @@ export default function PaymentsTable({ recibos }: { recibos: Payment[] }) {
     try {
       setSending(true);
       await fetch(
-        `${import.meta.env.VITE_BASE_API_URL}/prints/monit-recipt/${
-          customer.uuid
-        }/${id}`,
+        `${
+          import.meta.env.VITE_BASE_API_URL
+        }/prints/monit-recipt/${customerId}/${id}`,
         {
           body: JSON.stringify({
             sendMethod: "WPP",
