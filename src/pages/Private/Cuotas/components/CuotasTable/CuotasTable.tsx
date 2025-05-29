@@ -14,6 +14,7 @@ import { useState } from "react";
 import CuotasFilters from "../CuotasFilters/CuotasFilters";
 import ToggleStatusButton from "./ToggleStatusButton/ToggleStatusButton";
 import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog";
+import { useNavigate } from "react-router";
 export interface ICuotasTableProps {
   customerId: string;
 }
@@ -30,6 +31,7 @@ const initialFilters: filters = {
 };
 
 export default function CuotasTable({ customerId }: ICuotasTableProps) {
+  const navigate = useNavigate();
   const { data: cuotas } = useGetCuotasQuery(customerId);
   const [filters, setFilters] = useState<filters>(initialFilters);
   const [cuotasIdToPay, setCuotasIdToPay] = useState<readonly GridRowId[]>([]);
@@ -78,6 +80,7 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
     {
       field: "fecha",
       headerName: "Fecha (MES/AÑO)",
+      sortable: false,
       renderCell(params) {
         return `${params.row.month}/${params.row.year}`;
       },
@@ -86,6 +89,8 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
     {
       field: "amount",
       headerName: "Monto",
+      sortable: false,
+
       valueFormatter: (value) => formattedCurrency(value),
       flex: 1,
       editable: true,
@@ -93,6 +98,7 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
     {
       field: "status",
       headerName: "Estado",
+      sortable: false,
       flex: 1,
       renderCell({ row }: { row: Cuota }) {
         return (
@@ -136,6 +142,7 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
         customerId,
         status: CuotaStatus.PAID,
       }).unwrap();
+      navigate(`/private/pagos?customerId=${customerId}`);
     } catch (error) {
       console.log(error);
     }
@@ -176,7 +183,6 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
         rowSelectionModel={cuotasIdToPay}
         onRowSelectionModelChange={(newSelection) => {
           setCuotasIdToPay(newSelection);
-          console.log(cuotasIdToPay);
         }}
         processRowUpdate={(row) => {
           updateCuotaSerie(row);
@@ -191,8 +197,15 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
         close={() => setOpen(false)}
       >
         <>
-          Al confirmar <strong>vas a generar un recibo de pago</strong> al
-          cliente con las cuotas que seleccionaste, ¿Estás seguro de continuar?
+          Al confirmar vas a generar un <strong>recibo de pago</strong> al
+          cliente con las cuotas que seleccionaste:{" "}
+          <strong>
+            {cuotasIdToPay
+              .map((id) => cuotas?.find((cuota) => cuota.uuid == id))
+              .map((cuota) => `${cuota?.year}/${cuota?.month}`)
+              .join(" - ")}
+          </strong>
+          {` ¿Estás seguro de continuar?`}
         </>
       </ConfirmationDialog>
     </>

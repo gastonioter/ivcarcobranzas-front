@@ -36,7 +36,6 @@ export default function ProductForm({ product, setProduct }: ProductFormProps) {
   const { data: categories, isLoading: isLoadingCategories } =
     useGetCategoriesQuery();
 
-  console.log(product);
   const snackbar = useSnackbar();
   const {
     register,

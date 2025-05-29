@@ -100,7 +100,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
           },
         },
         {
-          name: "Ver Pagos",
+          name: "Ver Recibos",
           onClick: () => {
             navigate(
               `/private/${PrivateRoutes.PAYMENTS}?customerId=${row.uuid}`
@@ -126,7 +126,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
         },
 
         {
-          name: "Enviar Wpp",
+          name: "Enviar Rsm",
           onClick: async () => {
             setId(row.uuid);
           },

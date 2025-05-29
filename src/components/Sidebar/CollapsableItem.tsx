@@ -21,8 +21,7 @@ export default function CollapsableItem({
   items,
 }: CollapsableItemProps) {
   const [open, setOpen] = useState(false);
-  console.log(items);
-
+  
   const handleClick = () => {
     setOpen(!open);
   };

@@ -1,18 +1,16 @@
 import SectionHeader from "@/components/SectionHeader/SectionHeader";
 import SectionTitle from "@/components/SectionTitle/SectionTitle";
-import { CustomerModalidad, PrivateRoutes } from "@/models";
+import { CustomerModalidad } from "@/models";
 import {
-  useGetCustomerQuery,
   useGetCustomersQuery,
+  useGetRecibosCustomerQuery,
 } from "@/services/customerApi";
 import { formatFullName } from "@/utilities/formatFullName";
 import { Autocomplete, TextField } from "@mui/material";
-import { useNavigate } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import PaymentsTable from "./PaymentsTable/PaymentsTable";
 
 export default function Payments() {
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { data } = useGetCustomersQuery();
 
@@ -38,7 +36,7 @@ export default function Payments() {
     uuid: "",
   };
 
-  const { data: customerData } = useGetCustomerQuery(customerId || "", {
+  const { data: recibos } = useGetRecibosCustomerQuery(customerId || "", {
     skip: !customerId,
   });
 
@@ -63,7 +61,7 @@ export default function Payments() {
         )}
       />
 
-      {customerData && <PaymentsTable customer={customerData} />}
+      {recibos && <PaymentsTable recibos={recibos} />}
     </>
   );
 }

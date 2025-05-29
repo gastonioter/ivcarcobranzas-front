@@ -1,26 +1,26 @@
-import { Customer, CustomerModalidad } from "@/models";
-import { formattedDate } from "@/utilities";
-import { formattedCurrency } from "@/utilities/formatPrice";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import { CustomDialog, dialogOpenSubject$ } from "@/components";
 import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { Payment } from "@/models/Payment";
+import { formattedDate } from "@/utilities";
+import { formattedCurrency } from "@/utilities/formatPrice";
 import PrintIcon from "@mui/icons-material/Print";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import { IconButton, Tooltip } from "@mui/material";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useState } from "react";
 import PaymentDetails from "./PaymentDetails/PaymentDetails";
-export default function PaymentsTable({ customer }: { customer: Customer }) {
+import { useSearchParams } from "react-router-dom";
+
+export default function PaymentsTable({ recibos }: { recibos: Payment[] }) {
+  const [searchParams] = useSearchParams();
+  const customerId = searchParams.get("customerId");
+
   const [paymentSelected, setPaymentSelected] = useState<Payment | null>(null);
   const [id, setId] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const snackbar = useSnackbar();
-
-  if (customer.modalidadData.modalidad !== CustomerModalidad.CLOUD) {
-    return <p>El cliente no tiene modalidad de Cloud</p>;
-  }
 
   const sendWpp = async () => {
     try {
@@ -59,7 +59,6 @@ export default function PaymentsTable({ customer }: { customer: Customer }) {
       headerName: "Fecha",
       flex: 1,
       valueFormatter: (value) => {
-        console.log(value);
         return formattedDate(value);
       },
     },
@@ -84,9 +83,9 @@ export default function PaymentsTable({ customer }: { customer: Customer }) {
             <IconButton
               onClick={() => {
                 window.open(
-                  `${import.meta.env.VITE_BASE_API_URL}/prints/monit-recipt/${
-                    customer.uuid
-                  }/${row.uuid}`
+                  `${
+                    import.meta.env.VITE_BASE_API_URL
+                  }/prints/monit-recipt/${customerId}/${row.uuid}`
                 );
               }}
             >
@@ -127,7 +126,7 @@ export default function PaymentsTable({ customer }: { customer: Customer }) {
   return (
     <>
       <DataGrid
-        rows={customer.modalidadData.pagos}
+        rows={recibos}
         columns={columns}
         getRowId={(row) => row.uuid}
         onRowDoubleClick={showPaymentDetails}
