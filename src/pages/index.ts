@@ -16,7 +16,7 @@ export * from "./Private/(Transactions)/context/TransactionContext";
 export * from "./Private/(Transactions)/hooks/summary";
 export * from "./Private/(Transactions)/hooks/transaction";
 export * from "./Private/(Transactions)/reducers/summaryReducer";
-export * from "./Private/(Transactions)/reducers/transactionReducer";
+// export * from "./Private/(Transactions)/reducers/transactionReducer";
 export * from "./Private/(Transactions)/Sales/components/SalesTable/SalesTable";
 export * from "./Private/(Transactions)/Sales/NewSale/components/SaleFrom/SaleForm";
 export * from "./Private/(Transactions)/Sales/NewSale/NewSale";
@@ -59,4 +59,3 @@ export * from "./Private/Products/components/ProductForm/ProductForm";
 export * from "./Private/Products/components/ProductsTable/ProductsTable";
 export * from "./Private/Products/Products";
 export * from "./Private/styled-components/app-layout.styled.component";
-
