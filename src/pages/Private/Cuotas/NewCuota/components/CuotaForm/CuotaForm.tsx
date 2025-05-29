@@ -80,9 +80,22 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
     const result = CreateCuotasSchema.safeParse(data);
     if (result.success) {
       try {
-        console.log(result.data);
-        await create(data).unwrap();
-        snackbar.openSnackbar("Cuota creada correctamente");
+        const createdCuotas = await create(data).unwrap();
+        if (createdCuotas.length === 0) {
+          snackbar.openSnackbar(
+            "La cuotas seleccionadas ya fueron creadas",
+            "warning"
+          );
+          return;
+        }
+
+        if (createdCuotas.length < body.months.length) {
+          snackbar.openSnackbar(
+            `Se crearon ${createdCuotas.length} cuotas de ${body.months.length} seleccionadas, el resto ya existía`,
+            "warning"
+          );
+        }
+
         navigate(
           `/private/${PrivateRoutes.CUOTAS}?customerId=${customer?.uuid}`
         );
