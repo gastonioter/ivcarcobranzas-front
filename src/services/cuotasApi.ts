@@ -1,6 +1,6 @@
 import { addToken } from "@/interceptors";
 import {
-  CreateCuotaPayload,
+  CreateCuotasPayload,
   Cuota,
   UpdateCuotaPayload,
   UpdateCuotasPayload,
@@ -42,10 +42,19 @@ export const cuotasApi = createApi({
       providesTags: ["Cuotas"],
     }),
 
-    createCuota: builder.mutation<Cuota, CreateCuotaPayload>({
+    createCuotas: builder.mutation<Cuota[], CreateCuotasPayload>({
       query: (body) => ({
         url: "/",
         method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Cuotas"],
+    }),
+
+    updateCuotas: builder.mutation<Cuota[], UpdateCuotasPayload>({
+      query: (body) => ({
+        url: "/",
+        method: "PATCH",
         body,
       }),
       invalidatesTags: ["Cuotas"],
@@ -57,20 +66,6 @@ export const cuotasApi = createApi({
             { type: "Recibos", id: body.customerId },
           ])
         );
-      },
-    }),
-
-    updateCuotas: builder.mutation<Cuota[], UpdateCuotasPayload>({
-      query: (body) => ({
-        url: "/",
-        method: "PATCH",
-        body,
-      }),
-      invalidatesTags: ["Cuotas"],
-      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
-        await queryFulfilled;
-
-        dispatch(customerApi.util.invalidateTags(["Recibos"]));
       },
     }),
 
@@ -100,7 +95,7 @@ export const cuotasApi = createApi({
 
 export const {
   useGetCuotasQuery,
-  useCreateCuotaMutation,
+  useCreateCuotasMutation,
   useUpdateCuotasMutation,
   useGenerateAllCuotasMutation,
   useUpdateCuotaMutation,

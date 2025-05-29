@@ -21,12 +21,27 @@ export enum InitalCuotaStatus {
   PENDING = "PENDIENTE",
 }
 
-export const createCuotaSchema = z.object({
+export const cuotaMonthOpts = [
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
+];
+
+export const CreateCuotasSchema = z.object({
   customerId: z.string().uuid(),
   amount: z.number(),
   year: z.number(),
   status: z.nativeEnum(CuotaStatus),
-  month: z.number(),
+  months: z.array(z.string()),
   facturaId: z.string().optional(),
 });
 
@@ -48,4 +63,4 @@ export type UpdateCuotaPayload = z.infer<typeof UpdateCuotaSchema>;
 
 export type UpdateCuotasPayload = z.infer<typeof UpdateCuotasSchema>;
 
-export type CreateCuotaPayload = z.infer<typeof createCuotaSchema>;
+export type CreateCuotasPayload = z.infer<typeof CreateCuotasSchema>;

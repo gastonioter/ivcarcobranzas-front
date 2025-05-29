@@ -10,7 +10,6 @@ import CuotaForm from "./components/CuotaForm/CuotaForm";
 export default function NewCuota() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  
   const customerId = searchParams.get("customerId");
 
   const { data } = useGetCustomerQuery(customerId || "", {
