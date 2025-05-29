@@ -33,8 +33,8 @@ export default function Dashboard() {
           <MetricCard
             value={actives}
             icon={<GroupAddIcon fontSize="large" />}
-            title="Usuarios Activos"
-            description="Total de usuarios activos"
+            title="Clientes Activos"
+            description="Total de clientes activos"
           ></MetricCard>
         )}
         {loading ? (
@@ -42,9 +42,9 @@ export default function Dashboard() {
         ) : (
           <MetricCard
             value={inactives}
-            title="Usuarios Inactivos"
+            title="Clientes De Baja"
             icon={<GroupRemoveIcon fontSize="large" />}
-            description="Total de usuarios dados de baja"
+            description="Total de clientes dados de baja"
           ></MetricCard>
         )}
 

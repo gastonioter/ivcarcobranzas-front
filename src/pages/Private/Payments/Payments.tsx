@@ -44,16 +44,8 @@ export default function Payments() {
 
   return (
     <>
-      <SectionHeader
-        customClickHandler={() => {
-          navigate(
-            `${PrivateRoutes.NEW_PAYMENT}${
-              customerId ? `?customerId=${customerId}` : ""
-            } `
-          );
-        }}
-      >
-        <SectionTitle>Pago de Cuotas</SectionTitle>
+      <SectionHeader showButton={false}>
+        <SectionTitle>Recibos de Pago</SectionTitle>
       </SectionHeader>
 
       <Autocomplete

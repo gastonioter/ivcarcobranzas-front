@@ -20,12 +20,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useSearchParams } from "react-router-dom";
 
-import CuotasTable from "./CuotasTable/CuotasTable";
-import { useGenerateAllCuotasMutation } from "@/services/cuotasApi";
-import { useSnackbar } from "@/context/SnackbarContext";
-import { WhatsApp } from "@mui/icons-material";
 import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog";
+import { useSnackbar } from "@/context/SnackbarContext";
 import { useSendRsmMontiWpp } from "@/hooks/useSendRsmMonitWpp";
+import { useGenerateAllCuotasMutation } from "@/services/cuotasApi";
+import { WhatsApp } from "@mui/icons-material";
+import CuotasTable from "./components/CuotasTable/CuotasTable";
 
 export default function Cuotas() {
   const navigate = useNavigate();
@@ -126,6 +126,7 @@ export default function Cuotas() {
             )}
           />
         </FormControl>
+
         {customer && customerId && <CuotasTable customerId={customer.uuid} />}
 
         {!customer && !customerId ? (

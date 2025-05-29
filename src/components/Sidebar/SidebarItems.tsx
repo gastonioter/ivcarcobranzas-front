@@ -53,12 +53,12 @@ const items = [
     to: PrivateRoutes.CUSTOMERS,
   },
   {
-    name: "Cuotas",
+    name: "Resumenes",
     to: PrivateRoutes.CUOTAS,
     icon: <SummarizeIcon />,
   },
   {
-    name: "Pagos",
+    name: "Recibos",
     to: PrivateRoutes.PAYMENTS,
     icon: <MonetizationOnIcon />,
   },

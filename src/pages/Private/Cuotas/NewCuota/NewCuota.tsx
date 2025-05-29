@@ -5,12 +5,12 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Paper } from "@mui/material";
 import { useNavigate } from "react-router";
 import { useSearchParams } from "react-router-dom";
-import CuotaForm from "./CuotaForm/CuotaForm";
+import CuotaForm from "./components/CuotaForm/CuotaForm";
 
 export default function NewCuota() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-
+  
   const customerId = searchParams.get("customerId");
 
   const { data } = useGetCustomerQuery(customerId || "", {
