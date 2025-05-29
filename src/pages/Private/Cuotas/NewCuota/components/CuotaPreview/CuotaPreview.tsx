@@ -1,10 +1,9 @@
 import { Circle } from "@mui/icons-material";
-import { newCuotaPayload } from "../CuotaForm/CuotaForm";
-
 import { CuotaStatus } from "@/models/Cuota";
 import { formatFullName } from "@/utilities/formatFullName";
 import { formattedCurrency } from "@/utilities/formatPrice";
 import { Box, Paper, Tooltip, Typography } from "@mui/material";
+import { newCuotaPayload } from "../CuotaForm/CuotaForm";
 
 export interface ICuotaPreviewProps {
   cuota: newCuotaPayload;

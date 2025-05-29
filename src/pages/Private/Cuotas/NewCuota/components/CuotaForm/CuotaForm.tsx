@@ -27,8 +27,8 @@ import {
 import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useSearchParams } from "react-router-dom";
-import CuotaPreview from "../CuotaPreview/CuotaPreview";
 import { CuotaFormLayout } from "./styled-components/layout.styled.component";
+import CuotaPreview from "../CuotaPreview/CuotaPreview";
 
 const yearsOpts = [
   { value: new Date().getFullYear() - 1, label: new Date().getFullYear() - 1 },

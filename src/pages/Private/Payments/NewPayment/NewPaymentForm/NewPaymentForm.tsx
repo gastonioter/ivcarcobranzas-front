@@ -1,7 +1,8 @@
 import { useSnackbar } from "@/context/SnackbarContext";
 import { Customer, CustomerModalidad, PrivateRoutes } from "@/models";
 import { CuotaStatus } from "@/models/Cuota";
-import CuotaPreview from "@/pages/Private/Cuotas/NewCuota/CuotaPreview/CuotaPreview";
+import CuotaPreview from "@/pages/Private/Cuotas/NewCuota/components/CuotaPreview/CuotaPreview";
+
 import { useUpdateCuotasMutation } from "@/services/cuotasApi";
 import {
   useGetCustomerQuery,
