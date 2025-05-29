@@ -17,9 +17,11 @@ import {
   Autocomplete,
   Box,
   Button,
+  Checkbox,
   Divider,
   FormControl,
   InputLabel,
+  ListItemText,
   MenuItem,
   Select,
   TextField,
@@ -36,23 +38,24 @@ const yearsOpts = [
   { value: new Date().getFullYear() + 1, label: new Date().getFullYear() + 1 },
 ];
 
-const monthOpts = [
-  { value: 1, label: "Enero" },
-  { value: 2, label: "Febrero" },
-  { value: 3, label: "Marzo" },
-  { value: 4, label: "Abril" },
-  { value: 5, label: "Mayo" },
-  { value: 6, label: "Junio" },
-  { value: 7, label: "Julio" },
-  { value: 8, label: "Agosto" },
-  { value: 9, label: "Septiembre" },
-  { value: 10, label: "Octubre" },
-  { value: 11, label: "Noviembre" },
-  { value: 12, label: "Diciembre" },
+const mesesOpts = [
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
 ];
+
 export type newCuotaPayload = {
   year: number;
-  month: number;
+  months: string[];
   amonut: number;
   status: CuotaStatus;
   customer: Customer | undefined;
@@ -60,7 +63,7 @@ export type newCuotaPayload = {
 
 const initialCuota: newCuotaPayload = {
   year: new Date().getFullYear(),
-  month: new Date().getMonth() + 1,
+  months: [],
   amonut: 0,
   status: CuotaStatus.PENDING,
   customer: undefined,
@@ -70,6 +73,7 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
   const [cuota, setCuota] = useState<newCuotaPayload>(initialCuota);
   const [facturaId, setfacturaId] = useState<string>("");
   const [searchParams] = useSearchParams();
+  const [months, setMonths] = useState<string[]>([]);
 
   const snackbar = useSnackbar();
   const {
@@ -196,19 +200,21 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
             }
           ></TextField>
           <FormControl>
-            <InputLabel>Mes</InputLabel>
+            <InputLabel>Para el mes o meses</InputLabel>
             <Select
-              label="Mes"
-              value={cuota.month}
+              label="Para el mes o meses"
+              multiple
+              value={months}
               onChange={(e) => {
-                setCuota((prev) => ({
-                  ...prev,
-                  month: e.target.value as number,
-                }));
+                setMonths(e.target.value);
               }}
+              renderValue={(selected) => selected.join(", ")}
             >
-              {monthOpts.map((month) => (
-                <MenuItem value={month.value}>{month.label}</MenuItem>
+              {mesesOpts.map((month) => (
+                <MenuItem key={month} value={month}>
+                  <Checkbox checked={months.indexOf(month) > -1} />
+                  <ListItemText primary={month} />
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
