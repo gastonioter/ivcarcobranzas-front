@@ -14,6 +14,7 @@ import {
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
 import { customerApi } from "./customerApi";
+import { metricsApi } from "./metricsApi";
 
 const baseQuery: BaseQueryFn<
   string | FetchArgs,
@@ -48,7 +49,12 @@ export const cuotasApi = createApi({
         method: "POST",
         body,
       }),
+
       invalidatesTags: ["Cuotas"],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        await queryFulfilled;
+        dispatch(metricsApi.util.invalidateTags(["Metrics"]));
+      },
     }),
 
     updateCuotas: builder.mutation<Cuota[], UpdateCuotasPayload>({
@@ -61,6 +67,7 @@ export const cuotasApi = createApi({
       onQueryStarted: async (body, { dispatch, queryFulfilled }) => {
         await queryFulfilled;
 
+        dispatch(metricsApi.util.invalidateTags(["Metrics"]));
         dispatch(
           customerApi.util.invalidateTags([
             { type: "Recibos", id: body.customerId },
@@ -77,7 +84,7 @@ export const cuotasApi = createApi({
       invalidatesTags: ["Cuotas"],
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         await queryFulfilled;
-
+        dispatch(metricsApi.util.invalidateTags(["Metrics"]));
         dispatch(customerApi.util.invalidateTags(["Customers"]));
       },
     }),

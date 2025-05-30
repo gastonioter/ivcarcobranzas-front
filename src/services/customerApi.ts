@@ -15,6 +15,7 @@ import {
   fetchBaseQuery,
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
+import { metricsApi } from "./metricsApi";
 
 const baseQuery: BaseQueryFn<
   string | FetchArgs,
@@ -63,6 +64,11 @@ export const customerApi = createApi({
         method: "DELETE",
       }),
       invalidatesTags: ["Customers"],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        await queryFulfilled;
+
+        dispatch(metricsApi.util.invalidateTags(["Metrics"]));
+      },
     }),
 
     editCustomer: builder.mutation<Customer, EditCustomerFormData>({
@@ -81,6 +87,11 @@ export const customerApi = createApi({
         body,
       }),
       invalidatesTags: ["Customers"],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        await queryFulfilled;
+
+        dispatch(metricsApi.util.invalidateTags(["Metrics"]));
+      },
     }),
 
     getAccountSummary: builder.query<AccountSummary, string>({

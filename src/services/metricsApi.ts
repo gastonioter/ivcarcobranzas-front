@@ -36,9 +36,11 @@ const baseQuery: BaseQueryFn<
 export const metricsApi = createApi({
   reducerPath: "metricsApi",
   baseQuery,
+  tagTypes: ["Metrics"],
   endpoints: (builder) => ({
     getMetrics: builder.query<MetricsType, void>({
       query: () => "/",
+      providesTags: ["Metrics"],
     }),
   }),
 });
