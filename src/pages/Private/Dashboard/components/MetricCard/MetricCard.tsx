@@ -1,4 +1,11 @@
-import { Card, CardContent, Typography, Box } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  SxProps,
+  Theme,
+} from "@mui/material";
 
 interface MetricCardProps {
   title: string;
@@ -15,6 +22,7 @@ interface MetricCardProps {
     | "error"
     | "info"
     | "warning";
+  sx?: SxProps<Theme>;
 }
 
 export const MetricCard: React.FC<MetricCardProps> = ({
@@ -23,9 +31,10 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   description = "",
   color = "primary",
   icon,
+  sx = {},
 }) => {
   return (
-    <Card sx={{ minWidth: 250, borderRadius: 2, boxShadow: 3, p: 2 }}>
+    <Card sx={{ minWidth: 250, borderRadius: 2, boxShadow: 3, p: 2, ...sx }}>
       <CardContent
         sx={{
           display: "flex",
@@ -35,13 +44,13 @@ export const MetricCard: React.FC<MetricCardProps> = ({
         }}
       >
         <Box display="flex" alignItems="center" justifyContent="space-between">
-          <Typography variant="h5" fontWeight={500} >
+          <Typography variant="h5" fontWeight={500}>
             {title}
           </Typography>
           {icon}
         </Box>
 
-        <Typography variant="h4" fontWeight="bold"  color={color}>
+        <Typography variant="h2" fontWeight="bold" color={color}>
           {value}
         </Typography>
         <Typography variant="body2" color="textSecondary">

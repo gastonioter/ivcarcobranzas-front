@@ -6,8 +6,8 @@ import SummarizeIcon from "@mui/icons-material/Summarize";
 import { Alert, Skeleton } from "@mui/material";
 import { MetricCard } from "./components/MetricCard/MetricCard";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
-
-import { formattedCurrency } from "@/utilities/formatPrice";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import { summarizeAmount } from "@/utilities/summarizeAmount";
 import GroupRemoveIcon from "@mui/icons-material/GroupRemove";
 import { MetricsLayout } from "./styled-components/dahsboard-layout.styled.component";
 export default function Dashboard() {
@@ -34,15 +34,18 @@ export default function Dashboard() {
             value={actives}
             icon={<GroupAddIcon fontSize="large" />}
             title="Clientes Activos"
+            color="success"
             description="Total de clientes activos"
           ></MetricCard>
         )}
+
         {loading ? (
           <Skeleton />
         ) : (
           <MetricCard
             value={inactives}
             title="Clientes De Baja"
+            color="error"
             icon={<GroupRemoveIcon fontSize="large" />}
             description="Total de clientes dados de baja"
           ></MetricCard>
@@ -62,10 +65,23 @@ export default function Dashboard() {
           <Skeleton />
         ) : (
           <MetricCard
-            value={formattedCurrency(metrics.totalPaidAmounth)}
+            value={summarizeAmount(metrics.totalPaidAmounth+599)}
             title="Recaudado por Monitoreo"
+            color="success"
             icon={<MonetizationOnIcon fontSize="large" />}
             description="Total cobrado por monitoreo en el mes corriente"
+          ></MetricCard>
+        )}
+        {loading ? (
+          <Skeleton />
+        ) : (
+          <MetricCard
+            sx={{ gridColumn: "span 2" }}
+            value={actives}
+            icon={<AccountBalanceWalletIcon fontSize="large" />}
+            title="Clientes Deudores"
+            description="Clientes que tienen 3 o mas meses atrasados"
+            color="error"
           ></MetricCard>
         )}
       </MetricsLayout>
