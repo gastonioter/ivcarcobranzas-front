@@ -171,7 +171,7 @@ export default function Dashboard() {
                     <Button
                       onClick={() =>
                         navigate(
-                          `/private/cuotas?customerId=${params.row.uuid}`
+                          `/private/cuotas?customerId=${params.row.uuid}&status=PENDIENTE`
                         )
                       }
                     >
