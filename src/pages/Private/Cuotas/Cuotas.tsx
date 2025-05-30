@@ -30,8 +30,9 @@ import CuotasTable from "./components/CuotasTable/CuotasTable";
 export default function Cuotas() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+
   const updateSearchParams = (key: string, value: string) => {
-    const nuevosParams = new URLSearchParams(searchParams);
+    const nuevosParams = new URLSearchParams();
     if (value) {
       nuevosParams.set(key, value); // Agregar o actualizar parámetro
     } else {

@@ -1,4 +1,5 @@
 import { addToken } from "@/interceptors";
+import { Customer } from "@/models";
 import { clearCredentials } from "@/redux/slices";
 import {
   BaseQueryFn,
@@ -13,6 +14,7 @@ export interface MetricsType {
   inactives: number;
   generatedCutoas: number;
   totalPaidAmounth: number;
+  deudores: Customer[];
 }
 
 const baseQuery: BaseQueryFn<

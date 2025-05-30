@@ -1,10 +1,10 @@
 import {
+  Box,
   Card,
   CardContent,
-  Typography,
-  Box,
   SxProps,
   Theme,
+  Typography,
 } from "@mui/material";
 
 interface MetricCardProps {
@@ -23,6 +23,8 @@ interface MetricCardProps {
     | "info"
     | "warning";
   sx?: SxProps<Theme>;
+  onClick?: () => void;
+  children?: React.ReactNode;
 }
 
 export const MetricCard: React.FC<MetricCardProps> = ({
@@ -32,6 +34,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   color = "primary",
   icon,
   sx = {},
+  children,
 }) => {
   return (
     <Card sx={{ minWidth: 250, borderRadius: 2, boxShadow: 3, p: 2, ...sx }}>
@@ -56,6 +59,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
         <Typography variant="body2" color="textSecondary">
           {description}
         </Typography>
+        {children && <Box mt={"auto"}>{children}</Box>}
       </CardContent>
     </Card>
   );

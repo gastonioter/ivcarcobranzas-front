@@ -15,30 +15,22 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import CuotasFilters from "../CuotasFilters/CuotasFilters";
 import ToggleStatusButton from "./ToggleStatusButton/ToggleStatusButton";
+import { useCuotasURLFilters } from "./hooks/useCuotasURLFilters";
 export interface ICuotasTableProps {
   customerId: string;
 }
 
-export type filters = {
-  year: number | "sinaplicar";
-  month: number | "sinaplicar";
-  status: CuotaStatus | "sinaplicar";
-};
-const initialFilters: filters = {
-  year: "sinaplicar",
-  month: "sinaplicar",
-  status: "sinaplicar",
-};
-
 export default function CuotasTable({ customerId }: ICuotasTableProps) {
+  const { filters } = useCuotasURLFilters();
+
   const navigate = useNavigate();
   const { data: cuotas } = useGetCuotasQuery(customerId);
-  const [filters, setFilters] = useState<filters>(initialFilters);
   const [cuotasIdToPay, setCuotasIdToPay] = useState<readonly GridRowId[]>([]);
   const [update] = useUpdateCuotaMutation();
   const [open, setOpen] = useState(false);
   const [payCuotas, { isLoading }] = useUpdateCuotasMutation();
   const snackbar = useSnackbar();
+
   const cuotasSinPagar =
     cuotas
       ?.filter(
@@ -63,13 +55,15 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
     }
   };
 
-  const cuotasFiltered = cuotas?.filter(
-    (cuota) =>
-      (filters.month !== "sinaplicar" ? cuota.month === filters.month : true) &&
-      (filters.year !== "sinaplicar" ? cuota.year === filters.year : true) &&
-      (filters.status !== "sinaplicar" ? cuota.status === filters.status : true)
-  );
+  const cuotasFiltered = cuotas?.filter((cuota) => {
+    const coincideMes = !filters.month || String(cuota.month) === filters.month;
+    const coincideAnio = !filters.year || String(cuota.year) === filters.year;
+    const coincideEstado = !filters.status || cuota.status === filters.status;
 
+    return coincideMes && coincideAnio && coincideEstado;
+  });
+
+  console.log("cuotasFiltered", cuotas);
   const columns: GridColDef[] = [
     {
       field: "serie",
@@ -150,10 +144,10 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
   return (
     <>
       <Box display={"flex"} justifyContent={"space-between"}>
-        {cuotas && cuotas.length > 0 && (
-          <div>
-            <CuotasFilters filters={filters} setFilters={setFilters} />
-          </div>
+        {cuotas && cuotas.length >= 0 && (
+          <Box sx={{ flex: 1 }}>
+            <CuotasFilters />
+          </Box>
         )}
         {cuotasIdToPay.length > 0 && (
           <Box sx={{ mb: 1, display: "flex", gap: 1, alignItems: "center" }}>

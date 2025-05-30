@@ -13,7 +13,7 @@ export interface Cuota {
 export enum CuotaStatus {
   PENDING = "PENDIENTE",
   PAID = "PAGADA",
-  LATE = "ATRASADA",
+  // LATE = "ATRASADA",
   NO_SERVICE = "SIN SERVICIO",
 }
 export enum InitalCuotaStatus {
