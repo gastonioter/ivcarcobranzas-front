@@ -102,9 +102,9 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
                 ? "success"
                 : row.status === CuotaStatus.PENDING
                 ? "info"
-                : row.status === CuotaStatus.LATE
-                ? "warning"
-                : "error"
+                : // : row.status === CuotaStatus.LATE
+                  // ? "warning"
+                  "error"
             }
             sx={{ textTransform: "capitalize" }}
             label={row.status}

@@ -57,9 +57,9 @@ export default function CuotasPreview({
                 color={
                   cuotas.status === CuotaStatus.PENDING
                     ? "info"
-                    : cuotas.status === CuotaStatus.LATE
-                    ? "warning"
-                    : "error"
+                    : // : cuotas.status === CuotaStatus.LATE
+                      // ? "warning"
+                      "error"
                 }
               />
             </Tooltip>
