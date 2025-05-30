@@ -36,7 +36,6 @@ export * from "./Cuotas/components/CuotasTable/ToggleStatusButton/ToggleStatusBu
 export * from "./Cuotas/Cuotas";
 export * from "./Cuotas/NewCuota/components/CuotaForm/CuotaForm";
 export * from "./Cuotas/NewCuota/components/CuotaForm/styled-components/layout.styled.component";
-export * from "./Cuotas/NewCuota/components/CuotaPreview/CuotaPreview";
 export * from "./Cuotas/NewCuota/NewCuota";
 export * from "./Customers/components/CustomerForm/CustomerForm";
 export * from "./Customers/components/CustomersTable/CustomersTable";

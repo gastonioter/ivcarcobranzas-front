@@ -39,7 +39,6 @@ export * from "./Private/Cuotas/components/CuotasTable/ToggleStatusButton/Toggle
 export * from "./Private/Cuotas/Cuotas";
 export * from "./Private/Cuotas/NewCuota/components/CuotaForm/CuotaForm";
 export * from "./Private/Cuotas/NewCuota/components/CuotaForm/styled-components/layout.styled.component";
-export * from "./Private/Cuotas/NewCuota/components/CuotaPreview/CuotaPreview";
 export * from "./Private/Cuotas/NewCuota/NewCuota";
 export * from "./Private/Customers/components/CustomerForm/CustomerForm";
 export * from "./Private/Customers/components/CustomersTable/CustomersTable";
