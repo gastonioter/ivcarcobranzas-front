@@ -6,15 +6,15 @@ import {
 } from "@/services/cuotasApi";
 import SummarizeIcon from "@mui/icons-material/Summarize";
 
+import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { formattedCurrency } from "@/utilities/formatPrice";
 import { Box, Button, Chip } from "@mui/material";
 import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import CuotasFilters from "../CuotasFilters/CuotasFilters";
 import ToggleStatusButton from "./ToggleStatusButton/ToggleStatusButton";
-import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog";
-import { useNavigate } from "react-router";
 export interface ICuotasTableProps {
   customerId: string;
 }

@@ -91,8 +91,8 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
 
         if (createdCuotas.length < body.months.length) {
           snackbar.openSnackbar(
-            `Se crearon ${createdCuotas.length} cuotas de ${body.months.length} seleccionadas, el resto ya existía`,
-            "warning"
+            `Se crearon ${createdCuotas.length} de ${body.months.length} cuotas seleccionadas, algunas ya existían`,
+            "success"
           );
         }
 
