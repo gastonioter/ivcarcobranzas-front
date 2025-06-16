@@ -43,8 +43,8 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
   const [id, setId] = useState<null | string>(null);
 
   const [filters, setFilters] = useState({
-    active: false,
-    cloud: false,
+    active: true,
+    cloud: true,
   });
 
   const { sendWpp, sending } = useSendRsmMontiWpp(id || "");

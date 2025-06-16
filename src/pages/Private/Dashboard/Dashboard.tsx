@@ -13,7 +13,6 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import GroupRemoveIcon from "@mui/icons-material/GroupRemove";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
-import SummarizeIcon from "@mui/icons-material/Summarize";
 import { Alert, Button, Link, Skeleton } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router";
