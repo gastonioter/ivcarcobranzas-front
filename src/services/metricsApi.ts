@@ -12,8 +12,9 @@ import {
 export interface MetricsType {
   actives: number;
   inactives: number;
-  generatedCutoas: number;
-  totalPaidAmounth: number;
+  totalGeneratedCutoas: number;
+  totalPaidCuotas: number;
+  totalRevenue: number;
   deudores: Customer[];
 }
 

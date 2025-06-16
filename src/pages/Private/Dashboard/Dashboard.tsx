@@ -16,9 +16,9 @@ import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import SummarizeIcon from "@mui/icons-material/Summarize";
 import { Alert, Button, Link, Skeleton } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
+import { useNavigate } from "react-router";
 import { MetricCard } from "./components/MetricCard/MetricCard";
 import { MetricsLayout } from "./styled-components/dahsboard-layout.styled.component";
-import { useNavigate } from "react-router";
 export default function Dashboard() {
   const { data: metrics, isLoading, error } = useGetMetricsQuery();
 
@@ -27,8 +27,9 @@ export default function Dashboard() {
     actives = 0,
     inactives = 0,
     deudores,
-    generatedCutoas,
-    totalPaidAmounth,
+    totalGeneratedCutoas = 0,
+    totalPaidCuotas = 0,
+    totalRevenue = 0,
   } = metrics || {};
   if (error) {
     <Alert severity="error">Ocurrio un error al cargar esta pagina</Alert>;
@@ -66,12 +67,27 @@ export default function Dashboard() {
             description="Total de clientes dados de baja"
           ></MetricCard>
         )}
-
         {loading ? (
           <Skeleton />
         ) : (
           <MetricCard
-            value={generatedCutoas || 0}
+            value={`${((totalPaidCuotas / totalGeneratedCutoas) * 100).toFixed(
+              1
+            )}%`}
+            title="Tasa de pagos"
+            color={`${
+              totalPaidCuotas / totalGeneratedCutoas < 0.5 ? "error" : "success"
+            }`}
+            icon={<GroupRemoveIcon fontSize="large" />}
+            description={`Relacion entre las cuotas generadas y las que se pagaron ${totalPaidCuotas} pagas / ${totalGeneratedCutoas} generadas
+            `}
+          ></MetricCard>
+        )}
+        {/* {loading ? (
+          <Skeleton />
+        ) : (
+          <MetricCard
+            value={totalGeneratedCutoas || 0}
             title="Cuotas Generadas"
             icon={<SummarizeIcon fontSize="large" />}
             description="Total de cuotas generadas para el mes corriente"
@@ -81,7 +97,17 @@ export default function Dashboard() {
           <Skeleton />
         ) : (
           <MetricCard
-            value={summarizeAmount(totalPaidAmounth || 0)}
+            value={totalPaidCuotas || 0}
+            title="Cuotas Pagadas"
+            icon={<SummarizeIcon fontSize="large" />}
+            description="Total de cuotas pagadas en este mes"
+          ></MetricCard>
+        )} */}
+        {loading ? (
+          <Skeleton />
+        ) : (
+          <MetricCard
+            value={summarizeAmount(totalRevenue || 0)}
             title="Recaudado por Monitoreo"
             color="success"
             icon={<MonetizationOnIcon fontSize="large" />}
