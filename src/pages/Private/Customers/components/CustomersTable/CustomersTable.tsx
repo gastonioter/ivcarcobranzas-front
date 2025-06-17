@@ -24,6 +24,7 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import CustomerStatusIndicator from "../CustomerStatusIndicator/CustomerStatusIndicator";
+import "./styles.module.css";
 
 function formatCustomerModalidad(data: ModalidadData) {
   return data.modalidad == CustomerModalidad.CLOUD
@@ -303,6 +304,17 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
             toolbar: CustomGridToolbar({
               placeholder: "Buscar cliente por: NOMBRE, CUIT, TELEFONO, EMAIL",
             }),
+          }}
+          getRowClassName={({ row }: { row: Customer }) =>
+            row.modalidadData.modalidad === CustomerModalidad.CLOUD &&
+            row.modalidadData.resumenEnviado
+              ? "active"
+              : ""
+          }
+          sx={{
+            "& .active": {
+              backgroundColor: "#c4efce",
+            },
           }}
           disableColumnMenu
           getRowId={(row) => row.uuid}

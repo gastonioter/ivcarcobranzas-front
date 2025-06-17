@@ -12,6 +12,7 @@ export type ModalidadData =
       };
       cuotas: Cuota[] | [];
       pagos: Payment[] | [];
+      resumenEnviado: boolean;
     }
   | {
       modalidad: CustomerModalidad.REGULAR;

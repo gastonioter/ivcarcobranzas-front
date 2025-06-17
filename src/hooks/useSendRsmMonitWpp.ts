@@ -1,9 +1,12 @@
 import { useSnackbar } from "@/context/SnackbarContext";
 import { useState } from "react";
+import { useAppDispatch } from "./useAppDispatch";
+import { customerApi } from "@/services/customerApi";
 
 export const useSendRsmMontiWpp = (id: string) => {
   const snackbar = useSnackbar();
   const [sending, setSending] = useState(false);
+  const dispatch = useAppDispatch();
 
   const sendWpp = async () => {
     try {
@@ -22,6 +25,7 @@ export const useSendRsmMontiWpp = (id: string) => {
           }
         );
         snackbar.openSnackbar("Whatsapp enviado con éxito");
+        dispatch(customerApi.util.invalidateTags(["Customers"]));
       }
     } catch (e) {
       console.log(e);
