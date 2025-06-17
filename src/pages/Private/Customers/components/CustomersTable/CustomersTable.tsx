@@ -46,6 +46,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
   const [filters, setFilters] = useState({
     active: true,
     cloud: true,
+    resumenEnviado: false,
   });
 
   const { sendWpp, sending } = useSendRsmMontiWpp(id || "");
@@ -236,6 +237,10 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
   const filterActiveCustomer = (customer: Customer) =>
     customer.status === CustomerStatus.ACTIVE;
 
+  const filterResumenEnviado = (customer: Customer) =>
+    customer.modalidadData.modalidad === CustomerModalidad.CLOUD &&
+    customer.modalidadData.resumenEnviado;
+
   const filterCustomers = useCallback(() => {
     if (!customers) return;
 
@@ -247,6 +252,10 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
 
     if (filters.cloud) {
       result = result.filter(filterCloudCustomer);
+    }
+
+    if (filters.resumenEnviado) {
+      result = result.filter(filterResumenEnviado);
     }
 
     setFilteredCustomers(result);
@@ -284,6 +293,18 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
               <Checkbox
                 checked={filters.active}
                 name="active"
+                onChange={handleChange}
+                inputProps={{ "aria-label": "controlled" }}
+              />
+            }
+          ></FormControlLabel>
+
+          <FormControlLabel
+            label="Resumenes enviados"
+            control={
+              <Checkbox
+                checked={filters.resumenEnviado}
+                name="resumenEnviado"
                 onChange={handleChange}
                 inputProps={{ "aria-label": "controlled" }}
               />
