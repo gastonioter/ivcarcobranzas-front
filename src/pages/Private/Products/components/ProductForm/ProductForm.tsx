@@ -57,7 +57,7 @@ export default function ProductForm({ product, setProduct }: ProductFormProps) {
       snackbar.openSnackbar(
         `Producto  ${!editMode && data.name} ${
           editMode ? "editado" : "creado"
-        } con éxito`
+        } con éxito`,
       );
       setProduct(null);
     } catch (e) {
@@ -99,7 +99,7 @@ export default function ProductForm({ product, setProduct }: ProductFormProps) {
             <MenuItem value=""></MenuItem>
             {categories?.map((category) => (
               <MenuItem key={category.uuid} value={category.uuid}>
-                {category.name.toUpperCase()}
+                {category?.name?.toUpperCase()}
               </MenuItem>
             ))}
           </Select>

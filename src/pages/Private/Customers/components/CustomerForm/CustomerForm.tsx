@@ -6,12 +6,11 @@ import {
   Customer,
   CustomerModalidad,
 } from "@/models/customer";
-import { useGetCloudCategoriesQuery } from "@/services/cloudCategoriesApi";
 import {
   useCreateCustomerMutation,
   useEditCustomerMutation,
 } from "@/services/customerApi";
-import { formattedCurrency } from "@/utilities/formatPrice";
+
 import {
   Box,
   FormControl,
@@ -22,15 +21,8 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 
-interface BaseCustomer {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  cuit: string;
-}
 function CustomerForm({
   customer,
   setCostumer,
@@ -38,32 +30,28 @@ function CustomerForm({
   customer: Customer | null;
   setCostumer: React.Dispatch<React.SetStateAction<Customer | null>>;
 }) {
-  const { data: cloudCategories, isLoading: loadingCloudCategories } =
-    useGetCloudCategoriesQuery();
-
+  console.log("customer", customer);
   const [create, { isLoading }] = useCreateCustomerMutation();
   const [edit, { isLoading: isEditing }] = useEditCustomerMutation();
-  const [baseCustomer, setBaseCustomer] = useState<BaseCustomer>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    cuit: "",
+  const [baseCustomer, setBaseCustomer] = useState<
+    Omit<
+      Customer,
+      "modalidadData" | "createdAt" | "updatedAt" | "uuid" | "status"
+    >
+  >({
+    firstName: customer?.firstName || "",
+    lastName: customer?.lastName || "",
+    email: customer?.email || "",
+    phone: customer?.phone || "",
+    cuit: customer?.cuit || "",
+    type: customer?.type || CustomerModalidad.REGULAR,
   });
-
-  const [cloudModalidadData, setCloudModalidadData] = useState({
-    cloudCategoryId: "",
-  });
-
-  const [modalidad, setModalidad] = useState<CustomerModalidad>(
-    CustomerModalidad.REGULAR
-  );
 
   const handleInputChange = (
     e:
       | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      | SelectChangeEvent<any>
+      | SelectChangeEvent<any>,
   ) => {
     const { name, value } = e.target;
     setBaseCustomer((previous) => ({
@@ -72,37 +60,7 @@ function CustomerForm({
     }));
   };
 
-  const handleCloudDataChange = (e: SelectChangeEvent) => {
-    const { name, value } = e.target;
-    setCloudModalidadData((previous) => ({
-      ...previous,
-      [name]: value,
-    }));
-  };
-
   const snackbar = useSnackbar();
-
-  useEffect(() => {
-    /* Update form inputs based on the modalidad customer  */
-    if (customer) {
-      setBaseCustomer({
-        firstName: customer.firstName,
-        lastName: customer.lastName,
-        email: customer.email,
-        phone: customer.phone,
-        cuit: customer.cuit,
-      });
-
-      setModalidad(customer.modalidadData.modalidad);
-
-      if (customer.modalidadData.modalidad == CustomerModalidad.CLOUD) {
-        setCloudModalidadData({
-          cloudCategoryId: customer.modalidadData.cloudCategory.uuid,
-        });
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [customer]);
 
   const editMode = !!customer;
 
@@ -110,11 +68,6 @@ function CustomerForm({
     e.preventDefault();
     const result = createCustomerSchema.safeParse({
       ...baseCustomer,
-      modalidadData: {
-        modalidad,
-        ...cloudModalidadData,
-        //...regularModalidadData,
-      },
     });
     if (result.success) {
       const { data } = result;
@@ -127,7 +80,7 @@ function CustomerForm({
 
         dialogCloseSubject$.setSubject = false;
         snackbar.openSnackbar(
-          `Cliente ${editMode ? "editado" : "creado"} con éxito`
+          `Cliente ${editMode ? "editado" : "creado"} con éxito`,
         );
         setCostumer(null);
       } catch (e) {
@@ -204,10 +157,9 @@ function CustomerForm({
           <InputLabel>Tipo de Cliente</InputLabel>
           <Select
             label="Tipo de Cliente"
-            value={modalidad}
-            onChange={(e) => {
-              setModalidad(e.target.value as CustomerModalidad);
-            }}
+            value={baseCustomer?.type}
+            name="type"
+            onChange={handleInputChange}
           >
             {Object.values(CustomerModalidad).map((type) => {
               return (
@@ -219,29 +171,6 @@ function CustomerForm({
           </Select>
         </FormControl>
       </Stack>
-      {/* CONDITIONAL FORM BASED ON CUSTOMER MODALIAD */}
-      {modalidad === CustomerModalidad.CLOUD && (
-        <FormControl fullWidth>
-          <InputLabel>Categoria de Pago</InputLabel>
-          <Select
-            disabled={loadingCloudCategories}
-            value={cloudModalidadData.cloudCategoryId}
-            label="Categoria de Pago"
-            onChange={handleCloudDataChange}
-            name="cloudCategoryId"
-          >
-            {cloudCategories?.map((category) => {
-              return (
-                <MenuItem key={category.uuid} value={category.uuid}>
-                  {`${category.name.toUpperCase()}  ${formattedCurrency(
-                    category.price
-                  )}`}
-                </MenuItem>
-              );
-            })}
-          </Select>
-        </FormControl>
-      )}
       <FooterCustomDialog
         isLoading={isLoading || isEditing}
         onClose={() => {

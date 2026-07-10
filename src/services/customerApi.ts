@@ -4,7 +4,6 @@ import {
   CreateCustomerFormData,
   Customer,
   EditCustomerFormData,
-  UpdateStatusFormData,
 } from "@/models/customer";
 import { Payment } from "@/models/Payment";
 import { clearCredentials } from "@/redux/slices";
@@ -23,14 +22,13 @@ const baseQuery: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
   const result = await fetchBaseQuery({
-    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/customers`,
+    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/v2/customers`,
     prepareHeaders: addToken,
   })(args, api, extraOptions);
 
   if (result.error && result.error.status === 401) {
     api.dispatch(clearCredentials());
   }
-
   return result;
 };
 
@@ -80,20 +78,6 @@ export const customerApi = createApi({
       invalidatesTags: ["Customers"],
     }),
 
-    updateStatus: builder.mutation<Customer, UpdateStatusFormData>({
-      query: (body) => ({
-        url: `/status`,
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: ["Customers"],
-      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
-        await queryFulfilled;
-
-        dispatch(metricsApi.util.invalidateTags(["Metrics"]));
-      },
-    }),
-
     getAccountSummary: builder.query<AccountSummary, string>({
       query: (uuid) => ({
         method: "POST",
@@ -118,7 +102,6 @@ export const {
   useGetCustomerQuery,
   useGetRecibosCustomerQuery,
   useEditCustomerMutation,
-  useUpdateStatusMutation,
   useGetAccountSummaryQuery,
   useDeleteCustomerMutation,
 } = customerApi;

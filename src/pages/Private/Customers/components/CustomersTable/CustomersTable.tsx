@@ -2,20 +2,15 @@ import { CustomGridToolbar } from "@/components";
 import { dialogOpenSubject$ } from "@/components/CustomDialog";
 import TableMenuActions from "@/components/TableMenuActions/TableMenuActions";
 import { useSnackbar } from "@/context/SnackbarContext";
-import {
-  Customer,
-  CustomerModalidad,
-  CustomerStatus,
-  ModalidadData,
-} from "@/models/customer";
+import { Customer, CustomerModalidad, CustomerStatus } from "@/models/customer";
 
 import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog";
 import { useSendRsmMontiWpp } from "@/hooks/useSendRsmMonitWpp";
 import { PrivateRoutes } from "@/models";
 import {
   useDeleteCustomerMutation,
+  useEditCustomerMutation,
   useGetCustomersQuery,
-  useUpdateStatusMutation,
 } from "@/services/customerApi";
 import { formattedDate } from "@/utilities";
 import { formatFullName } from "@/utilities/formatFullName";
@@ -26,18 +21,12 @@ import { useNavigate } from "react-router";
 import CustomerStatusIndicator from "../CustomerStatusIndicator/CustomerStatusIndicator";
 import "./styles.module.css";
 
-function formatCustomerModalidad(data: ModalidadData) {
-  return data.modalidad == CustomerModalidad.CLOUD
-    ? `CLOUD  (${data.cloudCategory.name.toUpperCase()})`
-    : data.modalidad;
-}
-
 interface CustomerTableProps {
   setCustomer: (customer: Customer | null) => void;
 }
 function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
   const { data: customers, isLoading, error } = useGetCustomersQuery();
-  const [changeCustomerStatus] = useUpdateStatusMutation();
+  const [editCustomerMutation] = useEditCustomerMutation();
   const [deleteFn] = useDeleteCustomerMutation();
   const navigate = useNavigate();
 
@@ -49,17 +38,19 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
     resumenEnviado: false,
   });
 
+  console.log("customers", customers);
+
   const { sendWpp, sending } = useSendRsmMontiWpp(id || "");
 
   const toggleCustomerStatus = async (row: Customer) => {
     try {
       if (row.status === CustomerStatus.ACTIVE) {
-        await changeCustomerStatus({
+        await editCustomerMutation({
           uuid: row.uuid,
           status: CustomerStatus.INACTIVE,
         }).unwrap();
       } else {
-        await changeCustomerStatus({
+        await editCustomerMutation({
           uuid: row.uuid,
           status: CustomerStatus.ACTIVE,
         }).unwrap();
@@ -105,7 +96,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
           name: "Ver Recibos",
           onClick: () => {
             navigate(
-              `/private/${PrivateRoutes.PAYMENTS}?customerId=${row.uuid}`
+              `/private/${PrivateRoutes.PAYMENTS}?customerId=${row.uuid}`,
             );
           },
         },
@@ -114,7 +105,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
           name: "Rsm. Monit.",
           onClick: () => {
             window.open(
-              `${import.meta.env.VITE_BASE_API_URL}/prints/rsmmonit/${row.uuid}`
+              `${import.meta.env.VITE_BASE_API_URL}/prints/rsmmonit/${row.uuid}`,
             );
           },
         },
@@ -122,7 +113,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
           name: "Rsm. Cta.",
           onClick: () => {
             window.open(
-              `${import.meta.env.VITE_BASE_API_URL}/prints/rsmcta/${row.uuid}`
+              `${import.meta.env.VITE_BASE_API_URL}/prints/rsmcta/${row.uuid}`,
             );
           },
         },
@@ -159,7 +150,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
       editable: false,
       minWidth: 150,
       flex: 1,
-      valueGetter: (value, row) => {
+      valueGetter: (_, row) => {
         return formatFullName(row.firstName, row.lastName);
       },
     },
@@ -171,12 +162,11 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
       sortable: false,
     },
     {
-      field: "modalidadData",
+      field: "type",
       headerName: "Tipo",
       flex: 1,
-      valueFormatter: (value) => {
-        const modalidadData = value as unknown as ModalidadData;
-        return formatCustomerModalidad(modalidadData);
+      valueFormatter: (value: CustomerModalidad) => {
+        return value?.toUpperCase();
       },
       editable: false,
       sortable: false,
@@ -232,14 +222,10 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
   };
 
   const filterCloudCustomer = (customer: Customer) =>
-    customer.modalidadData.modalidad === CustomerModalidad.CLOUD;
+    customer.type === CustomerModalidad.CLOUD;
 
   const filterActiveCustomer = (customer: Customer) =>
     customer.status === CustomerStatus.ACTIVE;
-
-  const filterResumenEnviado = (customer: Customer) =>
-    customer.modalidadData.modalidad === CustomerModalidad.CLOUD &&
-    customer.modalidadData.resumenEnviado;
 
   const filterCustomers = useCallback(() => {
     if (!customers) return;
@@ -252,10 +238,6 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
 
     if (filters.cloud) {
       result = result.filter(filterCloudCustomer);
-    }
-
-    if (filters.resumenEnviado) {
-      result = result.filter(filterResumenEnviado);
     }
 
     setFilteredCustomers(result);
@@ -326,12 +308,6 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
               placeholder: "Buscar cliente por: NOMBRE, CUIT, TELEFONO, EMAIL",
             }),
           }}
-          getRowClassName={({ row }: { row: Customer }) =>
-            row.modalidadData.modalidad === CustomerModalidad.CLOUD &&
-            row.modalidadData.resumenEnviado
-              ? "active"
-              : ""
-          }
           sx={{
             "& .active": {
               backgroundColor: "#c4efce",

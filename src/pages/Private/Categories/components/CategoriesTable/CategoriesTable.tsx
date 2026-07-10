@@ -12,13 +12,12 @@ export default function CategoriesTable() {
   }
 
   const rows: GridRowsProp = data || [];
-
   const columns: GridColDef[] = [
     {
       field: "name",
       headerName: "Nombre",
       width: 250,
-      valueFormatter: (value: string) => value.toUpperCase(),
+      valueFormatter: (value: string) => value?.toUpperCase(),
     },
     {
       field: "description",
