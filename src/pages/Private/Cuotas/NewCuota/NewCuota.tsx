@@ -1,20 +1,12 @@
 import SectionHeader from "@/components/SectionHeader/SectionHeader";
 import SectionTitle from "@/components/SectionTitle/SectionTitle";
-import { useGetCustomerQuery } from "@/services/customerApi";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Paper } from "@mui/material";
 import { useNavigate } from "react-router";
-import { useSearchParams } from "react-router-dom";
 import CuotaForm from "./components/CuotaForm/CuotaForm";
 
 export default function NewCuota() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const customerId = searchParams.get("customerId");
-
-  const { data } = useGetCustomerQuery(customerId || "", {
-    skip: !customerId,
-  });
 
   return (
     <>
@@ -40,7 +32,7 @@ export default function NewCuota() {
           },
         }}
       >
-        <CuotaForm customer={data} />
+        <CuotaForm />
       </Paper>
     </>
   );
