@@ -16,6 +16,7 @@ import { useNavigate } from "react-router";
 import { MetricCard } from "./components/MetricCard/MetricCard";
 import { MetricsLayout } from "./styled-components/dahsboard-layout.styled.component";
 import { DeudoresTable } from "./components/DeudoresTable";
+import { RevenueChart } from "./components/RevenueChart/RevenueChart";
 import { formattedCurrency } from "@/utilities/formatPrice";
 export default function Dashboard() {
   const { data: metrics, isLoading, error } = useGetMetricsQuery();
@@ -130,6 +131,8 @@ export default function Dashboard() {
           </MetricCard>
         )}
       </MetricsLayout>
+
+      <RevenueChart />
 
       <CustomDialog
         title="Clientes Deudores"
