@@ -3,6 +3,7 @@ import {
   AccountSummary,
   CreateCustomerFormData,
   Customer,
+  CustomerFilters,
   EditCustomerFormData,
 } from "@/models/customer";
 import { clearCredentials } from "@/redux/slices";
@@ -37,8 +38,12 @@ export const customerApi = createApi({
   tagTypes: ["Customers", "AccountSummary", "Recibos"],
 
   endpoints: (builder) => ({
-    getCustomers: builder.query<Customer[], void>({
-      query: () => "/",
+    getCustomers: builder.query<Customer[], CustomerFilters>({
+      query: (filters) => ({
+        url: "/",
+        params: filters,
+      }),
+
       providesTags: ["Customers"],
     }),
 

@@ -17,3 +17,7 @@ export interface CreatePaymentForCuotasPayload {
   customerId: string;
   cuotaIds: string[];
 }
+
+export interface CuotaPaymentFilters {
+  customerId?: string;
+}

@@ -1,17 +1,23 @@
 import SectionHeader from "@/components/SectionHeader/SectionHeader";
 import SectionTitle from "@/components/SectionTitle/SectionTitle";
-import { CustomerModalidad } from "@/models";
+import { CustomerStatus } from "@/models";
+import { useGetCustomersQuery } from "@/services/customerApi";
 import { useGetPaymentsQuery } from "@/services/paymentCuotasApi";
 import { formatFullName } from "@/utilities/formatFullName";
 import { Autocomplete, TextField } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 import PaymentsTable from "./PaymentsTable/PaymentsTable";
-import { useGetCustomersQuery } from "@/services/customerApi";
 
 export default function Payments() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { data } = useGetCustomersQuery();
-  console.log("data", data);
+  const { data: customers } = useGetCustomersQuery({
+    status: CustomerStatus.ACTIVE,
+  });
+  const customerId = searchParams.get("customerId");
+  const { data: recibos } = useGetPaymentsQuery({
+    customerId: customerId ?? undefined,
+  });
+
   const updateSearchParams = (key: string, value: string) => {
     const nuevosParams = new URLSearchParams(searchParams);
     if (value) {
@@ -22,19 +28,11 @@ export default function Payments() {
     setSearchParams(nuevosParams);
   };
 
-  const customers =
-    data?.filter((c) => c.type == CustomerModalidad.CLOUD) || [];
-
-  const customerId = searchParams.get("customerId");
-
-  const selected = customers.find((c) => c.uuid === customerId) || {
+  const selected = customers?.find((c) => c.uuid === customerId) || {
     firstName: "",
     lastName: "",
     uuid: "",
   };
-
-  const { data: recibos } = useGetPaymentsQuery(customerId);
-  console.log("recibos", recibos);
 
   return (
     <>
@@ -44,7 +42,7 @@ export default function Payments() {
 
       <Autocomplete
         sx={{ mt: 3 }}
-        options={customers}
+        options={customers ?? []}
         value={selected}
         onChange={(e, value) => {
           updateSearchParams("customerId", value?.uuid ?? "");

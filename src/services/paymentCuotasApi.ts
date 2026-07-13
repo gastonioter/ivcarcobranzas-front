@@ -2,6 +2,7 @@ import { addToken } from "@/interceptors";
 import {
   CreatePaymentForCuotasPayload,
   CuotaPayment,
+  CuotaPaymentFilters,
 } from "@/models/CuotaPayment";
 import { clearCredentials } from "@/redux/slices/auth";
 import {
@@ -37,10 +38,15 @@ export const cuotaPaymentsApi = createApi({
   tagTypes: ["CuotaPayments"],
 
   endpoints: (builder) => ({
-    getPayments: builder.query<CuotaPayment[], string | null>({
-      query: (uuid) => `/?customerId=${uuid}`,
-      providesTags: (res, err, uuid) => [
-        { type: "CuotaPayments", id: uuid ?? "all" },
+    getPayments: builder.query<CuotaPayment[], CuotaPaymentFilters>({
+      query: (filters) => ({
+        url: "/",
+        method: "GET",
+        params: filters,
+      }),
+      providesTags: (res, err, args) => [
+        { type: "CuotaPayments", id: "LIST" },
+        { type: "CuotaPayments", id: `filters_${JSON.stringify(args)}` },
       ],
     }),
 
@@ -51,7 +57,10 @@ export const cuotaPaymentsApi = createApi({
         body,
       }),
       invalidatesTags: (res, err, body) => [
-        { type: "CuotaPayments", id: body.customerId },
+        {
+          type: "CuotaPayments",
+          id: `filters_${JSON.stringify({ customerId: body.customerId })}`,
+        },
       ],
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         await queryFulfilled;

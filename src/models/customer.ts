@@ -37,6 +37,12 @@ export enum CustomerStatus {
   INACTIVE = "inactive",
 }
 
+export interface CustomerFilters {
+  uuid?: string;
+  type?: CustomerModalidad;
+  status?: CustomerStatus;
+}
+
 /* Schemas for Inputs */
 
 const phoneSchema = z.string().regex(/^\+?\d{10,15}$/, {
