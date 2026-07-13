@@ -96,7 +96,7 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
         }
 
         navigate(
-          `/private/${PrivateRoutes.CUOTAS}?customerId=${customer?.uuid}`,
+          `/private/${PrivateRoutes.CUOTAS}?customerId=${body.customer?.uuid}`,
         );
       } catch (e) {
         snackbar.openSnackbar(e.data.error, "error");

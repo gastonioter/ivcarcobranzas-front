@@ -16,7 +16,7 @@ import {
   FormControl,
   TextField,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { useSearchParams } from "react-router-dom";
 
@@ -65,23 +65,22 @@ export default function Cuotas() {
 
   const { sendWpp, sending } = useSendRsmMontiWpp(customerId || "");
 
-  const [customer, setCustomer] = useState<Customer | undefined | null>(
-    undefined,
-  );
   const { data, isLoading: isLoadingCostumers } = useGetCustomersQuery();
 
-  const customers = data?.filter(
-    (customer) =>
-      customer.type === CustomerModalidad.CLOUD &&
-      customer.status === CustomerStatus.ACTIVE,
-  ) as Customer[];
+  const customers = useMemo(
+    () =>
+      data?.filter(
+        (c) =>
+          c.type === CustomerModalidad.CLOUD &&
+          c.status === CustomerStatus.ACTIVE,
+      ) as Customer[],
+    [data],
+  );
 
-  useEffect(() => {
-    if (customerId && customers) {
-      const customer = customers.find((c) => c.uuid === customerId);
-      setCustomer(customer);
-    }
-  }, [customerId, customers]);
+  const customer = useMemo(
+    () => (customerId ? customers?.find((c) => c.uuid === customerId) : undefined),
+    [customerId, customers],
+  );
 
   return (
     <>
@@ -107,7 +106,6 @@ export default function Cuotas() {
         <FormControl fullWidth sx={{ mt: 3 }}>
           <Autocomplete
             onChange={(event, customer) => {
-              setCustomer(customer);
               updateSearchParams("customerId", customer?.uuid || "");
             }}
             value={
