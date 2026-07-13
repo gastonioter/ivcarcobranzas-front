@@ -18,6 +18,13 @@ export interface DeudorData {
   lastName: string;
   phone: string;
 }
+
+export interface MonitoreoRenevue {
+  revenue: number;
+  year: number;
+  month: number;
+}
+
 export interface DashboardMetrics {
   actives: number;
   inactives: number;
@@ -25,6 +32,7 @@ export interface DashboardMetrics {
   totalPaidCuotas: number;
   totalRevenue: number;
   deudores: DeudorData[];
+  revenueByMonth: MonitoreoRenevue;
 }
 
 const baseQuery: BaseQueryFn<
