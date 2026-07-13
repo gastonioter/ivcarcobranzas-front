@@ -3,24 +3,18 @@ import {
   dialogCloseSubject$,
   dialogOpenSubject$,
 } from "@/components";
-import SectionHeader from "@/components/SectionHeader/SectionHeader";
-import SectionTitle from "@/components/SectionTitle/SectionTitle";
-import { useGetMetricsQuery } from "@/services/metricsApi";
-import { summarizeAmount } from "@/utilities/summarizeAmount";
+import { MonitoreoRenevue, useGetMetricsQuery } from "@/services/metricsApi";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import GroupRemoveIcon from "@mui/icons-material/GroupRemove";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import { Alert, Button, Link, Skeleton } from "@mui/material";
-import { useNavigate } from "react-router";
-import { MetricCard } from "./components/MetricCard/MetricCard";
-import { MetricsLayout } from "./styled-components/dahsboard-layout.styled.component";
+import { ClientesPieChart } from "./components/ClientesPieChart/ClientesPieChart";
 import { DeudoresTable } from "./components/DeudoresTable";
-import { formattedCurrency } from "@/utilities/formatPrice";
+import { MetricCard } from "./components/MetricCard/MetricCard";
+import { RevenueChart } from "./components/RevenueChart/RevenueChart";
+import { MetricsLayout } from "./styled-components/dahsboard-layout.styled.component";
 export default function Dashboard() {
   const { data: metrics, isLoading, error } = useGetMetricsQuery();
 
-  const navigate = useNavigate();
   const {
     actives = 0,
     inactives = 0,
@@ -28,6 +22,7 @@ export default function Dashboard() {
     totalGeneratedCutoas = 0,
     totalPaidCuotas = 0,
     totalRevenue = 0,
+    revenueByMonth = [],
   } = metrics || {};
   if (error) {
     <Alert severity="error">Ocurrio un error al cargar esta pagina</Alert>;
@@ -37,30 +32,18 @@ export default function Dashboard() {
 
   return (
     <>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "2fr 1fr",
+          gap: "1rem",
+          marginTop: "1rem",
+        }}
+      >
+        <RevenueChart data={revenueByMonth as MonitoreoRenevue[]} />
+        <ClientesPieChart actives={actives} inactives={inactives} />
+      </div>
       <MetricsLayout>
-        {loading ? (
-          <Skeleton />
-        ) : (
-          <MetricCard
-            value={actives}
-            icon={<GroupAddIcon fontSize="large" />}
-            title="Clientes Activos"
-            color="success"
-            description="Total de clientes activos"
-          ></MetricCard>
-        )}
-
-        {loading ? (
-          <Skeleton />
-        ) : (
-          <MetricCard
-            value={inactives}
-            title="Clientes De Baja"
-            color="error"
-            icon={<GroupRemoveIcon fontSize="large" />}
-            description="Total de clientes dados de baja"
-          ></MetricCard>
-        )}
         {loading ? (
           <Skeleton />
         ) : (
@@ -77,42 +60,10 @@ export default function Dashboard() {
             `}
           ></MetricCard>
         )}
-        {/* {loading ? (
-          <Skeleton />
-        ) : (
-          <MetricCard
-            value={totalGeneratedCutoas || 0}
-            title="Cuotas Generadas"
-            icon={<SummarizeIcon fontSize="large" />}
-            description="Total de cuotas generadas para el mes corriente"
-          ></MetricCard>
-        )}
         {loading ? (
           <Skeleton />
         ) : (
           <MetricCard
-            value={totalPaidCuotas || 0}
-            title="Cuotas Pagadas"
-            icon={<SummarizeIcon fontSize="large" />}
-            description="Total de cuotas pagadas en este mes"
-          ></MetricCard>
-        )} */}
-        {loading ? (
-          <Skeleton />
-        ) : (
-          <MetricCard
-            value={formattedCurrency(totalRevenue)}
-            title="Recaudado por Monitoreo"
-            color="success"
-            icon={<MonetizationOnIcon fontSize="large" />}
-            description="Total cobrado por monitoreo en el mes corriente"
-          ></MetricCard>
-        )}
-        {loading ? (
-          <Skeleton />
-        ) : (
-          <MetricCard
-            sx={{ gridColumn: "span 2" }}
             value={deudores?.length || 0}
             icon={<AccountBalanceWalletIcon fontSize="large" />}
             title="Clientes Deudores"
@@ -129,6 +80,17 @@ export default function Dashboard() {
             </Link>
           </MetricCard>
         )}
+        {/* {loading ? (
+          <Skeleton />
+        ) : (
+          <MetricCard
+            value={formattedCurrency(totalRevenue)}
+            title="Recaudado por Monitoreo"
+            color="success"
+            icon={<MonetizationOnIcon fontSize="large" />}
+            description="Total cobrado por monitoreo en el mes corriente"
+          ></MetricCard>
+        )} */}
       </MetricsLayout>
 
       <CustomDialog
