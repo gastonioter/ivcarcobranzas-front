@@ -8,10 +8,7 @@ import {
   InitalCuotaStatus,
 } from "@/models/Cuota";
 import { useCreateCuotasMutation } from "@/services/cuotasApi";
-import {
-  useGetCustomerQuery,
-  useGetCustomersQuery,
-} from "@/services/customerApi";
+import { useGetCustomersQuery } from "@/services/customerApi";
 import { formatFullName } from "@/utilities/formatFullName";
 import {
   Alert,
@@ -27,7 +24,7 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import { CuotaFormLayout } from "./styled-components/layout.styled.component";
@@ -50,7 +47,7 @@ const initialCuota: CuotaForm = {
   customer: undefined,
 };
 
-export default function CuotaForm({ customer }: { customer?: Customer }) {
+export default function CuotaForm() {
   const [body, setBody] = useState<CuotaForm>(initialCuota);
   const [searchParams] = useSearchParams();
 
@@ -65,9 +62,17 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
 
   const navigate = useNavigate();
 
-  const customers = data?.filter(
-    (c) => c.type === CustomerModalidad.CLOUD,
-  ) as Customer[];
+  const customerId = searchParams.get("customerId");
+
+  const customers = useMemo(
+    () => data?.filter((c) => c.type === CustomerModalidad.CLOUD) as Customer[],
+    [data],
+  );
+
+  const preselectedCustomer = useMemo(
+    () => (customerId ? customers?.find((c) => c.uuid === customerId) : undefined),
+    [customerId, customers],
+  );
 
   const handleNewCuota = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -96,7 +101,7 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
         }
 
         navigate(
-          `/private/${PrivateRoutes.CUOTAS}?customerId=${customer?.uuid}`,
+          `/private/${PrivateRoutes.CUOTAS}?customerId=${body.customer?.uuid}`,
         );
       } catch (e) {
         snackbar.openSnackbar(e.data.error, "error");
@@ -108,31 +113,12 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
     }
   };
 
-  const { data: selectedCustomer, isLoading: isLoadingSelectedCustomer } =
-    useGetCustomerQuery(customer?.uuid ?? "", {
-      skip: !customer?.uuid || !!customer,
-    });
-
   useEffect(() => {
-    // Precargo el formulario con el cliente seleccionado
-    if (selectedCustomer) {
-      setBody((prev) => ({
-        ...prev,
-        customer: selectedCustomer,
-        amount: 20_000,
-      }));
+    if (preselectedCustomer && !body.customer) {
+      setBody((prev) => ({ ...prev, customer: preselectedCustomer }));
     }
-  }, [body, selectedCustomer]);
-
-  useEffect(() => {
-    // Sincronizo el parametro externo con el formulario
-    if (customer) {
-      setBody((prev) => ({
-        ...prev,
-        customer: customer,
-      }));
-    }
-  }, [customer]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preselectedCustomer]);
 
   if (errorCustomers) {
     return (
@@ -140,21 +126,18 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
     );
   }
 
-  const showForm =
-    (!isLoadingCustomers && !isLoadingSelectedCustomer) || customer;
+  const showForm = !isLoadingCustomers || body.customer;
 
   return (
     <CuotaFormLayout onSubmit={handleNewCuota}>
       <FormControl sx={{ gridColumn: "1 / span 2" }}>
         <Autocomplete
-          onChange={(event, customer) => {
+          onChange={(_event, customer) => {
             setBody((prev) => ({ ...prev, customer }));
-            searchParams.delete("customerId");
           }}
           disableClearable
           value={
             body.customer ||
-            customer ||
             ({
               firstName: "",
               lastName: "",
