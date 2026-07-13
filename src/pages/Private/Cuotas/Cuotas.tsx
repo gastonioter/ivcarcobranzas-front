@@ -65,7 +65,7 @@ export default function Cuotas() {
 
   const { sendWpp, sending } = useSendRsmMontiWpp(customerId || "");
 
-  const { data, isLoading: isLoadingCostumers } = useGetCustomersQuery();
+  const { data, isLoading: isLoadingCostumers } = useGetCustomersQuery({});
 
   const customers = useMemo(
     () =>
@@ -78,7 +78,8 @@ export default function Cuotas() {
   );
 
   const customer = useMemo(
-    () => (customerId ? customers?.find((c) => c.uuid === customerId) : undefined),
+    () =>
+      customerId ? customers?.find((c) => c.uuid === customerId) : undefined,
     [customerId, customers],
   );
 

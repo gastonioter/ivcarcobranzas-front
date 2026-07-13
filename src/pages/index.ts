@@ -48,8 +48,7 @@ export * from "./Private/Dashboard/components/MetricCard/MetricCard";
 export * from "./Private/Dashboard/Dashboard";
 export * from "./Private/Dashboard/styled-components/dahsboard-layout.styled.component";
 export * from "./Private/Home/Home";
-export * from "./Private/Payments/NewPayment/NewPayment";
-export * from "./Private/Payments/NewPayment/NewPaymentForm/NewPaymentForm";
+
 export * from "./Private/Payments/Payments";
 export * from "./Private/Payments/PaymentsTable/PaymentDetails/PaymentDetails";
 export * from "./Private/Payments/PaymentsTable/PaymentsTable";

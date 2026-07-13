@@ -13,21 +13,20 @@ const Payments = lazy(() => import("./Payments/Payments"));
 const Sales = lazy(() => import("./(Transactions)/Sales/Sales"));
 const NewSale = lazy(() => import("./(Transactions)/Sales/NewSale/NewSale"));
 const SaleDetails = lazy(
-  () => import("./(Transactions)/Sales/SaleDetails/SaleDetails")
+  () => import("./(Transactions)/Sales/SaleDetails/SaleDetails"),
 );
 const SalePayments = lazy(
-  () => import("./(Transactions)/Sales/SalePayments/SalePayments")
+  () => import("./(Transactions)/Sales/SalePayments/SalePayments"),
 );
 const Categories = lazy(() => import("./Categories/Categories"));
 const Budgets = lazy(() => import("./(Transactions)/Budgets/Budgets"));
 const NewBudget = lazy(
-  () => import("./(Transactions)/Budgets/NewBudget/NewBudget")
+  () => import("./(Transactions)/Budgets/NewBudget/NewBudget"),
 );
 const BudgetDetails = lazy(
-  () => import("./(Transactions)/Budgets/BudgetDetails/BudgetDetails")
+  () => import("./(Transactions)/Budgets/BudgetDetails/BudgetDetails"),
 );
 const NewCuota = lazy(() => import("./Cuotas/NewCuota/NewCuota"));
-const NewPayment = lazy(() => import("./Payments/NewPayment/NewPayment"));
 
 export default function Private() {
   return (
@@ -90,10 +89,6 @@ export default function Private() {
           ></Route>
 
           <Route path={PrivateRoutes.PAYMENTS} element={<Payments />}></Route>
-          <Route
-            path={`pagos/${PrivateRoutes.NEW_PAYMENT}`}
-            element={<NewPayment />}
-          ></Route>
         </RoutesWithNotFound>
       </AppContainer>
     </AppLayout>

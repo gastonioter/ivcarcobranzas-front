@@ -56,7 +56,7 @@ export default function CuotaForm() {
     data,
     isLoading: isLoadingCustomers,
     error: errorCustomers,
-  } = useGetCustomersQuery();
+  } = useGetCustomersQuery({});
 
   const [create] = useCreateCuotasMutation();
 
@@ -70,7 +70,8 @@ export default function CuotaForm() {
   );
 
   const preselectedCustomer = useMemo(
-    () => (customerId ? customers?.find((c) => c.uuid === customerId) : undefined),
+    () =>
+      customerId ? customers?.find((c) => c.uuid === customerId) : undefined,
     [customerId, customers],
   );
 
@@ -117,7 +118,7 @@ export default function CuotaForm() {
     if (preselectedCustomer && !body.customer) {
       setBody((prev) => ({ ...prev, customer: preselectedCustomer }));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preselectedCustomer]);
 
   if (errorCustomers) {

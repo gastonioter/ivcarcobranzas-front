@@ -45,8 +45,6 @@ export * from "./Dashboard/components/MetricCard/MetricCard";
 export * from "./Dashboard/Dashboard";
 export * from "./Dashboard/styled-components/dahsboard-layout.styled.component";
 export * from "./Home/Home";
-export * from "./Payments/NewPayment/NewPayment";
-export * from "./Payments/NewPayment/NewPaymentForm/NewPaymentForm";
 export * from "./Payments/Payments";
 export * from "./Payments/PaymentsTable/PaymentDetails/PaymentDetails";
 export * from "./Payments/PaymentsTable/PaymentsTable";

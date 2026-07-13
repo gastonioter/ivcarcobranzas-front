@@ -61,7 +61,7 @@ export default function BaseTransactionForm({
     data,
     isLoading: isLoadingCostumers,
     error: errorCostumers,
-  } = useGetCustomersQuery();
+  } = useGetCustomersQuery({});
 
   const customers = data as SaleCustomer[];
 

@@ -25,7 +25,7 @@ interface CustomerTableProps {
   setCustomer: (customer: Customer | null) => void;
 }
 function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
-  const { data: customers, isLoading, error } = useGetCustomersQuery();
+  const { data: customers, isLoading, error } = useGetCustomersQuery({});
   const [editCustomerMutation] = useEditCustomerMutation();
   const [deleteFn] = useDeleteCustomerMutation();
   const navigate = useNavigate();
