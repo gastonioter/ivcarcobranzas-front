@@ -9,13 +9,22 @@ import {
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
 
-export interface MetricsType {
+export interface DeudorData {
+  _id: string;
+  pendingCount: number;
+  totalOwed: number;
+  customerId: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+}
+export interface DashboardMetrics {
   actives: number;
   inactives: number;
   totalGeneratedCutoas: number;
   totalPaidCuotas: number;
   totalRevenue: number;
-  deudores: Customer[];
+  deudores: DeudorData[];
 }
 
 const baseQuery: BaseQueryFn<
@@ -24,7 +33,7 @@ const baseQuery: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
   const result = await fetchBaseQuery({
-    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/metrics`,
+    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/dashboard`,
     prepareHeaders: addToken,
   })(args, api, extraOptions);
 
@@ -39,7 +48,7 @@ export const metricsApi = createApi({
   baseQuery,
   tagTypes: ["Metrics"],
   endpoints: (builder) => ({
-    getMetrics: builder.query<MetricsType, void>({
+    getMetrics: builder.query<DashboardMetrics, void>({
       query: () => "/",
       providesTags: ["Metrics"],
     }),

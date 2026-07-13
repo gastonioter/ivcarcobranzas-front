@@ -5,7 +5,6 @@ import {
   Customer,
   EditCustomerFormData,
 } from "@/models/customer";
-import { Payment } from "@/models/Payment";
 import { clearCredentials } from "@/redux/slices";
 import {
   BaseQueryFn,
@@ -85,14 +84,6 @@ export const customerApi = createApi({
       }),
       providesTags: ["AccountSummary"],
     }),
-
-    getRecibosCustomer: builder.query<Payment[], string>({
-      query: (uuid) => ({
-        method: "GET",
-        url: `/recibos/${uuid}`,
-      }),
-      providesTags: (res, err, uuid) => [{ type: "Recibos", id: uuid }],
-    }),
   }),
 });
 
@@ -100,7 +91,6 @@ export const {
   useCreateCustomerMutation,
   useGetCustomersQuery,
   useGetCustomerQuery,
-  useGetRecibosCustomerQuery,
   useEditCustomerMutation,
   useGetAccountSummaryQuery,
   useDeleteCustomerMutation,

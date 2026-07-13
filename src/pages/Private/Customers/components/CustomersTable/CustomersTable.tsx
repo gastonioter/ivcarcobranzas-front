@@ -35,7 +35,6 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
   const [filters, setFilters] = useState({
     active: true,
     cloud: true,
-    resumenEnviado: false,
   });
 
   console.log("customers", customers);
@@ -275,18 +274,6 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
               <Checkbox
                 checked={filters.active}
                 name="active"
-                onChange={handleChange}
-                inputProps={{ "aria-label": "controlled" }}
-              />
-            }
-          ></FormControlLabel>
-
-          <FormControlLabel
-            label="Resumenes enviados"
-            control={
-              <Checkbox
-                checked={filters.resumenEnviado}
-                name="resumenEnviado"
                 onChange={handleChange}
                 inputProps={{ "aria-label": "controlled" }}
               />

@@ -75,7 +75,10 @@ function CustomerForm({
         if (!editMode) {
           await create(data).unwrap();
         } else {
-          await edit({ uuid: customer.uuid, ...data }).unwrap();
+          await edit({
+            uuid: customer?.uuid || "",
+            ...data,
+          }).unwrap();
         }
 
         dialogCloseSubject$.setSubject = false;
@@ -89,6 +92,7 @@ function CustomerForm({
       }
     } else {
       const errorMessage = result.error.errors[0].message;
+
       snackbar.openSnackbar(`${errorMessage}`, "error");
     }
   };

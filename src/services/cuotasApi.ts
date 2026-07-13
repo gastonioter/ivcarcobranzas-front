@@ -2,8 +2,8 @@ import { addToken } from "@/interceptors";
 import {
   CreateCuotasPayload,
   Cuota,
+  CuotaFilters,
   UpdateCuotaPayload,
-  UpdateCuotasPayload,
 } from "@/models/Cuota";
 import { clearCredentials } from "@/redux/slices/auth";
 import {
@@ -15,6 +15,10 @@ import {
 } from "@reduxjs/toolkit/query/react";
 import { customerApi } from "./customerApi";
 import { metricsApi } from "./metricsApi";
+import {
+  CreatePaymentForCuotasPayload,
+  CuotaPayment,
+} from "@/models/CuotaPayment";
 
 const baseQuery: BaseQueryFn<
   string | FetchArgs,
@@ -22,7 +26,7 @@ const baseQuery: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
   const result = await fetchBaseQuery({
-    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/cuotas`,
+    baseUrl: `${import.meta.env.VITE_BASE_API_URL}/v2/cuotas`,
     prepareHeaders: addToken,
   })(args, api, extraOptions);
 
@@ -38,9 +42,26 @@ export const cuotasApi = createApi({
   baseQuery,
   tagTypes: ["Cuotas"],
   endpoints: (builder) => ({
-    getCuotas: builder.query<Cuota[], string>({
-      query: (uuid) => `/${uuid}`,
-      providesTags: ["Cuotas"],
+    getCuotas: builder.query<Cuota[], { filters: CuotaFilters }>({
+      query: ({ filters }) => ({
+        url: "/",
+        params: filters,
+      }),
+      providesTags: (result, error, arg) => {
+        if (error || !result) return [{ type: "Cuotas", id: "LIST" }];
+
+        return [
+          // Global tag for the list of Cuotas, useful for invalidating the entire list
+          { type: "Cuotas", id: "LIST" },
+          // A tag tied specifically to this exact combination of filters
+          { type: "Cuotas", id: `LIST_${JSON.stringify(arg.filters)}` },
+          // Individual entity tags for granular invalidation
+          ...result.map((cuota) => ({
+            type: "Cuotas" as const,
+            id: cuota.uuid,
+          })),
+        ];
+      },
     }),
 
     createCuotas: builder.mutation<Cuota[], CreateCuotasPayload>({
@@ -50,29 +71,26 @@ export const cuotasApi = createApi({
         body,
       }),
 
-      invalidatesTags: ["Cuotas"],
+      invalidatesTags: [{ type: "Cuotas", id: "LIST" }],
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         await queryFulfilled;
         dispatch(metricsApi.util.invalidateTags(["Metrics"]));
       },
     }),
 
-    updateCuotas: builder.mutation<Cuota[], UpdateCuotasPayload>({
+    createPaymentForCuotas: builder.mutation<
+      CuotaPayment,
+      CreatePaymentForCuotasPayload
+    >({
       query: (body) => ({
-        url: "/",
-        method: "PATCH",
+        url: "/payments",
+        method: "POST",
         body,
       }),
-      invalidatesTags: ["Cuotas"],
-      onQueryStarted: async (body, { dispatch, queryFulfilled }) => {
+      invalidatesTags: [{ type: "Cuotas", id: "LIST" }],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         await queryFulfilled;
-
         dispatch(metricsApi.util.invalidateTags(["Metrics"]));
-        dispatch(
-          customerApi.util.invalidateTags([
-            { type: "Recibos", id: body.customerId },
-          ])
-        );
       },
     }),
 
@@ -81,12 +99,28 @@ export const cuotasApi = createApi({
         url: "/generateAll",
         method: "POST",
       }),
-      invalidatesTags: ["Cuotas"],
+      invalidatesTags: [{ type: "Cuotas", id: "LIST" }],
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         await queryFulfilled;
         dispatch(metricsApi.util.invalidateTags(["Metrics"]));
         dispatch(customerApi.util.invalidateTags(["Customers"]));
       },
+    }),
+
+    reactivateCuota: builder.mutation<Cuota, string>({
+      query: (uuid) => ({
+        url: `${uuid}/reactivate`,
+        method: "POST",
+      }),
+      invalidatesTags: [{ type: "Cuotas", id: "LIST" }],
+    }),
+
+    anularCuota: builder.mutation<Cuota, string>({
+      query: (uuid) => ({
+        url: `/${uuid}/mark-no-service`,
+        method: "POST",
+      }),
+      invalidatesTags: [{ type: "Cuotas", id: "LIST" }],
     }),
 
     updateCuota: builder.mutation<Cuota, UpdateCuotaPayload>({
@@ -95,7 +129,7 @@ export const cuotasApi = createApi({
         method: "PATCH",
         body,
       }),
-      invalidatesTags: ["Cuotas"],
+      invalidatesTags: [{ type: "Cuotas", id: "LIST" }],
     }),
   }),
 });
@@ -103,7 +137,8 @@ export const cuotasApi = createApi({
 export const {
   useGetCuotasQuery,
   useCreateCuotasMutation,
-  useUpdateCuotasMutation,
   useGenerateAllCuotasMutation,
   useUpdateCuotaMutation,
+  useReactivateCuotaMutation,
+  useAnularCuotaMutation,
 } = cuotasApi;

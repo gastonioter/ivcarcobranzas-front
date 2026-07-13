@@ -1,23 +1,29 @@
 import { CustomDialog, dialogOpenSubject$ } from "@/components";
 import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog";
 import { useSnackbar } from "@/context/SnackbarContext";
-import { Payment } from "@/models/Payment";
+import { CuotaPayment } from "@/models/CuotaPayment";
 import { formattedDate } from "@/utilities";
-import { formattedCurrency } from "@/utilities/formatPrice";
 import PrintIcon from "@mui/icons-material/Print";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import { IconButton, Tooltip } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useState } from "react";
-import PaymentDetails from "./PaymentDetails/PaymentDetails";
 import { useSearchParams } from "react-router-dom";
+import PaymentDetails from "./PaymentDetails/PaymentDetails";
+import { formattedCurrency } from "@/utilities/formatPrice";
 
-export default function PaymentsTable({ recibos }: { recibos: Payment[] }) {
+export default function PaymentsTable({
+  recibos,
+}: {
+  recibos: CuotaPayment[];
+}) {
   const [searchParams] = useSearchParams();
   const customerId = searchParams.get("customerId");
   const animateNewRow = searchParams.get("animateNew");
-  const [paymentSelected, setPaymentSelected] = useState<Payment | null>(null);
+  const [paymentSelected, setPaymentSelected] = useState<CuotaPayment | null>(
+    null,
+  );
   const [id, setId] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const snackbar = useSnackbar();
@@ -37,7 +43,7 @@ export default function PaymentsTable({ recibos }: { recibos: Payment[] }) {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       snackbar.openSnackbar("Whatsapp enviado con éxito");
     } catch (e) {
@@ -63,21 +69,24 @@ export default function PaymentsTable({ recibos }: { recibos: Payment[] }) {
       },
     },
     {
-      field: "total",
+      field: "amount",
       headerName: "Total",
       flex: 1,
-      valueFormatter: (value) => formattedCurrency(value),
+      renderCell: ({ row }: { row: CuotaPayment }) =>
+        formattedCurrency(
+          row.lines.reduce((acc, line) => acc + line.amount, 0),
+        ),
     },
     {
       field: "cant_cuotas",
       headerName: "# Cuotas",
-      renderCell: (params) => params.row.cuotas.length,
+      renderCell: (params) => params.row.lines.length,
     },
     {
       field: "actions",
       headerName: "Acciones",
       width: 150,
-      renderCell: ({ row }: { row: Payment }) => (
+      renderCell: ({ row }: { row: CuotaPayment }) => (
         <>
           <Tooltip title="Imprimir Recibo">
             <IconButton
@@ -85,7 +94,7 @@ export default function PaymentsTable({ recibos }: { recibos: Payment[] }) {
                 window.open(
                   `${
                     import.meta.env.VITE_BASE_API_URL
-                  }/prints/monit-recipt/${customerId}/${row.uuid}`
+                  }/prints/monit-recipt/${customerId}/${row.uuid}`,
                 );
               }}
             >
@@ -118,7 +127,7 @@ export default function PaymentsTable({ recibos }: { recibos: Payment[] }) {
     },
   ];
 
-  const showPaymentDetails = ({ row }: { row: Payment }) => {
+  const showPaymentDetails = ({ row }: { row: CuotaPayment }) => {
     setPaymentSelected(row);
     dialogOpenSubject$.setSubject = true;
   };

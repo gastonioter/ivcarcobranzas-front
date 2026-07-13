@@ -2,7 +2,6 @@ import { Cuota, CuotaStatus } from "@/models/Cuota";
 import {
   useGetCuotasQuery,
   useUpdateCuotaMutation,
-  useUpdateCuotasMutation,
 } from "@/services/cuotasApi";
 import SummarizeIcon from "@mui/icons-material/Summarize";
 
@@ -16,6 +15,7 @@ import { useNavigate } from "react-router";
 import CuotasFilters from "../CuotasFilters/CuotasFilters";
 import ToggleStatusButton from "./ToggleStatusButton/ToggleStatusButton";
 import { useCuotasURLFilters } from "./hooks/useCuotasURLFilters";
+import { usePayCuotasMutation } from "@/services/paymentCuotasApi";
 export interface ICuotasTableProps {
   customerId: string;
 }
@@ -24,11 +24,15 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
   const { filters } = useCuotasURLFilters();
 
   const navigate = useNavigate();
-  const { data: cuotas } = useGetCuotasQuery(customerId);
+  const { data: cuotas } = useGetCuotasQuery({
+    filters: {
+      customerId,
+    },
+  });
   const [cuotasIdToPay, setCuotasIdToPay] = useState<readonly GridRowId[]>([]);
   const [update] = useUpdateCuotaMutation();
   const [open, setOpen] = useState(false);
-  const [payCuotas, { isLoading }] = useUpdateCuotasMutation();
+  const [payCuotas, { isLoading }] = usePayCuotasMutation();
   const snackbar = useSnackbar();
 
   const cuotasSinPagar =
@@ -36,22 +40,22 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
       ?.filter(
         (cuota) =>
           cuota.status != CuotaStatus.PAID &&
-          cuota.status != CuotaStatus.NO_SERVICE
+          cuota.status != CuotaStatus.NO_SERVICE,
       )
       .map((cuota) => cuota.uuid) ?? [];
 
-  const updateCuotaSerie = async (cuota: Cuota) => {
+  const updateCuota = async (cuota: Cuota) => {
     try {
       await update({
         cuotaId: cuota.uuid,
-        customerId,
-        serie: cuota.serie,
-        status: cuota.status,
-        monto: cuota.amount,
-      });
+        amount: cuota.amount,
+      }).unwrap();
       snackbar.openSnackbar("Cuota actualizada");
-    } catch {
-      snackbar.openSnackbar("Error al actualizar la cuota", "error");
+    } catch (err) {
+      snackbar.openSnackbar(
+        err?.data?.error || "Error al actualizar la cuota",
+        "error",
+      );
     }
   };
 
@@ -63,7 +67,6 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
     return coincideMes && coincideAnio && coincideEstado;
   });
 
-  console.log("cuotasFiltered", cuotas);
   const columns: GridColDef[] = [
     {
       field: "serie",
@@ -101,10 +104,10 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
               row.status === CuotaStatus.PAID
                 ? "success"
                 : row.status === CuotaStatus.PENDING
-                ? "info"
-                : // : row.status === CuotaStatus.LATE
-                  // ? "warning"
-                  "error"
+                  ? "info"
+                  : // : row.status === CuotaStatus.LATE
+                    // ? "warning"
+                    "error"
             }
             sx={{ textTransform: "capitalize" }}
             label={row.status}
@@ -118,13 +121,7 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
       headerName: "Acciones",
       width: 100,
       renderCell: ({ row }) => {
-        return (
-          <ToggleStatusButton
-            customerId={customerId}
-            row={row}
-            status={row.status}
-          />
-        );
+        return <ToggleStatusButton row={row} status={row.status} />;
       },
     },
   ];
@@ -132,9 +129,8 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
   const handlePayments = async () => {
     try {
       await payCuotas({
-        cuotasId: cuotasIdToPay as string[],
+        cuotaIds: cuotasIdToPay as string[],
         customerId,
-        status: CuotaStatus.PAID,
       }).unwrap();
       navigate(`/private/pagos?customerId=${customerId}&animateNew=yes`);
     } catch (error) {
@@ -179,7 +175,7 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
           setCuotasIdToPay(newSelection);
         }}
         processRowUpdate={(row) => {
-          updateCuotaSerie(row);
+          updateCuota(row);
         }}
         getRowId={(row) => row.uuid}
       ></DataGrid>

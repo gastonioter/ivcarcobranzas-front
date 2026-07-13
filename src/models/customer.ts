@@ -44,23 +44,19 @@ const phoneSchema = z.string().regex(/^\+?\d{10,15}$/, {
 });
 
 export const createCustomerSchema = z.object({
-  cuit: z.string(),
+  cuit: z.string().optional(),
   firstName: z.string().nonempty("El nombre es requerido"),
   lastName: z.string().nonempty("El apellido es requerido"),
   email: z.string().email({
     message: "Ingresa un correo electronico valido ",
   }),
   phone: phoneSchema,
-  status: z
-    .literal(CustomerStatus.ACTIVE)
-    .or(z.literal(CustomerStatus.INACTIVE)),
-  type: z
-    .literal(CustomerModalidad.REGULAR)
-    .or(z.literal(CustomerModalidad.CLOUD)),
+  type: z.nativeEnum(CustomerModalidad),
 });
 
 export const editCustomerSchema = createCustomerSchema.partial().extend({
   uuid: z.string(),
+  status: z.nativeEnum(CustomerStatus).optional(),
 });
 
 // CREATE
