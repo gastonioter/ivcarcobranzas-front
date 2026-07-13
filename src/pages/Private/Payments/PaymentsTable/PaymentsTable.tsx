@@ -32,9 +32,7 @@ export default function PaymentsTable({
     try {
       setSending(true);
       await fetch(
-        `${
-          import.meta.env.VITE_BASE_API_URL
-        }/prints/monit-recipt/${customerId}/${id}`,
+        `${import.meta.env.VITE_BASE_API_URL}/prints/monit-recipt/${id}`,
         {
           body: JSON.stringify({
             sendMethod: "WPP",
@@ -94,7 +92,7 @@ export default function PaymentsTable({
                 window.open(
                   `${
                     import.meta.env.VITE_BASE_API_URL
-                  }/prints/monit-recipt/${customerId}/${row.uuid}`,
+                  }/prints/monit-recipt/${row.uuid}`,
                 );
               }}
             >
