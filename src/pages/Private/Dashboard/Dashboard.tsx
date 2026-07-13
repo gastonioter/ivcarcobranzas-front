@@ -17,6 +17,7 @@ import { MetricCard } from "./components/MetricCard/MetricCard";
 import { MetricsLayout } from "./styled-components/dahsboard-layout.styled.component";
 import { DeudoresTable } from "./components/DeudoresTable";
 import { RevenueChart } from "./components/RevenueChart/RevenueChart";
+import { ClientesPieChart } from "./components/ClientesPieChart/ClientesPieChart";
 import { formattedCurrency } from "@/utilities/formatPrice";
 export default function Dashboard() {
   const { data: metrics, isLoading, error } = useGetMetricsQuery();
@@ -132,7 +133,10 @@ export default function Dashboard() {
         )}
       </MetricsLayout>
 
-      <RevenueChart />
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "1rem", marginTop: "1rem" }}>
+        <RevenueChart />
+        <ClientesPieChart actives={actives} inactives={inactives} />
+      </div>
 
       <CustomDialog
         title="Clientes Deudores"
