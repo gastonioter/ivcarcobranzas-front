@@ -1,5 +1,12 @@
 import { Card, CardContent, Typography } from "@mui/material";
-import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import {
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
 
 interface ClientesPieChartProps {
   actives: number;
@@ -21,7 +28,10 @@ const CustomTooltip = ({ active, payload }: any) => {
   return null;
 };
 
-export const ClientesPieChart = ({ actives, inactives }: ClientesPieChartProps) => {
+export const ClientesPieChart = ({
+  actives,
+  inactives,
+}: ClientesPieChartProps) => {
   const data = [
     { name: "Activos", value: actives },
     { name: "De Baja", value: inactives },
@@ -44,7 +54,7 @@ export const ClientesPieChart = ({ actives, inactives }: ClientesPieChartProps) 
               paddingAngle={4}
               dataKey="value"
               label={({ name, percent }) =>
-                `${name} ${(percent * 100).toFixed(0)}%`
+                `${name} ${((percent as number) * 100).toFixed(0)}%`
               }
               labelLine={false}
             >
