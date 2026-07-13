@@ -1,19 +1,17 @@
 import SectionHeader from "@/components/SectionHeader/SectionHeader";
 import SectionTitle from "@/components/SectionTitle/SectionTitle";
 import { CustomerModalidad } from "@/models";
-import {
-  useGetCustomersQuery,
-  useGetRecibosCustomerQuery,
-} from "@/services/customerApi";
+import { useGetPaymentsQuery } from "@/services/paymentCuotasApi";
 import { formatFullName } from "@/utilities/formatFullName";
 import { Autocomplete, TextField } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 import PaymentsTable from "./PaymentsTable/PaymentsTable";
+import { useGetCustomersQuery } from "@/services/customerApi";
 
 export default function Payments() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { data } = useGetCustomersQuery();
-
+  console.log("data", data);
   const updateSearchParams = (key: string, value: string) => {
     const nuevosParams = new URLSearchParams(searchParams);
     if (value) {
@@ -25,8 +23,7 @@ export default function Payments() {
   };
 
   const customers =
-    data?.filter((c) => c.modalidadData.modalidad == CustomerModalidad.CLOUD) ||
-    [];
+    data?.filter((c) => c.type == CustomerModalidad.CLOUD) || [];
 
   const customerId = searchParams.get("customerId");
 
@@ -36,7 +33,8 @@ export default function Payments() {
     uuid: "",
   };
 
-  const { data: recibos } = useGetRecibosCustomerQuery(customerId ?? "");
+  const { data: recibos } = useGetPaymentsQuery(customerId);
+  console.log("recibos", recibos);
 
   return (
     <>

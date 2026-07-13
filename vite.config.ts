@@ -5,7 +5,10 @@ import path from "path";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base:'./',
+  server: {
+    port: 3001, // <-- Aquí defines el puerto que tú quieras
+  },
+  base: "./",
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),

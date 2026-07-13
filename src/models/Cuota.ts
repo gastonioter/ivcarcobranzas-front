@@ -10,10 +10,16 @@ export interface Cuota {
   createdAt: Date;
 }
 
+export interface CuotaFilters {
+  customerId?: string;
+  fromMonth?: number;
+  year?: number;
+  status?: CuotaStatus;
+}
+
 export enum CuotaStatus {
   PENDING = "PENDIENTE",
   PAID = "PAGADA",
-  // LATE = "ATRASADA",
   NO_SERVICE = "SIN SERVICIO",
 }
 export enum InitalCuotaStatus {
@@ -42,25 +48,14 @@ export const CreateCuotasSchema = z.object({
   year: z.number(),
   status: z.nativeEnum(CuotaStatus),
   months: z.array(z.string()),
-  facturaId: z.string().optional(),
 });
 
-export const UpdateCuotasSchema = z.object({
-  cuotasId: z.array(z.string().uuid()),
-  customerId: z.string().uuid(),
-  status: z.nativeEnum(CuotaStatus),
-});
-
-export const UpdateCuotaSchema = z.object({
-  cuotaId: z.string().uuid(),
-  status: z.nativeEnum(CuotaStatus),
-  serie: z.string(),
-  monto: z.string().transform((value) => parseFloat(value)),
-  customerId: z.string().uuid(),
-});
+export const UpdateCuotaSchema = z
+  .object({
+    amount: z.string().transform((value) => parseFloat(value)),
+  })
+  .extend({ cuotaId: z.string().uuid() });
 
 export type UpdateCuotaPayload = z.infer<typeof UpdateCuotaSchema>;
-
-export type UpdateCuotasPayload = z.infer<typeof UpdateCuotasSchema>;
 
 export type CreateCuotasPayload = z.infer<typeof CreateCuotasSchema>;

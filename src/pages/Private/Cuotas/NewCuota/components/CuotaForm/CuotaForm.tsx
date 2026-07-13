@@ -38,21 +38,20 @@ const yearsOpts = [
   { value: new Date().getFullYear() + 1, label: new Date().getFullYear() + 1 },
 ];
 
-export type cuotaForm = Omit<CreateCuotasPayload, "customerId"> & {
+export type CuotaForm = Omit<CreateCuotasPayload, "customerId"> & {
   customer: Customer | undefined;
 };
 
-const initialCuota: cuotaForm = {
+const initialCuota: CuotaForm = {
   year: new Date().getFullYear(),
-  months: [],
-  amount: 0,
+  months: [cuotaMonthOpts[new Date().getMonth()]],
+  amount: 20_000,
   status: CuotaStatus.PENDING,
   customer: undefined,
 };
 
 export default function CuotaForm({ customer }: { customer?: Customer }) {
-  const [body, setBody] = useState<cuotaForm>(initialCuota);
-  const [facturaId, setfacturaId] = useState<string>("");
+  const [body, setBody] = useState<CuotaForm>(initialCuota);
   const [searchParams] = useSearchParams();
 
   const snackbar = useSnackbar();
@@ -67,7 +66,7 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
   const navigate = useNavigate();
 
   const customers = data?.filter(
-    (c) => c.modalidadData.modalidad === CustomerModalidad.CLOUD
+    (c) => c.type === CustomerModalidad.CLOUD,
   ) as Customer[];
 
   const handleNewCuota = async (e: FormEvent<HTMLFormElement>) => {
@@ -84,7 +83,7 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
         if (createdCuotas.length === 0) {
           snackbar.openSnackbar(
             "La cuotas seleccionadas ya fueron creadas",
-            "warning"
+            "warning",
           );
           return;
         }
@@ -92,12 +91,12 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
         if (createdCuotas.length < body.months.length) {
           snackbar.openSnackbar(
             `Se crearon ${createdCuotas.length} de ${body.months.length} cuotas seleccionadas, algunas ya existían`,
-            "success"
+            "success",
           );
         }
 
         navigate(
-          `/private/${PrivateRoutes.CUOTAS}?customerId=${customer?.uuid}`
+          `/private/${PrivateRoutes.CUOTAS}?customerId=${customer?.uuid}`,
         );
       } catch (e) {
         snackbar.openSnackbar(e.data.error, "error");
@@ -116,15 +115,11 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
 
   useEffect(() => {
     // Precargo el formulario con el cliente seleccionado
-    console.log("Body before set", body);
     if (selectedCustomer) {
       setBody((prev) => ({
         ...prev,
         customer: selectedCustomer,
-        amount:
-          selectedCustomer.modalidadData.modalidad === CustomerModalidad.CLOUD
-            ? selectedCustomer.modalidadData.cloudCategory.price
-            : 0,
+        amount: 20_000,
       }));
     }
   }, [body, selectedCustomer]);
@@ -132,14 +127,9 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
   useEffect(() => {
     // Sincronizo el parametro externo con el formulario
     if (customer) {
-      console.log("Customer from props", customer);
       setBody((prev) => ({
         ...prev,
         customer: customer,
-        amount:
-          customer.modalidadData.modalidad === CustomerModalidad.CLOUD
-            ? customer.modalidadData.cloudCategory.price
-            : 0,
       }));
     }
   }, [customer]);
@@ -193,9 +183,9 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
               }))
             }
             // defaultValue={
-            //   body.customer?.modalidadData.modalidad === CustomerModalidad.CLOUD
-            //     ? body.customer?.modalidadData.cloudCategory.price
-            //     : 0
+            // body.customer?.modalidadData.modalidad === CustomerModalidad.CLOUD
+            // ? body.customer?.modalidadData.cloudCategory.price
+            // : 0
             // }
             value={body.amount}
           ></TextField>
@@ -258,17 +248,8 @@ export default function CuotaForm({ customer }: { customer?: Customer }) {
           </FormControl>
 
           <Divider />
-          <TextField
-            label="Nro Factura (opcional)"
-            type="text"
-            value={facturaId}
-            onChange={(e) => setfacturaId(e.target.value)}
-          />
         </Box>
       )}
-
-      {/* {body.months.length > 0 &&
-        body.months.map(() => <CuotasPreview cuotas={body} />)} */}
       {showForm && (
         <Button
           sx={{ gridColumn: 1 }}

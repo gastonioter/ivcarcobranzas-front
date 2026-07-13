@@ -1,8 +1,9 @@
 import { dialogCloseSubject$ } from "@/components";
+import { CuotaPayment } from "@/models/CuotaPayment";
 import { Payment } from "@/models/Payment";
 import { Box, Button, Typography } from "@mui/material";
 export interface IPaymentDetailsProps {
-  payment: Payment | null;
+  payment: CuotaPayment | null;
 }
 
 export default function PaymentDetails({ payment }: IPaymentDetailsProps) {
@@ -19,8 +20,8 @@ export default function PaymentDetails({ payment }: IPaymentDetailsProps) {
           gap: 2,
         }}
       >
-        {payment.cuotas.map((cuota) => (
-          <Box key={cuota.uuid} sx={{ border: "1px solid black", padding: 2 }}>
+        {payment.lines.map((cuota, i) => (
+          <Box key={i} sx={{ border: "1px solid black", padding: 2 }}>
             {`Cuota ${cuota.month}/${cuota.year}`}
           </Box>
         ))}

@@ -48,12 +48,12 @@ export default function Cuotas() {
       await generate({}).unwrap();
       snackbar.openSnackbar(
         "Se ha generado para cada cliente la cuota para el mes corriente",
-        "success"
+        "success",
       );
     } catch (e) {
       snackbar.openSnackbar(
         "Ha ocurrido un error al intentar generar las cuotas",
-        "error"
+        "error",
       );
       console.error(e);
     }
@@ -66,14 +66,14 @@ export default function Cuotas() {
   const { sendWpp, sending } = useSendRsmMontiWpp(customerId || "");
 
   const [customer, setCustomer] = useState<Customer | undefined | null>(
-    undefined
+    undefined,
   );
   const { data, isLoading: isLoadingCostumers } = useGetCustomersQuery();
 
   const customers = data?.filter(
     (customer) =>
-      customer.modalidadData.modalidad === CustomerModalidad.CLOUD &&
-      customer.status === CustomerStatus.ACTIVE
+      customer.type === CustomerModalidad.CLOUD &&
+      customer.status === CustomerStatus.ACTIVE,
   ) as Customer[];
 
   useEffect(() => {
@@ -89,7 +89,7 @@ export default function Cuotas() {
         customClickHandler={() => {
           if (customerId) {
             navigate(
-              `/private/cuotas/${PrivateRoutes.NEW_CUOTA}?customerId=${customerId}`
+              `/private/cuotas/${PrivateRoutes.NEW_CUOTA}?customerId=${customerId}`,
             );
           } else {
             navigate(PrivateRoutes.NEW_CUOTA);
