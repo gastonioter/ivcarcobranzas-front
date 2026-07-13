@@ -32,7 +32,10 @@ export const RevenueChart = ({ data }: { data?: MonitoreoRenevue[] }) => {
     <Card sx={{ borderRadius: 2, boxShadow: 3, p: 2, mt: 2 }}>
       <CardContent>
         <Typography variant="h5" fontWeight={500} mb={3}>
-          Ingresos mensuales — últimos 12 meses
+          Monitoreo | Ingresos mensuales
+        </Typography>
+        <Typography variant="body2" fontWeight={500} mb={3}>
+          Ultimos 12 meses
         </Typography>
         <ResponsiveContainer width="100%" height={300}>
           <AreaChart

@@ -41,7 +41,7 @@ export const ClientesPieChart = ({
     <Card sx={{ borderRadius: 2, boxShadow: 3, p: 2, mt: 2 }}>
       <CardContent>
         <Typography variant="h5" fontWeight={500} mb={3}>
-          Clientes activos vs. dados de baja
+          Estado de clientes
         </Typography>
         <ResponsiveContainer width="100%" height={300}>
           <PieChart>

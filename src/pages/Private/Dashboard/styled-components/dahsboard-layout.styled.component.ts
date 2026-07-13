@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const MetricsLayout = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  grid-template-rows: 220px 220px;
+  grid-template-rows: 220px;
   gap: 1rem;
   /* height: 100%; */
   margin-top: 1rem;

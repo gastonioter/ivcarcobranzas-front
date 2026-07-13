@@ -21,7 +21,6 @@ export default function Dashboard() {
     deudores,
     totalGeneratedCutoas = 0,
     totalPaidCuotas = 0,
-    totalRevenue = 0,
     revenueByMonth = [],
   } = metrics || {};
   if (error) {
@@ -51,7 +50,7 @@ export default function Dashboard() {
             value={`${((totalPaidCuotas / totalGeneratedCutoas) * 100).toFixed(
               1,
             )}%`}
-            title="Tasa de pagos"
+            title="Monitoreo | Cuotas pagas"
             color={`${
               totalPaidCuotas / totalGeneratedCutoas < 0.5 ? "error" : "success"
             }`}
@@ -66,7 +65,7 @@ export default function Dashboard() {
           <MetricCard
             value={deudores?.length || 0}
             icon={<AccountBalanceWalletIcon fontSize="large" />}
-            title="Clientes Deudores"
+            title="Monitoreo | Clientes Deudores"
             description="Clientes que tienen mas de 3 meses sin pagar."
             color="error"
           >
