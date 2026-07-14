@@ -76,6 +76,13 @@ export default function PaymentsTable({
         ),
     },
     {
+      field: "sent",
+      headerName: "Enviado",
+      valueFormatter: (value) => {
+        return value ? "SI" : "NO";
+      },
+    },
+    {
       field: "cant_cuotas",
       headerName: "# Cuotas",
       renderCell: (params) => params.row.lines.length,
