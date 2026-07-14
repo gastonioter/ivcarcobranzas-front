@@ -1,44 +1,64 @@
-import { useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
+import { CuotaStatus } from "@/models/Cuota";
+import { CuotaFilters } from "@/models/Cuota";
 
-export type CuotasFilterType = {
-  year?: string;
-  month?: string;
-  status?: string;
-  customerId?: string;
-};
-
-export const useCuotasURLFilters = () => {
+export function useCuotasURLFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const filters: CuotasFilterType = useMemo(() => {
-    const status = searchParams.get("status") || undefined;
-    const year = searchParams.get("year") || undefined;
-    const month = searchParams.get("month") || undefined;
+  const filters: CuotaFilters = {
+    customerId: searchParams.get("customerId") || undefined,
+    monthStart: searchParams.get("monthStart")
+      ? Number(searchParams.get("monthStart"))
+      : undefined,
+    monthEnd: searchParams.get("monthEnd")
+      ? Number(searchParams.get("monthEnd"))
+      : undefined,
+    year: searchParams.get("year")
+      ? Number(searchParams.get("year"))
+      : undefined,
+    status: (searchParams.get("status") as CuotaStatus) || undefined,
+  };
 
-    return { status, year, month };
-  }, [searchParams]);
+  const setFilter = (
+    key: keyof CuotaFilters,
+    value: string | number | undefined,
+  ) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (value === undefined || value === "") {
+      newParams.delete(key);
+    } else {
+      newParams.set(key, String(value));
+    }
+    setSearchParams(newParams);
+  };
 
-  const setFilters = useCallback(
-    (nuevoEstado: Partial<CuotasFilterType>) => {
-      const customerId = searchParams.get("customerId") || undefined;
+  const clearFilter = (key: keyof CuotaFilters) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete(key);
+    setSearchParams(newParams);
+  };
 
-      const nuevosParams = new URLSearchParams();
+  const clearAllFilters = () => {
+    const newParams = new URLSearchParams();
+    const customerId = searchParams.get("customerId");
+    if (customerId) {
+      newParams.set("customerId", customerId);
+    }
+    setSearchParams(newParams);
+  };
 
-      const actualizados: CuotasFilterType = {
-        ...filters,
-        customerId,
-        ...nuevoEstado,
-      };
-
-      Object.entries(actualizados).forEach(([clave, valor]) => {
-        if (valor) nuevosParams.set(clave, valor);
-      });
-
-      setSearchParams(nuevosParams);
-    },
-    [filters, searchParams, setSearchParams]
+  const hasActiveFilters = !!(
+    filters.monthStart ||
+    filters.monthEnd ||
+    filters.year ||
+    filters.status
   );
 
-  return { filters, setFilters };
-};
+  return {
+    filters,
+    setFilter,
+    clearFilter,
+    clearAllFilters,
+    hasActiveFilters,
+  };
+}

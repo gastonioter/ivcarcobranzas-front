@@ -97,7 +97,7 @@ export default function Cuotas() {
         </SectionTitle>
       </SectionHeader>
 
-      <Stack direction={"column"}>
+      <Stack direction={"column"} spacing={3}>
         <Stack direction={"row"} spacing={3}>
           <FormControl fullWidth>
             <Autocomplete

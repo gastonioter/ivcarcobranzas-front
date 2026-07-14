@@ -42,8 +42,8 @@ export const cuotasApi = createApi({
   baseQuery,
   tagTypes: ["Cuotas"],
   endpoints: (builder) => ({
-    getCuotas: builder.query<Cuota[], { filters: CuotaFilters }>({
-      query: ({ filters }) => ({
+    getCuotas: builder.query<Cuota[], CuotaFilters>({
+      query: (filters) => ({
         url: "/",
         params: filters,
       }),
@@ -54,7 +54,7 @@ export const cuotasApi = createApi({
           // Global tag for the list of Cuotas, useful for invalidating the entire list
           { type: "Cuotas", id: "LIST" },
           // A tag tied specifically to this exact combination of filters
-          { type: "Cuotas", id: `LIST_${JSON.stringify(arg.filters)}` },
+          { type: "Cuotas", id: `LIST_${JSON.stringify(arg)}` },
           // Individual entity tags for granular invalidation
           ...result.map((cuota) => ({
             type: "Cuotas" as const,

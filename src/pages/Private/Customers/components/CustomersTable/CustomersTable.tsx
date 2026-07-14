@@ -14,32 +14,82 @@ import {
 } from "@/services/customerApi";
 import { formattedDate } from "@/utilities";
 import { formatFullName } from "@/utilities/formatFullName";
-import { Alert, Box, Checkbox, FormControlLabel } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import ClearIcon from "@mui/icons-material/Clear"; // <-- Importamos iconos de MUI
+import {
+  Alert,
+  Button,
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Stack,
+} from "@mui/material";
+import {
+  DataGrid,
+  GridColDef,
+  GridColumnVisibilityModel,
+} from "@mui/x-data-grid";
+import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import CustomerStatusIndicator from "../CustomerStatusIndicator/CustomerStatusIndicator";
 import "./styles.module.css";
 
 interface CustomerTableProps {
   setCustomer: (customer: Customer | null) => void;
 }
+
 function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
-  const { data: customers, isLoading, error } = useGetCustomersQuery({});
-  const [editCustomerMutation] = useEditCustomerMutation();
-  const [deleteFn] = useDeleteCustomerMutation();
   const navigate = useNavigate();
+  const snackbar = useSnackbar();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [id, setId] = useState<null | string>(null);
+  const currentStatus = searchParams.get("status") || undefined;
+  const currentType = searchParams.get("type") || undefined;
 
-  const [filters, setFilters] = useState({
-    active: true,
-    cloud: true,
+  const [columnVisibilityModel, setColumnVisibilityModel] =
+    useState<GridColumnVisibilityModel>({
+      cuit: false,
+      email: false,
+    });
+
+  const {
+    data: customers = [],
+    isLoading,
+    error,
+  } = useGetCustomersQuery({
+    status: currentStatus as CustomerStatus,
+    type: currentType as CustomerModalidad,
   });
 
-  console.log("customers", customers);
+  const [editCustomerMutation] = useEditCustomerMutation();
+  const [deleteFn] = useDeleteCustomerMutation();
 
+  const [id, setId] = useState<null | string>(null);
   const { sendWpp, sending } = useSendRsmMontiWpp(id || "");
+
+  const handleFilterChange =
+    (key: "status" | "type") => (event: SelectChangeEvent) => {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set(key, event.target.value);
+      setSearchParams(newParams);
+    };
+
+  const clearIndividualFilter = (key: "status" | "type") => () => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete(key);
+    setSearchParams(newParams);
+  };
+
+  const clearAllFilters = () => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete("status");
+    newParams.delete("type");
+    setSearchParams(newParams);
+  };
+
+  const hasActiveFilters = !!currentStatus || !!currentType;
 
   const toggleCustomerStatus = async (row: Customer) => {
     try {
@@ -54,11 +104,10 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
           status: CustomerStatus.ACTIVE,
         }).unwrap();
       }
-
       snackbar.openSnackbar("Estado actualizado con éxito");
-    } catch (e) {
-      console.log(e);
-      snackbar.openSnackbar(`${e.data.error}`, "error");
+    } catch (e: any) {
+      console.error(e);
+      snackbar.openSnackbar(`${e?.data?.error || "Error"}`, "error");
     }
   };
 
@@ -66,13 +115,11 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
     try {
       await deleteFn(uuid).unwrap();
       snackbar.openSnackbar("Cliente eliminado!");
-    } catch (e) {
-      console.log(e);
-      snackbar.openSnackbar(`${e.data.error}`, "error");
+    } catch (e: any) {
+      console.error(e);
+      snackbar.openSnackbar(`${e?.data?.error || "Error"}`, "error");
     }
   };
-
-  const snackbar = useSnackbar();
 
   const actions = ({ row }: { row: Customer }) => (
     <TableMenuActions
@@ -80,7 +127,6 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
         {
           name: "Editar",
           onClick: () => {
-            // open the dialog with the data;
             setCustomer(row);
             dialogOpenSubject$.setSubject = true;
           },
@@ -99,7 +145,6 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
             );
           },
         },
-
         {
           name: "Rsm. Monit.",
           onClick: () => {
@@ -116,18 +161,17 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
             );
           },
         },
-
         {
           name: "Enviar Rsm",
           onClick: async () => {
             setId(row.uuid);
           },
         },
-
         {
-          name: `${
-            row.status === CustomerStatus.ACTIVE ? "Dar de baja" : "Dar de alta"
-          }`,
+          name:
+            row.status === CustomerStatus.ACTIVE
+              ? "Dar de baja"
+              : "Dar de alta",
           onClick: async () => {
             toggleCustomerStatus(row);
           },
@@ -149,9 +193,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
       editable: false,
       minWidth: 150,
       flex: 1,
-      valueGetter: (_, row) => {
-        return formatFullName(row.firstName, row.lastName);
-      },
+      valueGetter: (_, row) => formatFullName(row.firstName, row.lastName),
     },
     {
       field: "phone",
@@ -164,9 +206,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
       field: "type",
       headerName: "Tipo",
       flex: 1,
-      valueFormatter: (value: CustomerModalidad) => {
-        return value?.toUpperCase();
-      },
+      valueFormatter: (value: CustomerModalidad) => value?.toUpperCase(),
       editable: false,
       sortable: false,
       filterable: false,
@@ -185,7 +225,7 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
     },
     {
       field: "createdAt",
-      headerName: "Creación",
+      headerName: "Registrado",
       flex: 0.5,
       editable: false,
       valueFormatter: (value) => formattedDate(value),
@@ -211,41 +251,6 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
     },
   ];
 
-  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilters((prev) => ({
-      ...prev,
-      [event.target.name]: event.target.checked,
-    }));
-  };
-
-  const filterCloudCustomer = (customer: Customer) =>
-    customer.type === CustomerModalidad.CLOUD;
-
-  const filterActiveCustomer = (customer: Customer) =>
-    customer.status === CustomerStatus.ACTIVE;
-
-  const filterCustomers = useCallback(() => {
-    if (!customers) return;
-
-    let result = [...customers];
-
-    if (filters.active) {
-      result = result.filter(filterActiveCustomer);
-    }
-
-    if (filters.cloud) {
-      result = result.filter(filterCloudCustomer);
-    }
-
-    setFilteredCustomers(result);
-  }, [customers, filters]);
-
-  useEffect(() => {
-    filterCustomers();
-  }, [filterCustomers]);
-
   if (error) {
     return (
       <Alert severity="error">Ocurrió un error al cargar los clientes</Alert>
@@ -255,32 +260,79 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
   return (
     <>
       <div>
-        <Box sx={{ b: 2 }}>
-          <FormControlLabel
-            label="Solo clientes cloud"
-            control={
-              <Checkbox
-                checked={filters.cloud}
-                name="cloud"
-                onChange={handleChange}
-                inputProps={{ "aria-label": "controlled" }}
-              />
-            }
-          ></FormControlLabel>
+        {/* SECCIÓN DE FILTROS */}
+        <Stack direction="row" spacing={2} sx={{ mb: 2 }} alignItems="center">
+          {/* Filtro de Estado con botón de limpiar integrado */}
+          <FormControl size="small" sx={{ minWidth: 180 }}>
+            <InputLabel id="status-filter-label">Estado</InputLabel>
+            <Select
+              labelId="status-filter-label"
+              id="status-filter"
+              value={currentStatus}
+              label="Estado"
+              onChange={handleFilterChange("status")}
+              endAdornment={
+                currentStatus && (
+                  <IconButton
+                    size="small"
+                    onClick={clearIndividualFilter("status")}
+                    sx={{ marginRight: 1.5 }}
+                  >
+                    <ClearIcon fontSize="small" />
+                  </IconButton>
+                )
+              }
+            >
+              <MenuItem value={CustomerStatus.ACTIVE}>Activos</MenuItem>
+              <MenuItem value={CustomerStatus.INACTIVE}>Inactivos</MenuItem>
+            </Select>
+          </FormControl>
 
-          <FormControlLabel
-            label="Solo clientes activos"
-            control={
-              <Checkbox
-                checked={filters.active}
-                name="active"
-                onChange={handleChange}
-                inputProps={{ "aria-label": "controlled" }}
-              />
-            }
-          ></FormControlLabel>
-        </Box>
+          {/* Filtro de Tipo con botón de limpiar integrado */}
+          <FormControl size="small" sx={{ minWidth: 180 }}>
+            <InputLabel id="type-filter-label">Tipo</InputLabel>
+            <Select
+              labelId="type-filter-label"
+              id="type-filter"
+              value={currentType}
+              label="Tipo"
+              onChange={handleFilterChange("type")}
+              endAdornment={
+                currentType && (
+                  <IconButton
+                    size="small"
+                    onClick={clearIndividualFilter("type")}
+                    sx={{ marginRight: 1.5 }}
+                  >
+                    <ClearIcon fontSize="small" />
+                  </IconButton>
+                )
+              }
+            >
+              <MenuItem value={CustomerModalidad.CLOUD}>Cloud</MenuItem>
+              <MenuItem value={CustomerModalidad.REGULAR}>Local</MenuItem>
+            </Select>
+          </FormControl>
+
+          {/* Botón para remover TODOS los filtros (solo visible si hay filtros aplicados) */}
+          {hasActiveFilters && (
+            <Button
+              variant="outlined"
+              color="secondary"
+              size="small"
+              onClick={clearAllFilters}
+              startIcon={<ClearIcon />}
+            >
+              Limpiar filtros
+            </Button>
+          )}
+        </Stack>
+
         <DataGrid
+          columnVisibilityModel={columnVisibilityModel}
+          onColumnVisibilityModelChange={(newModel) =>
+            setColumnVisibilityModel(newModel)
+          }
           slotProps={{
             toolbar: {
               showQuickFilter: true,
@@ -295,16 +347,11 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
               placeholder: "Buscar cliente por: NOMBRE, CUIT, TELEFONO, EMAIL",
             }),
           }}
-          sx={{
-            "& .active": {
-              backgroundColor: "#c4efce",
-            },
-          }}
           disableColumnMenu
           getRowId={(row) => row.uuid}
-          rows={filteredCustomers}
+          rows={customers}
           disableRowSelectionOnClick
-          columns={columns as GridColDef[]}
+          columns={columns}
           loading={isLoading}
         />
       </div>

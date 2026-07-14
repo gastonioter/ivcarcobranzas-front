@@ -19,7 +19,6 @@ const items = [
     icon: <DashboardIcon />,
     to: PrivateRoutes.DASHBOARD,
   },
-
   {
     name: "Catalogo",
     icon: <LocalGroceryStoreIcon />,
@@ -38,6 +37,11 @@ const items = [
     ],
   },
   {
+    name: "Clientes",
+    icon: <PersonIcon />,
+    to: PrivateRoutes.CUSTOMERS,
+  },
+  {
     name: "Ventas",
     to: PrivateRoutes.SALES,
     icon: <StorefrontIcon />,
@@ -48,12 +52,7 @@ const items = [
     icon: <ReceiptLongIcon />,
   },
   {
-    name: "Clientes",
-    icon: <PersonIcon />,
-    to: PrivateRoutes.CUSTOMERS,
-  },
-  {
-    name: "Resumenes",
+    name: "Cuotas",
     to: PrivateRoutes.CUOTAS,
     icon: <SummarizeIcon />,
   },
@@ -96,7 +95,7 @@ export default function SidebarNavigationItems() {
             />
           ) : (
             <></>
-          )
+          ),
         )}
       </List>
       <Divider />

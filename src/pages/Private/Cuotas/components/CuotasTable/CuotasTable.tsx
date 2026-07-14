@@ -16,34 +16,17 @@ import { useNavigate } from "react-router";
 import CuotasFilters from "../CuotasFilters/CuotasFilters";
 import ToggleStatusButton from "./ToggleStatusButton/ToggleStatusButton";
 import { useCuotasURLFilters } from "./hooks/useCuotasURLFilters";
-import { useSearchParams } from "react-router-dom";
-
 export default function CuotasTable() {
   const { filters } = useCuotasURLFilters();
-
-  const [searchParams] = useSearchParams();
-  const customerId = searchParams.get("customerId");
   const navigate = useNavigate();
 
-  const { data: cuotas } = useGetCuotasQuery({
-    filters: {
-      customerId: customerId ?? undefined,
-    },
-  });
+  const { data: cuotas, isLoading } = useGetCuotasQuery(filters);
+
   const [cuotasIdToPay, setCuotasIdToPay] = useState<readonly GridRowId[]>([]);
   const [update] = useUpdateCuotaMutation();
   const [open, setOpen] = useState(false);
-  const [payCuotas, { isLoading }] = usePayCuotasMutation();
+  const [payCuotas, { isLoading: isPaying }] = usePayCuotasMutation();
   const snackbar = useSnackbar();
-
-  const cuotasSinPagar =
-    cuotas
-      ?.filter(
-        (cuota) =>
-          cuota.status != CuotaStatus.PAID &&
-          cuota.status != CuotaStatus.NO_SERVICE,
-      )
-      .map((cuota) => cuota.uuid) ?? [];
 
   const updateCuota = async (cuota: Cuota) => {
     try {
@@ -52,21 +35,13 @@ export default function CuotasTable() {
         amount: cuota.amount,
       }).unwrap();
       snackbar.openSnackbar("Cuota actualizada");
-    } catch (err) {
+    } catch (err: any) {
       snackbar.openSnackbar(
         err?.data?.error || "Error al actualizar la cuota",
         "error",
       );
     }
   };
-
-  const cuotasFiltered = cuotas?.filter((cuota) => {
-    const coincideMes = !filters.month || String(cuota.month) === filters.month;
-    const coincideAnio = !filters.year || String(cuota.year) === filters.year;
-    const coincideEstado = !filters.status || cuota.status === filters.status;
-
-    return coincideMes && coincideAnio && coincideEstado;
-  });
 
   const columns: GridColDef[] = [
     {
@@ -88,7 +63,6 @@ export default function CuotasTable() {
       field: "amount",
       headerName: "Monto",
       sortable: false,
-
       valueFormatter: (value) => formattedCurrency(value),
       flex: 1,
       editable: true,
@@ -129,45 +103,48 @@ export default function CuotasTable() {
     try {
       await payCuotas({
         cuotaIds: cuotasIdToPay as string[],
-        customerId: customerId as string,
+        customerId: filters.customerId as string,
       }).unwrap();
-      navigate(`/private/pagos?customerId=${customerId}&animateNew=yes`);
+      navigate(
+        `/private/pagos?customerId=${filters.customerId}&animateNew=yes`,
+      );
     } catch (error) {
       console.log(error);
     }
   };
+
   return (
     <>
-      <Box display={"flex"} justifyContent={"space-between"}>
-        {cuotas && cuotas.length >= 0 && (
+      <Box display={"flex"} justifyContent={"space-between"} sx={{ mb: 2 }}>
+        {cuotas && (
           <Box sx={{ flex: 1 }}>
             <CuotasFilters />
           </Box>
         )}
         {cuotasIdToPay.length > 0 && (
-          <Box sx={{ mb: 1, display: "flex", gap: 1, alignItems: "center" }}>
-            <div>
-              <Button
-                endIcon={<SummarizeIcon />}
-                variant="contained"
-                size="small"
-                color="success"
-                onClick={() => setOpen(true)}
-              >
-                Generar Recibo de Pago
-              </Button>
-            </div>
+          <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+            <Button
+              endIcon={<SummarizeIcon />}
+              variant="contained"
+              size="small"
+              color="success"
+              onClick={() => setOpen(true)}
+            >
+              Generar Recibo de Pago
+            </Button>
           </Box>
         )}
       </Box>
+
       <DataGrid
         editMode="cell"
         columns={columns}
         checkboxSelection
-        isRowSelectable={(params) =>
-          cuotasSinPagar?.includes(params.id.toString())
+        isRowSelectable={({ row }: { row: Cuota }) =>
+          row.status !== CuotaStatus.PAID
         }
-        rows={cuotasFiltered}
+        rows={cuotas ?? []} // <-- Pasamos directamente las cuotas que vienen de la API
+        loading={isLoading} // <-- Pasamos el estado de carga al DataGrid
         hideFooterSelectedRowCount
         rowSelectionModel={cuotasIdToPay}
         onRowSelectionModelChange={(newSelection) => {
@@ -175,12 +152,13 @@ export default function CuotasTable() {
         }}
         processRowUpdate={(row) => {
           updateCuota(row);
+          return row;
         }}
         getRowId={(row) => row.uuid}
-      ></DataGrid>
+      />
 
       <ConfirmationDialog
-        loading={isLoading}
+        loading={isPaying}
         onConfirm={handlePayments}
         open={open}
         close={() => setOpen(false)}
@@ -190,7 +168,7 @@ export default function CuotasTable() {
           cliente con las cuotas que seleccionaste:{" "}
           <strong>
             {cuotasIdToPay
-              .map((id) => cuotas?.find((cuota) => cuota.uuid == id))
+              .map((id) => cuotas?.find((cuota) => cuota.uuid === id))
               .map((cuota) => `${cuota?.year}/${cuota?.month}`)
               .join(" - ")}
           </strong>

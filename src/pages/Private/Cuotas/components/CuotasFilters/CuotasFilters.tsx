@@ -1,104 +1,164 @@
-import { CuotaStatus } from "@/models/Cuota";
+// components/CuotasFilters/CuotasFilters.tsx
+import { CuotaStatus, MonthsMap } from "@/models/Cuota";
+import ClearIcon from "@mui/icons-material/Clear";
 import {
-  Box,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
-  Typography,
+  SelectChangeEvent,
+  Stack,
+  Button,
 } from "@mui/material";
 import { useCuotasURLFilters } from "../CuotasTable/hooks/useCuotasURLFilters";
 
-const yearsOpts = [
-  { value: new Date().getFullYear() - 1, label: new Date().getFullYear() - 1 },
-  { value: new Date().getFullYear(), label: new Date().getFullYear() },
-  { value: new Date().getFullYear() + 1, label: new Date().getFullYear() + 1 },
-];
-
-const monthOpts = [
-  { value: 1, label: "Enero" },
-  { value: 2, label: "Febrero" },
-  { value: 3, label: "Marzo" },
-  { value: 4, label: "Abril" },
-  { value: 5, label: "Mayo" },
-  { value: 6, label: "Junio" },
-  { value: 7, label: "Julio" },
-  { value: 8, label: "Agosto" },
-  { value: 9, label: "Septiembre" },
-  { value: 10, label: "Octubre" },
-  { value: 11, label: "Noviembre" },
-  { value: 12, label: "Diciembre" },
-];
+// Generar una lista dinámica de años (ej. los últimos 5 años)
+const YEARS = Array.from({ length: 6 }, (_, i) => new Date().getFullYear() - i);
 
 export default function CuotasFilters() {
-  const { filters, setFilters } = useCuotasURLFilters();
-
-  console.log("filters", filters);
+  const { filters, setFilter, clearFilter, clearAllFilters, hasActiveFilters } =
+    useCuotasURLFilters();
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        gap: 2,
-        alignItems: "center",
-        py: 3,
-        // border: "1px solid #ddd",
-      }}
+    <Stack
+      direction="row"
+      spacing={2}
+      sx={{ mb: 2 }}
+      alignItems="center"
+      flexWrap="wrap"
+      gap={1}
     >
-      {/* <Typography variant="h6">Filtrar</Typography> */}
-      <FormControl fullWidth>
-        <InputLabel>Año</InputLabel>
+      {/* Mes Desde */}
+      <FormControl size="small" sx={{ minWidth: 140 }}>
+        <InputLabel id="month-start-label">Mes Desde</InputLabel>
         <Select
-          label="Año"
-          size="small"
+          labelId="month-start-label"
+          value={filters.monthStart || ""}
+          label="Mes Desde"
+          onChange={(e: SelectChangeEvent<any>) =>
+            setFilter("monthStart", e.target.value)
+          }
+          endAdornment={
+            filters.monthStart && (
+              <IconButton
+                size="small"
+                onClick={() => clearFilter("monthStart")}
+                sx={{ marginRight: 1.5 }}
+              >
+                <ClearIcon fontSize="small" />
+              </IconButton>
+            )
+          }
+        >
+          {MonthsMap.map((m) => (
+            <MenuItem key={m.value} value={m.value}>
+              {m.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      {/* Mes Hasta */}
+      <FormControl size="small" sx={{ minWidth: 140 }}>
+        <InputLabel id="month-end-label">Mes Hasta</InputLabel>
+        <Select
+          labelId="month-end-label"
+          value={filters.monthEnd || ""}
+          label="Mes Hasta"
+          onChange={(e: SelectChangeEvent<any>) =>
+            setFilter("monthEnd", e.target.value)
+          }
+          endAdornment={
+            filters.monthEnd && (
+              <IconButton
+                size="small"
+                onClick={() => clearFilter("monthEnd")}
+                sx={{ marginRight: 1.5 }}
+              >
+                <ClearIcon fontSize="small" />
+              </IconButton>
+            )
+          }
+        >
+          {MonthsMap.map((m) => (
+            <MenuItem key={m.value} value={m.value}>
+              {m.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      {/* Año */}
+      <FormControl size="small" sx={{ minWidth: 120 }}>
+        <InputLabel id="year-label">Año</InputLabel>
+        <Select
+          labelId="year-label"
           value={filters.year || ""}
-          onChange={(e) => setFilters({ year: e.target.value })}
+          label="Año"
+          onChange={(e: SelectChangeEvent<any>) =>
+            setFilter("year", e.target.value)
+          }
+          endAdornment={
+            filters.year && (
+              <IconButton
+                size="small"
+                onClick={() => clearFilter("year")}
+                sx={{ marginRight: 1.5 }}
+              >
+                <ClearIcon fontSize="small" />
+              </IconButton>
+            )
+          }
         >
-          {yearsOpts.map((year) => (
-            <MenuItem key={year.value} value={year.value}>
-              {year.label}
+          {YEARS.map((y) => (
+            <MenuItem key={y} value={y}>
+              {y}
             </MenuItem>
           ))}
         </Select>
       </FormControl>
 
-      <FormControl fullWidth>
-        <InputLabel>Mes</InputLabel>
+      {/* Estado */}
+      <FormControl size="small" sx={{ minWidth: 140 }}>
+        <InputLabel id="status-label">Estado</InputLabel>
         <Select
-          label="mes"
-          size="small"
-          value={filters.month || ""}
-          onChange={(e) => setFilters({ month: e.target.value })}
-        >
-          <MenuItem value="">
-            <em>Mes</em>
-          </MenuItem>
-          {monthOpts.map((month) => (
-            <MenuItem key={month.value} value={month.value}>
-              {month.label}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      <FormControl fullWidth>
-        <InputLabel>Estado</InputLabel>
-        <Select
-          label="Estado"
-          size="small"
+          labelId="status-label"
           value={filters.status || ""}
-          onChange={(e) => setFilters({ status: e.target.value })}
+          label="Estado"
+          onChange={(e: SelectChangeEvent<any>) =>
+            setFilter("status", e.target.value)
+          }
+          endAdornment={
+            filters.status && (
+              <IconButton
+                size="small"
+                onClick={() => clearFilter("status")}
+                sx={{ marginRight: 1.5 }}
+              >
+                <ClearIcon fontSize="small" />
+              </IconButton>
+            )
+          }
         >
-          <MenuItem value="">
-            <em>Estado</em>
-          </MenuItem>
-          {Object.values(CuotaStatus).map((status) => (
-            <MenuItem key={status.toLocaleLowerCase()} value={status}>
-              {status.toUpperCase()}
-            </MenuItem>
-          ))}
+          <MenuItem value={CuotaStatus.PENDING}>Pendiente</MenuItem>
+          <MenuItem value={CuotaStatus.PAID}>Pagado</MenuItem>
+          <MenuItem value={CuotaStatus.NO_SERVICE}>Sin Servicio</MenuItem>
         </Select>
       </FormControl>
-    </Box>
+
+      {/* Botón de limpiar todo */}
+      {hasActiveFilters && (
+        <Button
+          variant="outlined"
+          color="secondary"
+          size="small"
+          onClick={clearAllFilters}
+          startIcon={<ClearIcon />}
+        >
+          Limpiar Filtros
+        </Button>
+      )}
+    </Stack>
   );
 }
