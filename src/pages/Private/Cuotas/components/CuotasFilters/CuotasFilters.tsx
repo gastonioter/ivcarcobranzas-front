@@ -42,11 +42,10 @@ export default function CuotasFilters() {
         gap: 2,
         alignItems: "center",
         py: 3,
-        px: 2,
         // border: "1px solid #ddd",
       }}
     >
-      <Typography variant="h6">Filtrar</Typography>
+      {/* <Typography variant="h6">Filtrar</Typography> */}
       <FormControl fullWidth>
         <InputLabel>Año</InputLabel>
         <Select

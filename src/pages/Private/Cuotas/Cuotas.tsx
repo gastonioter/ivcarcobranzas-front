@@ -14,6 +14,7 @@ import {
   Box,
   Button,
   FormControl,
+  Stack,
   TextField,
 } from "@mui/material";
 import { useMemo, useState } from "react";
@@ -29,7 +30,9 @@ import CuotasTable from "./components/CuotasTable/CuotasTable";
 
 export default function Cuotas() {
   const navigate = useNavigate();
+  const [openDialog, setOpenDialog] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const customerId = searchParams.get("customerId");
 
   const updateSearchParams = (key: string, value: string) => {
     const nuevosParams = new URLSearchParams();
@@ -43,6 +46,7 @@ export default function Cuotas() {
   const snackbar = useSnackbar();
 
   const [generate, { isLoading }] = useGenerateAllCuotasMutation();
+
   const generateAllCuotas = async () => {
     try {
       await generate({}).unwrap();
@@ -59,23 +63,13 @@ export default function Cuotas() {
     }
   };
 
-  const [openDialog, setOpenDialog] = useState(false);
-
-  const customerId = searchParams.get("customerId");
-
   const { sendWpp, sending } = useSendRsmMontiWpp(customerId || "");
 
-  const { data, isLoading: isLoadingCostumers } = useGetCustomersQuery({});
-
-  const customers = useMemo(
-    () =>
-      data?.filter(
-        (c) =>
-          c.type === CustomerModalidad.CLOUD &&
-          c.status === CustomerStatus.ACTIVE,
-      ) as Customer[],
-    [data],
-  );
+  const { data: customers, isLoading: isLoadingCostumers } =
+    useGetCustomersQuery({
+      status: CustomerStatus.ACTIVE,
+      type: CustomerModalidad.CLOUD,
+    });
 
   const customer = useMemo(
     () =>
@@ -103,34 +97,49 @@ export default function Cuotas() {
         </SectionTitle>
       </SectionHeader>
 
-      <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-        <FormControl fullWidth sx={{ mt: 3 }}>
-          <Autocomplete
-            onChange={(event, customer) => {
-              updateSearchParams("customerId", customer?.uuid || "");
-            }}
-            value={
-              customer ||
-              ({
-                firstName: "",
-                lastName: "",
-              } as Customer)
-            }
-            getOptionLabel={(option: Customer) =>
-              formatFullName(option.firstName, option.lastName)
-            }
-            disabled={isLoadingCostumers}
-            options={customers ?? []}
-            renderInput={(params) => (
-              <TextField {...params} label="Selecciona el Cliente" />
-            )}
-          />
-        </FormControl>
+      <Stack direction={"column"}>
+        <Stack direction={"row"} spacing={3}>
+          <FormControl fullWidth>
+            <Autocomplete
+              onChange={(event, customer) => {
+                updateSearchParams("customerId", customer?.uuid || "");
+              }}
+              value={
+                customer ||
+                ({
+                  firstName: "",
+                  lastName: "",
+                } as Customer)
+              }
+              getOptionLabel={(option: Customer) =>
+                formatFullName(option.firstName, option.lastName)
+              }
+              disabled={isLoadingCostumers}
+              options={customers ?? []}
+              renderInput={(params) => (
+                <TextField {...params} label="Selecciona el Cliente" />
+              )}
+            />
+          </FormControl>
 
-        {customer && customerId && <CuotasTable customerId={customer.uuid} />}
+          {customerId && (
+            <Button
+              endIcon={<WhatsApp />}
+              variant="contained"
+              sx={{ fontWeight: 900, flexBasis: "30%" }}
+              color="info"
+              onClick={() => {
+                setOpenDialog(true);
+              }}
+            >
+              Enviar resumen
+            </Button>
+          )}
+        </Stack>
 
-        {!customer && !customerId ? (
-          <Button
+        <CuotasTable />
+
+        {/* {<Button
             color="warning"
             variant="contained"
             loading={isLoading}
@@ -138,21 +147,8 @@ export default function Cuotas() {
             onClick={generateAllCuotas}
           >
             Crear cutoas para todos los clientes
-          </Button>
-        ) : (
-          <Button
-            endIcon={<WhatsApp />}
-            variant="contained"
-            color="warning"
-            sx={{ fontSize: "1rem" }}
-            onClick={() => {
-              setOpenDialog(true);
-            }}
-          >
-            Enviar resumen
-          </Button>
-        )}
-      </Box>
+          </Button>} */}
+      </Stack>
 
       <ConfirmationDialog
         loading={sending}

@@ -19,7 +19,6 @@ export default function PaymentsTable({
   recibos: CuotaPayment[];
 }) {
   const [searchParams] = useSearchParams();
-  const customerId = searchParams.get("customerId");
   const animateNewRow = searchParams.get("animateNew");
   const [paymentSelected, setPaymentSelected] = useState<CuotaPayment | null>(
     null,

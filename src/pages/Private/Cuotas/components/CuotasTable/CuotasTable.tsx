@@ -7,6 +7,7 @@ import SummarizeIcon from "@mui/icons-material/Summarize";
 
 import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog";
 import { useSnackbar } from "@/context/SnackbarContext";
+import { usePayCuotasMutation } from "@/services/paymentCuotasApi";
 import { formattedCurrency } from "@/utilities/formatPrice";
 import { Box, Button, Chip } from "@mui/material";
 import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
@@ -15,18 +16,18 @@ import { useNavigate } from "react-router";
 import CuotasFilters from "../CuotasFilters/CuotasFilters";
 import ToggleStatusButton from "./ToggleStatusButton/ToggleStatusButton";
 import { useCuotasURLFilters } from "./hooks/useCuotasURLFilters";
-import { usePayCuotasMutation } from "@/services/paymentCuotasApi";
-export interface ICuotasTableProps {
-  customerId: string;
-}
+import { useSearchParams } from "react-router-dom";
 
-export default function CuotasTable({ customerId }: ICuotasTableProps) {
+export default function CuotasTable() {
   const { filters } = useCuotasURLFilters();
 
+  const [searchParams] = useSearchParams();
+  const customerId = searchParams.get("customerId");
   const navigate = useNavigate();
+
   const { data: cuotas } = useGetCuotasQuery({
     filters: {
-      customerId,
+      customerId: customerId ?? undefined,
     },
   });
   const [cuotasIdToPay, setCuotasIdToPay] = useState<readonly GridRowId[]>([]);
@@ -105,9 +106,7 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
                 ? "success"
                 : row.status === CuotaStatus.PENDING
                   ? "info"
-                  : // : row.status === CuotaStatus.LATE
-                    // ? "warning"
-                    "error"
+                  : "error"
             }
             sx={{ textTransform: "capitalize" }}
             label={row.status}
@@ -130,7 +129,7 @@ export default function CuotasTable({ customerId }: ICuotasTableProps) {
     try {
       await payCuotas({
         cuotaIds: cuotasIdToPay as string[],
-        customerId,
+        customerId: customerId as string,
       }).unwrap();
       navigate(`/private/pagos?customerId=${customerId}&animateNew=yes`);
     } catch (error) {
