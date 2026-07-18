@@ -11,6 +11,7 @@ import { metricsApi } from "@/services/metricsApi";
 import { cuotaPaymentsApi } from "@/services/paymentCuotasApi";
 import { productApi } from "@/services/productApi";
 import { saleApi } from "@/services/saleApi";
+import { settingsApi } from "@/services/settingsApi";
 import { configureStore } from "@reduxjs/toolkit";
 
 export const store = configureStore({
@@ -27,6 +28,7 @@ export const store = configureStore({
     [cuotasApi.reducerPath]: cuotasApi.reducer,
     [metricsApi.reducerPath]: metricsApi.reducer,
     [cuotaPaymentsApi.reducerPath]: cuotaPaymentsApi.reducer,
+    [settingsApi.reducerPath]: settingsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -40,6 +42,7 @@ export const store = configureStore({
       cuotasApi.middleware,
       metricsApi.middleware,
       cuotaPaymentsApi.middleware,
+      settingsApi.middleware,
     ),
 });
 

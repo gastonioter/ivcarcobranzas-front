@@ -13,6 +13,7 @@ import { useLocation } from "react-router";
 import logo from "../../assets/logo.png";
 import CollapsableItem from "./CollapsableItem";
 import SimpleItem, { SimpleItemProps } from "./SimpleItem";
+import { Settings } from "@mui/icons-material";
 const items = [
   {
     name: "Dashboard",
@@ -52,7 +53,7 @@ const items = [
     icon: <ReceiptLongIcon />,
   },
   {
-    name: "Cuotas",
+    name: "Resumenes",
     to: PrivateRoutes.CUOTAS,
     icon: <SummarizeIcon />,
   },
@@ -60,6 +61,11 @@ const items = [
     name: "Recibos",
     to: PrivateRoutes.PAYMENTS,
     icon: <MonetizationOnIcon />,
+  },
+  {
+    name: "Configuracion",
+    to: PrivateRoutes.SETTINGS,
+    icon: <Settings />,
   },
 ];
 

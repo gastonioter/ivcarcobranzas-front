@@ -28,6 +28,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import { CuotaFormLayout } from "./styled-components/layout.styled.component";
+import { useGetSettingsQuery } from "@/services/settingsApi";
 
 const yearsOpts = [
   { value: new Date().getFullYear() - 1, label: new Date().getFullYear() - 1 },
@@ -42,7 +43,7 @@ export type CuotaForm = Omit<CreateCuotasPayload, "customerId"> & {
 const initialCuota: CuotaForm = {
   year: new Date().getFullYear(),
   months: [cuotaMonthOpts[new Date().getMonth()]],
-  amount: 20_000,
+  amount: 20000,
   status: CuotaStatus.PENDING,
   customer: undefined,
 };
@@ -58,6 +59,8 @@ export default function CuotaForm() {
     error: errorCustomers,
   } = useGetCustomersQuery({});
 
+  const { data: config } = useGetSettingsQuery();
+  initialCuota.amount = config?.globalCuotaPrice || 0;
   const [create] = useCreateCuotasMutation();
 
   const navigate = useNavigate();
@@ -166,11 +169,6 @@ export default function CuotaForm() {
                 amount: parseFloat(e.target.value),
               }))
             }
-            // defaultValue={
-            // body.customer?.modalidadData.modalidad === CustomerModalidad.CLOUD
-            // ? body.customer?.modalidadData.cloudCategory.price
-            // : 0
-            // }
             value={body.amount}
           ></TextField>
           <FormControl>

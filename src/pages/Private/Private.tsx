@@ -4,7 +4,9 @@ import { lazy } from "react";
 import { Navigate, Route } from "react-router";
 import AppContainer from "./components/AppContainer/AppContainer";
 import { AppLayout } from "./styled-components";
+
 import CustomerDetail from "./Customers/CustomerDetails";
+const Settings = lazy(() => import("./Settings/Settings"));
 
 const Dashboard = lazy(() => import("./Dashboard/Dashboard"));
 const Customers = lazy(() => import("./Customers/Customers"));
@@ -94,6 +96,11 @@ export default function Private() {
           ></Route>
 
           <Route path={PrivateRoutes.PAYMENTS} element={<Payments />}></Route>
+
+          <Route
+            path={`${PrivateRoutes.SETTINGS}`}
+            element={<Settings />}
+          ></Route>
         </RoutesWithNotFound>
       </AppContainer>
     </AppLayout>
