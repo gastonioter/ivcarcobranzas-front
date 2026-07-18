@@ -26,6 +26,8 @@ export const PrivateRoutes = {
 
   PAYMENTS: "pagos",
   NEW_PAYMENT: "nuevo",
+
+  SETTINGS: "settings",
 };
 
 export enum Roles {
