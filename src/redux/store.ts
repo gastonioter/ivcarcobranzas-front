@@ -27,6 +27,7 @@ export const store = configureStore({
     [cuotasApi.reducerPath]: cuotasApi.reducer,
     [metricsApi.reducerPath]: metricsApi.reducer,
     [cuotaPaymentsApi.reducerPath]: cuotaPaymentsApi.reducer,
+    [settingsApi.reducerPath]: settingsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -40,6 +41,7 @@ export const store = configureStore({
       cuotasApi.middleware,
       metricsApi.middleware,
       cuotaPaymentsApi.middleware,
+      settingsApi.middleware,
     ),
 });
 
