@@ -35,7 +35,7 @@ const baseQuery: BaseQueryFn<
 export const customerApi = createApi({
   reducerPath: "customerApi",
   baseQuery,
-  tagTypes: ["Customers", "AccountSummary", "Recibos"],
+  tagTypes: ["Customers", "Customer", "AccountSummary", "Recibos"],
 
   endpoints: (builder) => ({
     getCustomers: builder.query<Customer[], CustomerFilters>({
@@ -49,6 +49,7 @@ export const customerApi = createApi({
 
     getCustomer: builder.query<Customer, string>({
       query: (uuid) => `/${uuid}`,
+      providesTags: (_, __, uuid) => [{ type: "Customer", id: uuid }],
     }),
 
     createCustomer: builder.mutation<Customer, CreateCustomerFormData>({
@@ -79,7 +80,10 @@ export const customerApi = createApi({
         method: "PATCH",
         body: updatedCustomerData,
       }),
-      invalidatesTags: ["Customers"],
+      invalidatesTags: (_, __, { uuid }) => [
+        "Customers",
+        { type: "Customer", id: uuid },
+      ],
     }),
 
     getAccountSummary: builder.query<AccountSummary, string>({
