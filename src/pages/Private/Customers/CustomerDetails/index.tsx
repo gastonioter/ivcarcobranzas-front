@@ -48,9 +48,15 @@ export default function CustomerDetail() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [wppConfirmOpen, setWppConfirmOpen] = useState(false);
 
-  const { data: customer, isLoading, error } = useGetCustomerQuery(uuid!);
-  const { data: accountSummary, isLoading: summaryLoading } =
-    useGetAccountSummaryQuery(uuid!);
+  const {
+    data: customer,
+    isLoading,
+    error,
+  } = useGetCustomerQuery(uuid as string);
+
+  // const { data: accountSummary, isLoading: summaryLoading } =
+  //   useGetAccountSummaryQuery(uuid!);
+
   const [editCustomerMutation] = useEditCustomerMutation();
   const [deleteFn] = useDeleteCustomerMutation();
   const { sendWpp, sending } = useSendRsmMontiWpp(uuid!);
@@ -99,12 +105,7 @@ export default function CustomerDetail() {
     <>
       {/* Header */}
       <Paper sx={{ p: 3, mb: 3, boxShadow: 2 }}>
-        <Stack
-          direction="row"
-          alignItems="center"
-          flexWrap="wrap"
-          gap={2}
-        >
+        <Stack direction="row" alignItems="center" flexWrap="wrap" gap={2}>
           <Button
             startIcon={<ArrowBackIcon />}
             variant="text"
@@ -134,7 +135,9 @@ export default function CustomerDetail() {
             <Button
               variant="outlined"
               color={
-                customer.status === CustomerStatus.ACTIVE ? "warning" : "success"
+                customer.status === CustomerStatus.ACTIVE
+                  ? "warning"
+                  : "success"
               }
               onClick={toggleStatus}
             >
@@ -180,7 +183,7 @@ export default function CustomerDetail() {
         </Grid>
 
         {/* Account Summary */}
-        <Grid item xs={12} md={6}>
+        {/* <Grid item xs={12} md={6}>
           <Paper sx={{ p: 3, height: "100%", boxShadow: 2 }}>
             <Typography variant="h6" fontWeight="bold" mb={2}>
               Resumen de Cuenta
@@ -213,16 +216,14 @@ export default function CustomerDetail() {
               </Typography>
             )}
           </Paper>
-        </Grid>
+        </Grid> */}
 
         {/* Navigation Cards */}
         <Grid item xs={12} sm={6}>
           <Card sx={{ boxShadow: 2 }}>
             <CardActionArea
               onClick={() =>
-                navigate(
-                  `/private/${PrivateRoutes.CUOTAS}?customerId=${uuid}`
-                )
+                navigate(`/private/${PrivateRoutes.CUOTAS}?customerId=${uuid}`)
               }
             >
               <CardContent>
@@ -247,7 +248,7 @@ export default function CustomerDetail() {
             <CardActionArea
               onClick={() =>
                 navigate(
-                  `/private/${PrivateRoutes.PAYMENTS}?customerId=${uuid}`
+                  `/private/${PrivateRoutes.PAYMENTS}?customerId=${uuid}`,
                 )
               }
             >
@@ -281,7 +282,7 @@ export default function CustomerDetail() {
                 startIcon={<PrintIcon />}
                 onClick={() =>
                   window.open(
-                    `${import.meta.env.VITE_BASE_API_URL}/prints/rsmmonit/${uuid}`
+                    `${import.meta.env.VITE_BASE_API_URL}/prints/rsmmonit/${uuid}`,
                   )
                 }
               >
@@ -292,7 +293,7 @@ export default function CustomerDetail() {
                 startIcon={<PrintIcon />}
                 onClick={() =>
                   window.open(
-                    `${import.meta.env.VITE_BASE_API_URL}/prints/rsmcta/${uuid}`
+                    `${import.meta.env.VITE_BASE_API_URL}/prints/rsmcta/${uuid}`,
                   )
                 }
               >
@@ -313,7 +314,10 @@ export default function CustomerDetail() {
 
       {/* Edit Dialog */}
       <CustomDialog title="Editar Cliente">
-        <CustomerForm customer={dialogCustomer} setCostumer={setDialogCustomer} />
+        <CustomerForm
+          customer={dialogCustomer}
+          setCostumer={setDialogCustomer}
+        />
       </CustomDialog>
 
       {/* Delete Confirmation */}
@@ -337,9 +341,8 @@ export default function CustomerDetail() {
         loading={sending}
       >
         <>
-          Estás a punto de{" "}
-          <strong>enviar el resumen de monitoreo</strong> al número de WhatsApp
-          del cliente, ¿Estás seguro de continuar?
+          Estás a punto de <strong>enviar el resumen de monitoreo</strong> al
+          número de WhatsApp del cliente, ¿Estás seguro de continuar?
         </>
       </ConfirmationDialog>
     </>
