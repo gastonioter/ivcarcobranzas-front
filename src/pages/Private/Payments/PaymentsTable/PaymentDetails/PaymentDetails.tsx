@@ -1,7 +1,7 @@
 import { dialogCloseSubject$ } from "@/components";
 import { CuotaPayment } from "@/models/CuotaPayment";
-import { Payment } from "@/models/Payment";
 import { Box, Button, Typography } from "@mui/material";
+
 export interface IPaymentDetailsProps {
   payment: CuotaPayment | null;
 }

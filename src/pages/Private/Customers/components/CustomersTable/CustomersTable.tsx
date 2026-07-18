@@ -4,11 +4,8 @@ import TableMenuActions from "@/components/TableMenuActions/TableMenuActions";
 import { useSnackbar } from "@/context/SnackbarContext";
 import { Customer, CustomerModalidad, CustomerStatus } from "@/models/customer";
 
-import ConfirmationDialog from "@/components/ConfirmationDialog/ConfirmationDialog";
-import { useSendRsmMontiWpp } from "@/hooks/useSendRsmMonitWpp";
 import { PrivateRoutes } from "@/models";
 import {
-  useDeleteCustomerMutation,
   useEditCustomerMutation,
   useGetCustomersQuery,
 } from "@/services/customerApi";
@@ -64,10 +61,6 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
   });
 
   const [editCustomerMutation] = useEditCustomerMutation();
-  const [deleteFn] = useDeleteCustomerMutation();
-
-  const [id, setId] = useState<null | string>(null);
-  const { sendWpp, sending } = useSendRsmMontiWpp(id || "");
 
   const handleFilterChange =
     (key: "status" | "type") => (event: SelectChangeEvent) => {
@@ -111,19 +104,15 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
     }
   };
 
-  const deleteCustomer = async (uuid: string) => {
-    try {
-      await deleteFn(uuid).unwrap();
-      snackbar.openSnackbar("Cliente eliminado!");
-    } catch (e: any) {
-      console.error(e);
-      snackbar.openSnackbar(`${e?.data?.error || "Error"}`, "error");
-    }
-  };
-
   const actions = ({ row }: { row: Customer }) => (
     <TableMenuActions
       actions={[
+        {
+          name: "Ver detalle",
+          onClick: () => {
+            navigate(`/private/${PrivateRoutes.CUSTOMERS}/${row.uuid}`);
+          },
+        },
         {
           name: "Editar",
           onClick: () => {
@@ -132,54 +121,12 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
           },
         },
         {
-          name: "Ver Cuotas",
-          onClick: () => {
-            navigate(`/private/${PrivateRoutes.CUOTAS}?customerId=${row.uuid}`);
-          },
-        },
-        {
-          name: "Ver Recibos",
-          onClick: () => {
-            navigate(
-              `/private/${PrivateRoutes.PAYMENTS}?customerId=${row.uuid}`,
-            );
-          },
-        },
-        {
-          name: "Rsm. Monit.",
-          onClick: () => {
-            window.open(
-              `${import.meta.env.VITE_BASE_API_URL}/prints/rsmmonit/${row.uuid}`,
-            );
-          },
-        },
-        {
-          name: "Rsm. Cta.",
-          onClick: () => {
-            window.open(
-              `${import.meta.env.VITE_BASE_API_URL}/prints/rsmcta/${row.uuid}`,
-            );
-          },
-        },
-        {
-          name: "Enviar Rsm",
-          onClick: async () => {
-            setId(row.uuid);
-          },
-        },
-        {
           name:
             row.status === CustomerStatus.ACTIVE
               ? "Dar de baja"
               : "Dar de alta",
-          onClick: async () => {
+          onClick: () => {
             toggleCustomerStatus(row);
-          },
-        },
-        {
-          name: "Eliminar",
-          onClick: async () => {
-            deleteCustomer(row.uuid);
           },
         },
       ]}
@@ -355,18 +302,6 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
           loading={isLoading}
         />
       </div>
-
-      <ConfirmationDialog
-        close={() => setId(null)}
-        onConfirm={sendWpp}
-        open={!!id}
-        loading={sending}
-      >
-        <>
-          Estas a punto de <strong>enviar el resumen de monitoreo</strong> al
-          numero de WhatsApp del cliente, ¿Estás seguro de continuar?
-        </>
-      </ConfirmationDialog>
     </>
   );
 }
