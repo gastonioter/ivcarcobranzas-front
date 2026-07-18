@@ -125,6 +125,12 @@ function CustomersTable({ setCustomer }: CustomerTableProps): JSX.Element {
     <TableMenuActions
       actions={[
         {
+          name: "Ver detalle",
+          onClick: () => {
+            navigate(`/private/clientes/${row.uuid}`);
+          },
+        },
+        {
           name: "Editar",
           onClick: () => {
             setCustomer(row);

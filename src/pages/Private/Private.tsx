@@ -4,6 +4,7 @@ import { lazy } from "react";
 import { Navigate, Route } from "react-router";
 import AppContainer from "./components/AppContainer/AppContainer";
 import { AppLayout } from "./styled-components";
+import CustomerDetail from "./Customers/CustomerDetails";
 
 const Dashboard = lazy(() => import("./Dashboard/Dashboard"));
 const Customers = lazy(() => import("./Customers/Customers"));
@@ -80,6 +81,10 @@ export default function Private() {
           {/* CUSTOEMRS */}
 
           <Route path={PrivateRoutes.CUSTOMERS} element={<Customers />}></Route>
+          <Route
+            path={PrivateRoutes.CUSTOMER_DETAIL}
+            element={<CustomerDetail />}
+          ></Route>
 
           <Route path={`${PrivateRoutes.CUOTAS}`} element={<Cuotas />}></Route>
 

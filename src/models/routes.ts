@@ -19,6 +19,7 @@ export const PrivateRoutes = {
   PAYMENTS_SALE: "pagos/:uuid",
 
   CUSTOMERS: "clientes",
+  CUSTOMER_DETAIL: "clientes/:uuid",
 
   CUOTAS: "cuotas",
   NEW_CUOTA: "nueva",
