@@ -6,7 +6,7 @@ import AppContainer from "./components/AppContainer/AppContainer";
 import { AppLayout } from "./styled-components";
 
 import CustomerDetail from "./Customers/CustomerDetails";
-import Settings from "./Settings/Settings";
+const Settings = lazy(() => import("./Settings/Settings"));
 
 const Dashboard = lazy(() => import("./Dashboard/Dashboard"));
 const Customers = lazy(() => import("./Customers/Customers"));
