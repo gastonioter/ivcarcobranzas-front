@@ -1,7 +1,10 @@
 import SectionHeader from "@/components/SectionHeader/SectionHeader";
 import SectionTitle from "@/components/SectionTitle/SectionTitle";
 import { useSnackbar } from "@/context/SnackbarContext";
-import { useGetSettingsQuery, useSetSettingsMutation } from "@/services/settingsApi";
+import {
+  useGetSettingsQuery,
+  useSetSettingsMutation,
+} from "@/services/settingsApi";
 import {
   Box,
   Button,

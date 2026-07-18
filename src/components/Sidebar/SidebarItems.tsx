@@ -53,7 +53,7 @@ const items = [
     icon: <ReceiptLongIcon />,
   },
   {
-    name: "Cuotas",
+    name: "Resumenes",
     to: PrivateRoutes.CUOTAS,
     icon: <SummarizeIcon />,
   },

@@ -26,7 +26,7 @@ const baseQuery: BaseQueryFn<
   return result;
 };
 
-const settingsApi = createApi({
+export const settingsApi = createApi({
   baseQuery,
   reducerPath: "settingsApi",
   tagTypes: ["Settings"],
@@ -36,7 +36,7 @@ const settingsApi = createApi({
       providesTags: ["Settings"],
     }),
 
-    setSettings: builder.mutation({
+    setSettings: builder.mutation<Settings, Partial<Settings>>({
       query: (body) => ({
         url: "/",
         method: "POST",
